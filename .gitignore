@@ -1,0 +1,41 @@
+# 程序生成目录
+Release
+Debug
+
+# 生成的文件
+*.dll
+!LT_WXCL_Dll/**/*.dll
+!LT_WXCL_Dll/**/*.lib
+*.she
+*.exe
+*.lib
+*.obj
+
+
+# Visual Studio 文件
+*.sdf
+*.suo
+.vs
+
+
+# 备份文件
+*-old
+*.zip
+*.bak
+
+
+# vs
+*.aps
+enc_temp_folder
+
+build
+*.filters
+*.user
+ipch
+
+# 资源文件
+*.png
+*.psd
+res
+res（旧）
+
