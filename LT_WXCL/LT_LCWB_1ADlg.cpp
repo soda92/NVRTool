@@ -12,15 +12,11 @@
 
 #include "VideoPlay.h"
 #include "WaitDlg.h"
-
 #include <Dbt.h>
-
-
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
 
 // CLT_WXCLDlg 对话框
 
@@ -28,21 +24,20 @@ extern char IPCName[12][50];
 
 char FirstDriveFromMask(ULONG unitmask);
 
-#include <sapi.h>    // 导入语音头文件
+#include <sapi.h> // 导入语音头文件
 #include "sphelper.h"
-#pragma comment(lib,"sapi.lib")
+#pragma comment(lib, "sapi.lib")
 CString WarVoice;
 int WINAPI Thread_Voice(LPVOID lpPara);
-
 
 CLT_LCWB_1ADlg::CLT_LCWB_1ADlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CLT_LCWB_1ADlg::IDD, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	memset(lUserID,-1,sizeof(lUserID));
-	memset(lRealPlayHandle,-1,sizeof(lRealPlayHandle));
+	memset(lUserID, -1, sizeof(lUserID));
+	memset(lRealPlayHandle, -1, sizeof(lRealPlayHandle));
 	TaxStat = FALSE;
-	memset(&TaxData,0,sizeof(TaxData));
+	memset(&TaxData, 0, sizeof(TaxData));
 	OsdIndex = 0;
 	BRecUdp = -1;
 }
@@ -51,8 +46,6 @@ void CLT_LCWB_1ADlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TAB1, m_TabCtrl);
-	
-
 }
 
 BEGIN_MESSAGE_MAP(CLT_LCWB_1ADlg, CDialogEx)
@@ -65,23 +58,22 @@ BEGIN_MESSAGE_MAP(CLT_LCWB_1ADlg, CDialogEx)
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
-
 // CLT_WXCLDlg 消息处理程序
 
-int __stdcall VideoStateCB(LONG nPort,char type,char* error)
+int __stdcall VideoStateCB(LONG nPort, char type, char* error)
 {
-	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*) theApp.pMainDlg;
-	TRACE("port = %d,type = %d,error = %s\n",nPort,type,error);
+	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)theApp.pMainDlg;
+	TRACE("port = %d,type = %d,error = %s\n", nPort, type, error);
 	//AfxMessageBox(error);
 	if (dlg != NULL)
 	{
-		if (type == 0)//replay
+		if (type == 0) //replay
 		{
 			//dlg->m_ReplayDlg.ReplayCallBack(nPort,error);
 		}
-		else if (type == 2)//record
+		else if (type == 2) //record
 		{
-			dlg->m_ManageDlg.m_RecordCallBack(nPort,error);
+			dlg->m_ManageDlg.m_RecordCallBack(nPort, error);
 		}
 	}
 	return 0;
@@ -89,12 +81,12 @@ int __stdcall VideoStateCB(LONG nPort,char type,char* error)
 
 int WINAPI Thread_SetOsd(LPVOID lpPara)
 {
-	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*) lpPara;
+	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 	int i = dlg->OsdIndex;
 
-	TRACE("osd i = %d\n",i);
+	TRACE("osd i = %d\n", i);
 
-	while(1)
+	while (1)
 	{
 		char Speed[20] = "";
 		char Mileage[20] = "";
@@ -102,15 +94,14 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
 		char CheHao[20] = "";
 		char SiJiHao[20] = "";
 
-		double LiCheng = dlg->TaxData.Signpost/1000.0;
+		double LiCheng = dlg->TaxData.Signpost / 1000.0;
 
+		sprintf_s(CheCi, "%d", dlg->TaxData.TrainNum);
 
-		sprintf_s(CheCi,"%d",dlg->TaxData.TrainNum);
-
-		sprintf_s(Speed,"%d",dlg->TaxData.Speed);
-		sprintf_s(Mileage,"%.3lf",LiCheng);				
-		sprintf_s(CheHao,"%d",dlg->TaxData.EngineNo);
-		sprintf_s(SiJiHao,"%d",dlg->TaxData.DriverNo);
+		sprintf_s(Speed, "%d", dlg->TaxData.Speed);
+		sprintf_s(Mileage, "%.3lf", LiCheng);
+		sprintf_s(CheHao, "%d", dlg->TaxData.EngineNo);
+		sprintf_s(SiJiHao, "%d", dlg->TaxData.DriverNo);
 		//TRACE("sudu = %s,gongli = %s\n",Speed,Mileage);
 		/*if (i == 1)
 		{
@@ -119,11 +110,11 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
 			dlg->SetFireText(buf);
 		}*/
 		if (dlg->lUserID[i] >= 0)
-		{			
-			dlg->VideoOSDSet(&dlg->lUserID[i],Speed,Mileage,CheCi,CheHao,(i>7?i-8:i),SiJiHao);
+		{
+			dlg->VideoOSDSet(&dlg->lUserID[i], Speed, Mileage, CheCi, CheHao, (i > 7 ? i - 8 : i), SiJiHao);
 		}
 
-		Sleep(2*1000);
+		Sleep(2 * 1000);
 	}
 
 	return 0;
@@ -131,12 +122,12 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
 
 int WINAPI Thread_Play(LPVOID lpPara)
 {
-	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*) lpPara;
+	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 	char ip[30] = "";
-	Sleep(5*1000);
+	Sleep(5 * 1000);
 #if 0
-	HWND PWnd[32] = {0};
-	
+	HWND PWnd[32] = { 0 };
+
 	PWnd[0] = dlg->m_VideoDlg.m_videoPlayWnd[0]->GetSafeHwnd();
 	PWnd[1] = dlg->m_VideoDlg.m_videoPlayWnd[1]->GetSafeHwnd();
 	PWnd[2] = dlg->m_VideoDlg.m_videoPlayWnd[2]->GetSafeHwnd();
@@ -158,23 +149,22 @@ int WINAPI Thread_Play(LPVOID lpPara)
 	PWnd[15] = dlg->m_VideoDlg.m_videoPlayWnd[15]->GetSafeHwnd();
 #endif
 
-	int tmp = (theApp.Local[1]=='A'?0:8);
+	int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
 
-	for (int i = tmp;i < (8+ tmp);i++)
-	{			
+	for (int i = tmp; i < (8 + tmp); i++)
+	{
 		dlg->OsdIndex = i;
-		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_SetOsd,lpPara,0,NULL);//osd叠加线程
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetOsd, lpPara, 0, NULL); //osd叠加线程
 		Sleep(50);
 	}
-	
 
-	while(1)
+	while (1)
 	{
-		for (int i = 0;i < 32;i++)
+		for (int i = 0; i < 32; i++)
 		{
 
 			if (dlg->lUserID[i] == -1)
-			{			
+			{
 				//TRACE("i = %d\n",i);
 				/*switch(i)
 				{
@@ -223,15 +213,15 @@ int WINAPI Thread_Play(LPVOID lpPara)
 				}*/
 				//sprintf_s(ip,"192.168.101.7%d",i);
 
-				if(i<=5 && i>=0)
-					sprintf_s(ip,"192.168.10%d.7%d",atoi(&theApp.Local[0]),i);
-				else if(i<=13 && i>=8)
-					sprintf_s(ip,"192.168.10%d.8%d",atoi(&theApp.Local[0]),i-8);
+				if (i <= 5 && i >= 0)
+					sprintf_s(ip, "192.168.10%d.7%d", atoi(&theApp.Local[0]), i);
+				else if (i <= 13 && i >= 8)
+					sprintf_s(ip, "192.168.10%d.8%d", atoi(&theApp.Local[0]), i - 8);
 				else
 					continue;
 
-				TRACE("ipc ip = %s\n",ip);
-				int res = dlg->VideoPlay(ip,&(dlg->lUserID[i]),&(dlg->lRealPlayHandle[i]),dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
+				TRACE("ipc ip = %s\n", ip);
+				int res = dlg->VideoPlay(ip, &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]), dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
 				if (res < 0)
 				{
 					//TRACE("ipc %s error\n",ip);
@@ -242,7 +232,7 @@ int WINAPI Thread_Play(LPVOID lpPara)
 			Sleep(50);
 		}
 
-		Sleep(5*1000);
+		Sleep(5 * 1000);
 	}
 
 	return 0;
@@ -250,16 +240,15 @@ int WINAPI Thread_Play(LPVOID lpPara)
 
 int WINAPI Thread_SetIpcTime(LPVOID lpPara)
 {
-	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*) lpPara;
+	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 
-	while(1)
+	while (1)
 	{
-		Sleep(10*60*1000);
+		Sleep(10 * 60 * 1000);
 		dlg->TimeCFG();
 	}
 	return 0;
 }
-
 
 //UDP广播接收函数
 //
@@ -269,42 +258,41 @@ int WINAPI Thread_SetIpcTime(LPVOID lpPara)
 //
 int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 {
-	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*) lpPara;
+	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 
 	struct sockaddr_in addr;
 	int addrLen = sizeof(addr);
 	unsigned char RecBuf[1024] = "";
 
-	while(1)
+	while (1)
 	{
-		int res = recvfrom(dlg->BRecUdp,(char*)RecBuf,sizeof(RecBuf),0,(struct sockaddr *)&addr, &addrLen);
+		int res = recvfrom(dlg->BRecUdp, (char*)RecBuf, sizeof(RecBuf), 0, (struct sockaddr*)&addr, &addrLen);
 		if (res > 0)
 		{
-			if (RecBuf[0] == 0xFF && RecBuf[1] == 0x01)							//防火
+			if (RecBuf[0] == 0xFF && RecBuf[1] == 0x01) //防火
 			{
 				char Remote[10] = "";
 				Remote[0] = RecBuf[2];
 				Remote[1] = RecBuf[3];
 
-				if (Remote[0] == theApp.Local[0] && Remote[1] == 'A' )		//本车A
+				if (Remote[0] == theApp.Local[0] && Remote[1] == 'A') //本车A
 				{
-					dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4],41,0);
+					dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 0);
 				}
-				if (Remote[0] == theApp.Local[0] && Remote[1] == 'B' )		//本车B
+				if (Remote[0] == theApp.Local[0] && Remote[1] == 'B') //本车B
 				{
-					dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4],41,1);
+					dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 1);
 				}
-				if (Remote[0] != theApp.Local[0] && Remote[1] == 'A' )		//他车A
+				if (Remote[0] != theApp.Local[0] && Remote[1] == 'A') //他车A
 				{
-					dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4],41,2);
+					dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 2);
 				}
-				if (Remote[0] != theApp.Local[0] && Remote[1] == 'B' )		//他车B
+				if (Remote[0] != theApp.Local[0] && Remote[1] == 'B') //他车B
 				{
-					dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4],41,3);
+					dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 3);
 				}
-
 			}
-			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x02)					//采集盒
+			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x02) //采集盒
 			{
 				char Remote[10] = "";
 				Remote[0] = RecBuf[2];
@@ -312,19 +300,19 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 
 				if (Remote[0] == theApp.Local[0] && Remote[1] == 'A' && dlg->m_JcgkDlg.CurrentPage == 0)
 				{
-					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5],10,0,RecBuf[4]);
+					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5], 10, 0, RecBuf[4]);
 				}
 				if (Remote[0] == theApp.Local[0] && Remote[1] == 'B' && dlg->m_JcgkDlg.CurrentPage == 1)
 				{
-					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5],10,1,RecBuf[4]);
+					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5], 10, 1, RecBuf[4]);
 				}
 				if (Remote[0] != theApp.Local[0] && Remote[1] == 'A' && dlg->m_JcgkDlg.CurrentPage == 2)
 				{
-					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5],10,2,RecBuf[4]);
+					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5], 10, 2, RecBuf[4]);
 				}
 				if (Remote[0] != theApp.Local[0] && Remote[1] == 'B' && dlg->m_JcgkDlg.CurrentPage == 3)
 				{
-					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5],10,3,RecBuf[4]);
+					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5], 10, 3, RecBuf[4]);
 				}
 			}
 			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x03)
@@ -333,20 +321,20 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 				Remote[0] = RecBuf[2];
 				Remote[1] = RecBuf[3];
 
-				if (strcmp(Remote,theApp.Local) && Remote[0] == theApp.Local[0])
+				if (strcmp(Remote, theApp.Local) && Remote[0] == theApp.Local[0])
 				{
-					memcpy(&dlg->TaxData,&RecBuf[4],sizeof(dlg->TaxData));
+					memcpy(&dlg->TaxData, &RecBuf[4], sizeof(dlg->TaxData));
 					//校时
 
 					if (dlg->TaxData.TAXTime.Year != 0 && dlg->TaxData.TAXTime.Month != 0 && dlg->TaxData.TAXTime.Day != 0)
 					{
-						CTime curTime  = CTime::GetCurrentTime();
-						CTime TaxTime(dlg->TaxData.TAXTime.Year,dlg->TaxData.TAXTime.Month,dlg->TaxData.TAXTime.Day,dlg->TaxData.TAXTime.Hour,dlg->TaxData.TAXTime.Minute,dlg->TaxData.TAXTime.Second);
+						CTime curTime = CTime::GetCurrentTime();
+						CTime TaxTime(dlg->TaxData.TAXTime.Year, dlg->TaxData.TAXTime.Month, dlg->TaxData.TAXTime.Day, dlg->TaxData.TAXTime.Hour, dlg->TaxData.TAXTime.Minute, dlg->TaxData.TAXTime.Second);
 						CTimeSpan span = curTime - TaxTime;
 
 						//if (time.wYear != MainDlg->TaxData.TAXTime.Year || time.wMonth != MainDlg->TaxData.TAXTime.Month || time.wDay != MainDlg->TaxData.TAXTime.Day || time.wHour != MainDlg->TaxData.TAXTime.Hour || time.wMinute != MainDlg->TaxData.TAXTime.Minute)
-						if(span.GetTotalSeconds() >60 || span.GetTotalSeconds() < -60)
-						{					
+						if (span.GetTotalSeconds() > 60 || span.GetTotalSeconds() < -60)
+						{
 							//MainDlg->SetFireText("set time");
 							TRACE("tax set time\n");
 							SYSTEMTIME time;
@@ -358,47 +346,47 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 							time.wMinute = dlg->TaxData.TAXTime.Minute;
 							time.wSecond = dlg->TaxData.TAXTime.Second;
 
-							SetLocalTime(&time);							
+							SetLocalTime(&time);
 						}
 					}
 				}
 			}
-			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x04)					//报警中断
+			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x04) //报警中断
 			{
 				dlg->m_FireMsgDlg.StopWarFun();
 			}
-			else if(RecBuf[0] == 0xFF && RecBuf[1] == 0x05)						//空转
+			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x05) //空转
 			{
 				char Remote[10] = "";
 				Remote[0] = RecBuf[2];
 				Remote[1] = RecBuf[3];
 
 				//存储本节车的空转数据
-				if(Remote[0] == theApp.Local[0] && Remote[1]== theApp.Local[1])
+				if (Remote[0] == theApp.Local[0] && Remote[1] == theApp.Local[1])
 				{
 					dlg->m_RacingDlg.saveData(&RecBuf[4]);
 				}
-				
+
 				//解析数据
-				if (Remote[0] == theApp.Local[0] && Remote[1] == 'A' )		//本车A
+				if (Remote[0] == theApp.Local[0] && Remote[1] == 'A') //本车A
 				{
-					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4],41,0);
+					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4], 41, 0);
 				}
-				if (Remote[0] == theApp.Local[0] && Remote[1] == 'B' )		//本车B
+				if (Remote[0] == theApp.Local[0] && Remote[1] == 'B') //本车B
 				{
-					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4],41,1);
+					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4], 41, 1);
 				}
-				if (Remote[0] != theApp.Local[0] && Remote[1] == 'A' )		//他车A
+				if (Remote[0] != theApp.Local[0] && Remote[1] == 'A') //他车A
 				{
-					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4],41,2);
+					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4], 41, 2);
 				}
-				if (Remote[0] != theApp.Local[0] && Remote[1] == 'B' )		//他车B
+				if (Remote[0] != theApp.Local[0] && Remote[1] == 'B') //他车B
 				{
-					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4],41,3);
+					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4], 41, 3);
 				}
 			}
 		}
-		memset(RecBuf,0,sizeof(RecBuf));
+		memset(RecBuf, 0, sizeof(RecBuf));
 	}
 	return 0;
 }
@@ -407,62 +395,57 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	plog::init(plog::debug, "log.txt"); // Step2: initialize the logger
+
 	// 设置此对话框的图标。当应用程序主窗口不是对话框时，框架将自动
 	//  执行此操作
-	SetIcon(m_hIcon, TRUE);			// 设置大图标
-	SetIcon(m_hIcon, FALSE);		// 设置小图标
+	SetIcon(m_hIcon, TRUE);	 // 设置大图标
+	SetIcon(m_hIcon, FALSE); // 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
-	m_brush.CreateSolidBrush(RGB(0,0,0));
-	newFont.CreatePointFont(200,"黑体");
-
-	
+	m_brush.CreateSolidBrush(RGB(0, 0, 0));
+	newFont.CreatePointFont(200, "黑体");
 
 	CArray<COLORREF, COLORREF> arColors;
 
-	arColors.Add (RGB (121, 210, 231));
-	arColors.Add (RGB (190, 218, 153));
-	arColors.Add (RGB (255, 170, 100));
-
-
+	arColors.Add(RGB(121, 210, 231));
+	arColors.Add(RGB(190, 218, 153));
+	arColors.Add(RGB(255, 170, 100));
 
 	//******************************
 	CWaitDlg dlg;
 	dlg.DoModal();
 
 	theApp.pMainDlg = this;
-	GetPrivateProfileString("LT_WXCLCFG","Local","",theApp.Local,10,".//LT_WXCLCFG.ini");
-	theApp.Remote = GetPrivateProfileInt("LT_WXCLCFG","Remote",0,".//LT_WXCLCFG.ini");
-
+	GetPrivateProfileString("LT_WXCLCFG", "Local", "", theApp.Local, 10, ".//LT_WXCLCFG.ini");
+	theApp.Remote = GetPrivateProfileInt("LT_WXCLCFG", "Remote", 0, ".//LT_WXCLCFG.ini");
 
 	///***
 
-	m_button1.SetBkColor(RGB(0,0,0));
-	m_button1.SetForeColor(RGB(255,255,255));
+	m_button1.SetBkColor(RGB(0, 0, 0));
+	m_button1.SetForeColor(RGB(255, 255, 255));
 
-	MoveWindow(0,0,SCREEN_X,SCREEN_Y);
+	MoveWindow(0, 0, SCREEN_X, SCREEN_Y);
 	CenterWindow();
 
-	
-	m_TabCtrl.SetItemSize(CSize(150,40));
+	m_TabCtrl.SetItemSize(CSize(150, 40));
 
-	m_TabCtrl.MoveWindow(-3,-3,SCREEN_X+3,SCREEN_Y+3);
+	m_TabCtrl.MoveWindow(-3, -3, SCREEN_X + 3, SCREEN_Y + 3);
 	//m_TabCtrl.InsertItem(0,"机车工况");
 	//m_JcgkDlg.Create(IDD_DIALOG_JCGK,GetDlgItem(IDC_TAB1));
-	m_TabCtrl.InsertItem(0,"视频预览");
-	m_VideoDlg.Create(IDD_DIALOG_VIDEO,GetDlgItem(IDC_TAB1));
-	m_TabCtrl.InsertItem(1,"设备管理");
-	m_ManageDlg.Create(IDD_DIALOG_MANAGE,GetDlgItem(IDC_TAB1));
-	m_TabCtrl.InsertItem(2,"火警信息");
-	m_FireMsgDlg.Create(IDD_DIALOG_FIRE,GetDlgItem(IDC_TAB1));
+	m_TabCtrl.InsertItem(0, "视频预览");
+	m_VideoDlg.Create(IDD_DIALOG_VIDEO, GetDlgItem(IDC_TAB1));
+	m_TabCtrl.InsertItem(1, "设备管理");
+	m_ManageDlg.Create(IDD_DIALOG_MANAGE, GetDlgItem(IDC_TAB1));
+	m_TabCtrl.InsertItem(2, "火警信息");
+	m_FireMsgDlg.Create(IDD_DIALOG_FIRE, GetDlgItem(IDC_TAB1));
 	//m_TabCtrl.InsertItem(4,"空转记录");
 	//m_RacingDlg.Create(IDD_DIALOG_RACING,GetDlgItem(IDC_TAB1));
 
-
-	CRect rc;//标签页里的窗口大小
-	m_TabCtrl.GetClientRect(&rc);	
+	CRect rc; //标签页里的窗口大小
+	m_TabCtrl.GetClientRect(&rc);
 	ClientToScreen(rc);
-	m_TabCtrl.SetMinTabWidth(rc.Width()/7);
+	m_TabCtrl.SetMinTabWidth(rc.Width() / 7);
 	//m_TabCtrl.ClientToScreen(rc);
 	rc.top += 40;
 	rc.bottom -= 0;
@@ -478,25 +461,23 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	m_VideoDlg.ShowWindow(TRUE);
 
 	char TaxCom[20] = "";
-	GetPrivateProfileString("LT_WXCLCFG","TaxCom","COM1",TaxCom,20,".//LT_WXCLCFG.ini");
-	char Parity = GetPrivateProfileInt("LT_WXCLCFG","TaxParity",0,".//LT_WXCLCFG.ini");
+	GetPrivateProfileString("LT_WXCLCFG", "TaxCom", "COM1", TaxCom, 20, ".//LT_WXCLCFG.ini");
+	char Parity = GetPrivateProfileInt("LT_WXCLCFG", "TaxParity", 0, ".//LT_WXCLCFG.ini");
 
-	
-	if (TaxCOMInit(TaxCom,Parity) != -1)
-	{		
-		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_TaxData,this,0,NULL);		
-		SetTimer(3,20*1000,NULL);
+	if (TaxCOMInit(TaxCom, Parity) != -1)
+	{
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_TaxData, this, 0, NULL);
+		SetTimer(3, 20 * 1000, NULL);
 	}
-	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_SetIpcTime,this,0,NULL);//校时 10min
-	
+	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetIpcTime, this, 0, NULL); //校时 10min
 
 	char PweCom[20] = "";
-	GetPrivateProfileString("LT_WXCLCFG","PweCom","COM3",PweCom,20,".//LT_WXCLCFG.ini");
-	Parity = GetPrivateProfileInt("LT_WXCLCFG","PweParity",0,".//LT_WXCLCFG.ini");
+	GetPrivateProfileString("LT_WXCLCFG", "PweCom", "COM3", PweCom, 20, ".//LT_WXCLCFG.ini");
+	Parity = GetPrivateProfileInt("LT_WXCLCFG", "PweParity", 0, ".//LT_WXCLCFG.ini");
 
-	if (PweCOMInit(PweCom,Parity) != -1)
-	{		
-		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_PweData,this,0,NULL);
+	if (PweCOMInit(PweCom, Parity) != -1)
+	{
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_PweData, this, 0, NULL);
 	}
 
 	//ffmpeg dll
@@ -509,18 +490,18 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	NET_DVR_SetConnectTime(2000, 1);
 	NET_DVR_SetReconnect(6000, true);
 
-	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_Play,this,0,NULL);//开启视频线程
+	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Play, this, 0, NULL); //开启视频线程
 
 	//////////////////////////////////////////////////////////////////////////
 	BROADCASTInit();
 	if (FireUdpInit() != -1)
 	{
-		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_UDPBroadcastRecv,this,0,NULL);
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_UDPBroadcastRecv, this, 0, NULL);
 	}
 
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Voice, this, 0, NULL);
 
-	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
+	return TRUE; // 除非将焦点设置到控件，否则返回 TRUE
 }
 
 // 如果向对话框添加最小化按钮，则需要下面的代码
@@ -561,9 +542,7 @@ HCURSOR CLT_LCWB_1ADlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-
-
-void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
+void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
 {
 	// TODO: 在此添加控件通知处理程序代码
 	int CurSel = m_TabCtrl.GetCurSel();
@@ -574,46 +553,44 @@ void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 	m_FireMsgDlg.ShowWindow(false);
 	//m_RacingDlg.ShowWindow(false);
 
-	switch(CurSel)
+	switch (CurSel)
 	{
 	case 3:
-		//m_JcgkDlg.ShowWindow(true);				
+		//m_JcgkDlg.ShowWindow(true);
 		break;
 	case 0:
 		m_VideoDlg.ShowWindow(true);
-		//m_ReplayDlg.ShowWindow(true);		
+		//m_ReplayDlg.ShowWindow(true);
 		break;
-	case 1:		
+	case 1:
 		m_ManageDlg.ShowWindow(true);
 		break;
-	case 2:		
+	case 2:
 		m_FireMsgDlg.ShowWindow(true);
 		break;
 	case 4:
 		//m_RacingDlg.ShowWindow(true);
 		break;
 	default:
-		//m_JcgkDlg.ShowWindow(true);			
+		//m_JcgkDlg.ShowWindow(true);
 		break;
-
 	}
-
 
 	*pResult = 0;
 }
 
-int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid,char* Speed,char* Mileage,char* CheCi,char* CheHao,char pos,char* SiJiHao)
+int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* CheCi, char* CheHao, char pos, char* SiJiHao)
 {
-	char OSDOne[100] = "";//右上角
-	char OSDTwo[100] = "";//左下角
-	char OSDThree[100] = "";//右下角
-	NET_DVR_SHOWSTRING_V30 struShowString = {0};
+	char OSDOne[100] = "";	 //右上角
+	char OSDTwo[100] = "";	 //左下角
+	char OSDThree[100] = ""; //右下角
+	NET_DVR_SHOWSTRING_V30 struShowString = { 0 };
 	unsigned long dwReturned = 0;
 
 	/*if (!NET_DVR_GetDVRConfig(*pUid, NET_DVR_GET_SHOWSTRING_V30, 1, &struShowString, sizeof(NET_DVR_SHOWSTRING_V30), &dwReturned))
-	{		
+	{
 		return -1;
-	}*/	
+	}*/
 
 	/*CString CHName;
 	if (TrainBox[0] == 4)
@@ -622,88 +599,90 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid,char* Speed,char* Mileage,char* CheCi
 	}
 	else
 		CHName.Format("B节%s",IPCName.GetAt(pos));*/
-	
-	sprintf_s(OSDOne,"%skm/h %skm",Speed,Mileage);
-	sprintf_s(OSDTwo,"车次:%s 车号:%s",CheCi,CheHao);
-	sprintf_s(OSDThree,"%s%s 司机:%s",IPCName[pos],&theApp.Local[1],SiJiHao);
+
+	sprintf_s(OSDOne, "%skm/h %skm", Speed, Mileage);
+	sprintf_s(OSDTwo, "车次:%s 车号:%s", CheCi, CheHao);
+	sprintf_s(OSDThree, "%s%s 司机:%s", IPCName[pos], &theApp.Local[1], SiJiHao);
 
 	struShowString.struStringInfo[0].wShowString = 1;
 	struShowString.struStringInfo[0].wStringSize = strlen(OSDOne);
-	strcpy(struShowString.struStringInfo[0].sString,OSDOne);
+	strcpy(struShowString.struStringInfo[0].sString, OSDOne);
 	struShowString.struStringInfo[0].wShowStringTopLeftX = 400;
 	struShowString.struStringInfo[0].wShowStringTopLeftY = 32;
 
 	struShowString.struStringInfo[1].wShowString = 1;
 	struShowString.struStringInfo[1].wStringSize = strlen(OSDTwo);
-	strcpy(struShowString.struStringInfo[1].sString,OSDTwo);
+	strcpy(struShowString.struStringInfo[1].sString, OSDTwo);
 	struShowString.struStringInfo[1].wShowStringTopLeftX = 0;
 	struShowString.struStringInfo[1].wShowStringTopLeftY = 540;
 
 	struShowString.struStringInfo[2].wShowString = 1;
 	struShowString.struStringInfo[2].wStringSize = strlen(OSDThree);
-	strcpy(struShowString.struStringInfo[2].sString,OSDThree);
-	struShowString.struStringInfo[2].wShowStringTopLeftX = 360;//320
+	strcpy(struShowString.struStringInfo[2].sString, OSDThree);
+	struShowString.struStringInfo[2].wShowStringTopLeftX = 360; //320
 	struShowString.struStringInfo[2].wShowStringTopLeftY = 540;
 
-	if(m_ManageDlg.RecordFlag[pos]){
+	if (m_ManageDlg.RecordFlag[pos])
+	{
 		struShowString.struStringInfo[3].wShowString = 1;
 		struShowString.struStringInfo[3].wStringSize = strlen("REC");
-		strcpy(struShowString.struStringInfo[3].sString,"REC");
+		strcpy(struShowString.struStringInfo[3].sString, "REC");
 		struShowString.struStringInfo[3].wShowStringTopLeftX = 5;
 		struShowString.struStringInfo[3].wShowStringTopLeftY = 80;
-	}else{
+	}
+	else
+	{
 		struShowString.struStringInfo[3].wShowString = 0;
 	}
 
 	struShowString.dwSize = sizeof(struShowString);
-	
+
 	if (!NET_DVR_SetDVRConfig(*pUid, NET_DVR_SET_SHOWSTRING_V30, 1, &struShowString, sizeof(NET_DVR_SHOWSTRING_V30)))
-	{		
+	{
 		return -1;
 	}
 	return 0;
 }
 
-int CLT_LCWB_1ADlg::VideoPlay(char* ip,long* pUid,long* pHandle,HWND hWnd)
+int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
 {
 	//登录参数，包括设备地址、登录用户、密码等
-	NET_DVR_USER_LOGIN_INFO struLoginInfo = {0};
-	struLoginInfo.bUseAsynLogin = 0; //同步登录方式
-	strcpy(struLoginInfo.sDeviceAddress, ip); //设备IP地址
-	struLoginInfo.wPort = 8000; //设备服务端口
-	strcpy(struLoginInfo.sUserName, "admin"); //设备登录用户名
+	NET_DVR_USER_LOGIN_INFO struLoginInfo = { 0 };
+	struLoginInfo.bUseAsynLogin = 0;			 //同步登录方式
+	strcpy(struLoginInfo.sDeviceAddress, ip);	 //设备IP地址
+	struLoginInfo.wPort = 8000;					 //设备服务端口
+	strcpy(struLoginInfo.sUserName, "admin");	 //设备登录用户名
 	strcpy(struLoginInfo.sPassword, "hk123456"); //设备登录密码
 	//strcpy(struLoginInfo.sPassword, "123456"); //设备登录密码
 
 	//设备信息, 输出参数
-	NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = {0};
+	NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = { 0 };
 
 	*pUid = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
 	if (*pUid < 0)
 	{
-		TRACE("Login failed, error code: %d ip = %s\n", NET_DVR_GetLastError(),ip);		
+		TRACE("Login failed, error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
 		return -1;
 	}
 
 	//---------------------------------------
-	//启动预览并设置回调数据流	
-	NET_DVR_PREVIEWINFO struPlayInfo = {0};
-	struPlayInfo.hPlayWnd = hWnd;        //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-	struPlayInfo.lChannel     = 1;       //预览通道号
-	struPlayInfo.dwStreamType = 1;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
-	struPlayInfo.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
+	//启动预览并设置回调数据流
+	NET_DVR_PREVIEWINFO struPlayInfo = { 0 };
+	struPlayInfo.hPlayWnd = hWnd;  //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
+	struPlayInfo.lChannel = 1;	   //预览通道号
+	struPlayInfo.dwStreamType = 1; //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
+	struPlayInfo.dwLinkMode = 0;   //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
 
 	*pHandle = NET_DVR_RealPlay_V40(*pUid, &struPlayInfo, NULL, NULL);
 	if (*pHandle < 0)
 	{
-		TRACE("NET_DVR_RealPlay_V40 error code: %d ip = %s\n",NET_DVR_GetLastError(),ip);
-		NET_DVR_Logout(*pUid);		
+		TRACE("NET_DVR_RealPlay_V40 error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
+		NET_DVR_Logout(*pUid);
 		return -1;
 	}
 	//VideoOSDSet(pUid,"100","200","t23","12378",3,"12445");
 	return 0;
 }
-
 
 void CLT_LCWB_1ADlg::OnTimer(UINT_PTR nIDEvent)
 {
@@ -711,7 +690,7 @@ void CLT_LCWB_1ADlg::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent == 3)
 	{
 		TaxStat = FALSE;
-		memset(&TaxData,0,sizeof(TaxData));
+		memset(&TaxData, 0, sizeof(TaxData));
 	}
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -730,14 +709,14 @@ int CLT_LCWB_1ADlg::TimeCFG()
 	NvrTime.dwMinute = Time.wMinute;
 	NvrTime.dwSecond = Time.wSecond;
 
-	int tmp = (theApp.Local[1]=='A'?0:8);
+	int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
 
-	for (int i = tmp;i < (8 + tmp);i++)
+	for (int i = tmp; i < (8 + tmp); i++)
 	{
 		if (lUserID[i] >= 0)
 		{
 
-			bool res = NET_DVR_SetDVRConfig(lUserID[i],NET_DVR_SET_TIMECFG,0,&NvrTime,sizeof(NvrTime));
+			bool res = NET_DVR_SetDVRConfig(lUserID[i], NET_DVR_SET_TIMECFG, 0, &NvrTime, sizeof(NvrTime));
 			if (!res)
 			{
 				TRACE("time set error \n");
@@ -752,14 +731,14 @@ int CLT_LCWB_1ADlg::TimeCFG()
 int CLT_LCWB_1ADlg::BROADCASTInit()
 {
 	theApp.BSoc = -1;
-	if((theApp.BSoc=socket(AF_INET,SOCK_DGRAM,0))==-1)
-	{	
+	if ((theApp.BSoc = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+	{
 		return -1;
 	}
-	int opt=-1;
-	int nb=0;
-	nb=setsockopt(theApp.BSoc,SOL_SOCKET,SO_BROADCAST,(char*)&opt,sizeof(opt));//设置套接字类型
-	if(nb==-1)
+	int opt = -1;
+	int nb = 0;
+	nb = setsockopt(theApp.BSoc, SOL_SOCKET, SO_BROADCAST, (char*)&opt, sizeof(opt)); //设置套接字类型
+	if (nb == -1)
 	{
 		return -1;
 	}
@@ -776,10 +755,10 @@ int CLT_LCWB_1ADlg::FireUdpInit()
 {
 	//接收防火信息
 	BRecUdp = -1;
-	if (( BRecUdp= socket(AF_INET, SOCK_DGRAM, 0)) < 0)  
-	{  
-		TRACE("fire socket error!\n");  
-		return -1;  
+	if ((BRecUdp = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+	{
+		TRACE("fire socket error!\n");
+		return -1;
 	}
 
 	sockaddr_in Addr;
@@ -788,7 +767,7 @@ int CLT_LCWB_1ADlg::FireUdpInit()
 	Addr.sin_port = htons(8000);
 	Addr.sin_addr.s_addr = INADDR_ANY;
 
-	if(bind(BRecUdp, (struct sockaddr *)&Addr, sizeof(sockaddr)) < 0)
+	if (bind(BRecUdp, (struct sockaddr*)&Addr, sizeof(sockaddr)) < 0)
 		return -1;
 
 	return 0;
@@ -808,104 +787,100 @@ char FirstDriveFromMask(ULONG unitmask)
 	return (i + 'A');
 }
 
-BOOL CLT_LCWB_1ADlg::OnDeviceChange( UINT nEventType, DWORD_PTR dwData )
+BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 {
 	//MessageBox("收到消息");
 	CString detectMsg;
-	PDEV_BROADCAST_HDR lpdb=(PDEV_BROADCAST_HDR)dwData;
+	PDEV_BROADCAST_HDR lpdb = (PDEV_BROADCAST_HDR)dwData;
 
 	switch (nEventType)
 	{
-	case DBT_DEVICEREMOVECOMPLETE:	//U盘拔出
+	case DBT_DEVICEREMOVECOMPLETE: //U盘拔出
+	{
+		if (lpdb->dbch_devicetype == DBT_DEVTYP_VOLUME) //逻辑卷
 		{
-			if(lpdb->dbch_devicetype == DBT_DEVTYP_VOLUME)//逻辑卷
+			PDEV_BROADCAST_VOLUME lpdbv = (PDEV_BROADCAST_VOLUME)lpdb;
+			switch (lpdbv->dbcv_flags)
 			{
-				PDEV_BROADCAST_VOLUME lpdbv =  (PDEV_BROADCAST_VOLUME)lpdb;
-				switch(lpdbv->dbcv_flags)
-				{
-				case 0:                //U盘
-					{
-// 						CString decDriver;
-// 						decDriver = FirstDriveFromMask(lpdbv ->dbcv_unitmask);
-// 						detectMsg.Format(_T("检测到U盘:[%s]拔出!"), decDriver.GetBuffer(0)); 
-// 						MessageBox(detectMsg,0);
-					}
-					break;
-				case DBTF_MEDIA:    //光盘
+			case 0: //U盘
+			{
+				// 						CString decDriver;
+				// 						decDriver = FirstDriveFromMask(lpdbv ->dbcv_unitmask);
+				// 						detectMsg.Format(_T("检测到U盘:[%s]拔出!"), decDriver.GetBuffer(0));
+				// 						MessageBox(detectMsg,0);
+			}
+			break;
+			case DBTF_MEDIA: //光盘
 
-					break;
-				}
+				break;
 			}
 		}
-		break;
-	case DBT_DEVICEARRIVAL:			//U盘插入
+	}
+	break;
+	case DBT_DEVICEARRIVAL: //U盘插入
+	{
+		if (lpdb->dbch_devicetype == DBT_DEVTYP_VOLUME) //逻辑卷
 		{
-			if(lpdb->dbch_devicetype == DBT_DEVTYP_VOLUME)//逻辑卷
+			PDEV_BROADCAST_VOLUME lpdbv = (PDEV_BROADCAST_VOLUME)lpdb;
+			switch (lpdbv->dbcv_flags)
 			{
-				PDEV_BROADCAST_VOLUME lpdbv =  (PDEV_BROADCAST_VOLUME)lpdb;
-				switch(lpdbv->dbcv_flags)
+			case 0: //U盘
+			{
+				CString decDriver, fileName;
+				decDriver = FirstDriveFromMask(lpdbv->dbcv_unitmask);
+				detectMsg.Format(_T("检测到U盘[%s：]插入!\n是否拷贝空转数据到 [%s：]盘？"), decDriver.GetBuffer(0), decDriver.GetBuffer(0));
+
+				fileName.Format("%s:/license.txt", decDriver.GetBuffer(0));
+				CFile file1;
+				if (file1.Open(fileName, CFile::modeRead))
 				{
-				case 0:                //U盘
+					if (MessageBox(detectMsg, "U盘插入提示", MB_SYSTEMMODAL | MB_YESNO) == 6)
 					{
-						CString decDriver,fileName;
-						decDriver = FirstDriveFromMask(lpdbv ->dbcv_unitmask);
-						detectMsg.Format(_T("检测到U盘[%s：]插入!\n是否拷贝空转数据到 [%s：]盘？"), decDriver.GetBuffer(0),decDriver.GetBuffer(0)); 
-						
-						fileName.Format("%s:/license.txt",decDriver.GetBuffer(0));
-						CFile file1;
-						if(file1.Open(fileName,CFile::modeRead))
-						{
-							if(MessageBox(detectMsg,"U盘插入提示",MB_SYSTEMMODAL|MB_YESNO)==6)
-							{
-								//拷贝文件
-								m_RacingDlg.set_Upath(decDriver.GetBuffer(0));
-								m_RacingDlg.copyToU();
-							}
-						}
-						file1.Close();
+						//拷贝文件
+						m_RacingDlg.set_Upath(decDriver.GetBuffer(0));
+						m_RacingDlg.copyToU();
 					}
-					break;
-				case DBTF_MEDIA:    //光盘
-					break;
 				}
+				file1.Close();
+			}
+			break;
+			case DBTF_MEDIA: //光盘
+				break;
 			}
 		}
-		break;
+	}
+	break;
 	}
 
 	return TRUE;
 }
-
 
 HBRUSH CLT_LCWB_1ADlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
 	// TODO:  在此更改 DC 的任何特性
-	if(nCtlColor   ==CTLCOLOR_DLG)      //对话框颜色  
+	if (nCtlColor == CTLCOLOR_DLG) //对话框颜色
 
-		return   m_brush;       //返加刷子
+		return m_brush; //返加刷子
 
-	if(nCtlColor == CTLCOLOR_STATIC )
+	if (nCtlColor == CTLCOLOR_STATIC)
 	{
-		pDC->SetTextColor(RGB(255,255,255));  
-		pDC->SetBkMode(TRANSPARENT);    //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合  
-		hbr=(HBRUSH)m_brush;
+		pDC->SetTextColor(RGB(255, 255, 255));
+		pDC->SetBkMode(TRANSPARENT); //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合
+		hbr = (HBRUSH)m_brush;
 	}
 
-	if (nCtlColor == CTLCOLOR_BTN ||nCtlColor == CTLCOLOR_LISTBOX ||nCtlColor == CTLCOLOR_STATIC)
+	if (nCtlColor == CTLCOLOR_BTN || nCtlColor == CTLCOLOR_LISTBOX || nCtlColor == CTLCOLOR_STATIC)
 	{
-		pDC->SetTextColor(RGB(255,255,255));  
-		pDC->SetBkMode(TRANSPARENT);    //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合  
-		hbr=(HBRUSH)m_brush;
+		pDC->SetTextColor(RGB(255, 255, 255));
+		pDC->SetBkMode(TRANSPARENT); //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合
+		hbr = (HBRUSH)m_brush;
 	}
-
-
 
 	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
 	return hbr;
 }
-
 
 BOOL CLT_LCWB_1ADlg::OnEraseBkgnd(CDC* pDC)
 {
@@ -913,7 +888,6 @@ BOOL CLT_LCWB_1ADlg::OnEraseBkgnd(CDC* pDC)
 
 	return CDialogEx::OnEraseBkgnd(pDC);
 }
-
 
 int WINAPI Thread_Voice(LPVOID lpPara)
 {
@@ -934,25 +908,28 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 
 	HRESULT hr = -1;
 	ISpVoice* pVoice = NULL; //初始化COM
-	hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void **)&pVoice);
+	hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void**)&pVoice);
 	pVoice->SetRate(1);
-	ISpObjectToken *p = NULL;
+	ISpObjectToken* p = NULL;
 
 	char lan = -1;
-	
+
 	//WarVoice = "hello";
 	while (1)
 	{
 		UCHAR f_add = 0;
 		CString fWarVoice = "";
-		for(int i=0;i<2;i++){
-			if(dlg->m_FireMsgDlg.f_fire_tex[i] != ""){
+		for (int i = 0; i < 2; i++)
+		{
+			if (dlg->m_FireMsgDlg.f_fire_tex[i] != "")
+			{
 				fWarVoice += dlg->m_FireMsgDlg.f_fire_tex[i];
-				f_add ++;
+				f_add++;
 			}
 		}
-		
-		if(f_add >0){
+
+		if (f_add > 0)
+		{
 			hr = SpFindBestToken(SPCAT_VOICES, L"language=804", NULL, &p);
 			if (SUCCEEDED(hr))
 			{
@@ -960,6 +937,64 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 			}
 			pVoice->Speak(fWarVoice.AllocSysString(), 0, NULL);
 			pVoice->WaitUntilDone(INFINITE);
+			// TEST
+#ifdef TEST
+		}
+		else {
+			fWarVoice = "B节探头1报警.....";
+#endif
+			// END TEST
+
+			// 联动
+			//
+			// 设置当前选项
+			dlg->m_TabCtrl.SetCurSel(0);
+			// 切换窗口
+			dlg->m_VideoDlg.ShowWindow(SW_SHOW);
+			dlg->m_ManageDlg.ShowWindow(SW_HIDE);
+			dlg->m_FireMsgDlg.ShowWindow(SW_HIDE);
+			// 切换按钮
+			if (0)
+			{
+				dlg->m_VideoDlg.OnBnClickedButtonBb();
+			}
+
+			if (fWarVoice.GetAt(0) == 'A')
+			{
+				PLOGD << "switch to A...";
+				dlg->m_VideoDlg.OnBnClickedButtonBa();
+			}
+			if (fWarVoice.GetAt(0) == 'B')
+			{
+				PLOGD << "switch to B...";
+				dlg->m_VideoDlg.OnBnClickedButtonBb();
+			}
+
+			// A节探头2报警.....
+			PLOGD << "fWarVoice.GetLength()" << fWarVoice.GetLength();
+			PLOGD << "fWarVoice" << fWarVoice;
+			PLOGD << "fWarVoice.GetAt(0)" << fWarVoice.GetAt(0);
+			PLOGD << "fWarVoice.GetAt(7)" << fWarVoice.GetAt(7);
+
+			// 最大化
+			auto detector_num = 0;
+			if (fWarVoice.GetAt(0) == 'A')
+			{
+				auto c1 = fWarVoice.GetAt(7);
+				detector_num = fWarVoice.GetAt(7) - '0';
+			}
+			else
+			{
+				detector_num = fWarVoice.GetAt(7) - '0' + 4;
+			}
+			PLOGD << "detector num: " << detector_num;
+			auto detector = "detector" + std::to_string(detector_num);
+			char video_num_cstr[21] = { '\0' };
+			GetPrivateProfileString("LT_WXCLCFG", detector.c_str(), "0", video_num_cstr, 20, ".//LT_WXCLCFG.ini");
+			int video_num = std::stoi(std::string(video_num_cstr));
+			PLOGD << "video num: " << video_num;
+			// 切换对应窗口
+			dlg->m_VideoDlg.ChangeWndRects(0, video_num - 1);
 		}
 
 		/*====================
@@ -987,7 +1022,7 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 				lan = theApp.Language;
 			}
 			pVoice->Speak(WarVoice.AllocSysString(), 0, NULL);
-			pVoice->WaitUntilDone(INFINITE);			
+			pVoice->WaitUntilDone(INFINITE);
 
 
 			//dlg->WarVoiceFun();

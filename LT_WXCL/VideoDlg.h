@@ -37,7 +37,7 @@ public:
 	afx_msg void OnBnClickedButtonTb();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
-private:
+public:
 	CBrush m_brush;
 	CMyButton m_button[4];
 public:

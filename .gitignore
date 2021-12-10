@@ -4,8 +4,10 @@ Debug
 
 # 生成的文件
 *.dll
-!LT_WXCL_Dll/**/*.dll
-!LT_WXCL_Dll/**/*.lib
+!LT_WXCL_Dll/*.dll
+!LT_WXCL_Dll/HCNetSDKCom/*.dll
+!LT_WXCL_Dll/*.lib
+!LT_WXCL_Dll/HCNetSDKCom/*.lib
 *.she
 *.exe
 *.lib
@@ -39,3 +41,6 @@ ipch
 res
 res（旧）
 
+
+# 日志文件
+LT_WXCL/log.txt

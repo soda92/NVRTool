@@ -57,3 +57,6 @@
 #endif
 
 
+#include <plog/Log.h> // Step1: include the headers
+#include "plog/Initializers/RollingFileInitializer.h"
+
