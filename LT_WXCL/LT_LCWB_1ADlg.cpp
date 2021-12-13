@@ -102,13 +102,7 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
 		sprintf_s(Mileage, "%.3lf", LiCheng);
 		sprintf_s(CheHao, "%d", dlg->TaxData.EngineNo);
 		sprintf_s(SiJiHao, "%d", dlg->TaxData.DriverNo);
-		//TRACE("sudu = %s,gongli = %s\n",Speed,Mileage);
-		/*if (i == 1)
-		{
-			char buf[1024] = "";
-			sprintf_s(buf,"速度 %s，公里 %s，时间 %d-%d-%d\n",Speed,Mileage,dlg->TaxData.TAXTime.Hour,dlg->TaxData.TAXTime.Minute,dlg->TaxData.TAXTime.Second);
-			dlg->SetFireText(buf);
-		}*/
+
 		if (dlg->lUserID[i] >= 0)
 		{
 			dlg->VideoOSDSet(&dlg->lUserID[i], Speed, Mileage, CheCi, CheHao, (i > 7 ? i - 8 : i), SiJiHao);
@@ -125,29 +119,6 @@ int WINAPI Thread_Play(LPVOID lpPara)
 	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 	char ip[30] = "";
 	Sleep(5 * 1000);
-#if 0
-	HWND PWnd[32] = { 0 };
-
-	PWnd[0] = dlg->m_VideoDlg.m_videoPlayWnd[0]->GetSafeHwnd();
-	PWnd[1] = dlg->m_VideoDlg.m_videoPlayWnd[1]->GetSafeHwnd();
-	PWnd[2] = dlg->m_VideoDlg.m_videoPlayWnd[2]->GetSafeHwnd();
-	PWnd[3] = dlg->m_VideoDlg.m_videoPlayWnd[3]->GetSafeHwnd();
-
-	PWnd[4] = dlg->m_VideoDlg.m_videoPlayWnd[4]->GetSafeHwnd();
-	PWnd[5] = dlg->m_VideoDlg.m_videoPlayWnd[5]->GetSafeHwnd();
-	PWnd[6] = dlg->m_VideoDlg.m_videoPlayWnd[6]->GetSafeHwnd();
-	PWnd[7] = dlg->m_VideoDlg.m_videoPlayWnd[7]->GetSafeHwnd();
-
-	PWnd[8] = dlg->m_VideoDlg.m_videoPlayWnd[8]->GetSafeHwnd();
-	PWnd[9] = dlg->m_VideoDlg.m_videoPlayWnd[9]->GetSafeHwnd();
-	PWnd[10] = dlg->m_VideoDlg.m_videoPlayWnd[10]->GetSafeHwnd();
-	PWnd[11] = dlg->m_VideoDlg.m_videoPlayWnd[11]->GetSafeHwnd();
-
-	PWnd[12] = dlg->m_VideoDlg.m_videoPlayWnd[12]->GetSafeHwnd();
-	PWnd[13] = dlg->m_VideoDlg.m_videoPlayWnd[13]->GetSafeHwnd();
-	PWnd[14] = dlg->m_VideoDlg.m_videoPlayWnd[14]->GetSafeHwnd();
-	PWnd[15] = dlg->m_VideoDlg.m_videoPlayWnd[15]->GetSafeHwnd();
-#endif
 
 	int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
 
@@ -165,53 +136,6 @@ int WINAPI Thread_Play(LPVOID lpPara)
 
 			if (dlg->lUserID[i] == -1)
 			{
-				//TRACE("i = %d\n",i);
-				/*switch(i)
-				{
-				case 0:
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5:
-				case 6:
-				case 7:
-					//sprintf_s(ip,"192.168.10%d.%d%d",atoi(&theApp.Local[0]),(theApp.Local[1]=='A'?7:8),i);
-					sprintf_s(ip,"192.168.10%d.%d%d",atoi(&theApp.Local[0]),7,i);
-					break;
-				case 8:
-				case 9:
-				case 10:
-				case 11:
-				case 12:
-				case 13:
-				case 14:
-				case 15:
-					//sprintf_s(ip,"192.168.10%d.%d%d",atoi(&theApp.Local[0]),(theApp.Local[1]=='A'?8:7),i-4);
-					sprintf_s(ip,"192.168.10%d.%d%d",atoi(&theApp.Local[0]),8,i-8);
-					break;
-				case 16:
-				case 17:
-				case 18:
-				case 19:
-				case 20:
-				case 21:
-				case 22:
-				case 23:
-					sprintf_s(ip,"192.168.10%d.7%d",theApp.Remote,i-16);
-					break;
-				case 24:
-				case 25:
-				case 26:
-				case 27:
-				case 28:
-				case 29:
-				case 30:
-				case 31:
-					sprintf_s(ip,"192.168.10%d.8%d",theApp.Remote,i-24);
-					break;
-				}*/
-				//sprintf_s(ip,"192.168.101.7%d",i);
 
 				if (i <= 5 && i >= 0)
 					sprintf_s(ip, "192.168.10%d.7%d", atoi(&theApp.Local[0]), i);
@@ -431,32 +355,27 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	m_TabCtrl.SetItemSize(CSize(150, 40));
 
 	m_TabCtrl.MoveWindow(-3, -3, SCREEN_X + 3, SCREEN_Y + 3);
-	//m_TabCtrl.InsertItem(0,"机车工况");
-	//m_JcgkDlg.Create(IDD_DIALOG_JCGK,GetDlgItem(IDC_TAB1));
+
 	m_TabCtrl.InsertItem(0, "视频预览");
 	m_VideoDlg.Create(IDD_DIALOG_VIDEO, GetDlgItem(IDC_TAB1));
 	m_TabCtrl.InsertItem(1, "设备管理");
 	m_ManageDlg.Create(IDD_DIALOG_MANAGE, GetDlgItem(IDC_TAB1));
 	m_TabCtrl.InsertItem(2, "火警信息");
 	m_FireMsgDlg.Create(IDD_DIALOG_FIRE, GetDlgItem(IDC_TAB1));
-	//m_TabCtrl.InsertItem(4,"空转记录");
-	//m_RacingDlg.Create(IDD_DIALOG_RACING,GetDlgItem(IDC_TAB1));
 
 	CRect rc; //标签页里的窗口大小
 	m_TabCtrl.GetClientRect(&rc);
 	ClientToScreen(rc);
 	m_TabCtrl.SetMinTabWidth(rc.Width() / 7);
-	//m_TabCtrl.ClientToScreen(rc);
+
 	rc.top += 40;
 	rc.bottom -= 0;
 	rc.left += 0;
 	rc.right -= 0;
 
-	//m_JcgkDlg.MoveWindow(&rc);
 	m_VideoDlg.MoveWindow(&rc);
 	m_ManageDlg.MoveWindow(&rc);
 	m_FireMsgDlg.MoveWindow(&rc);
-	//m_RacingDlg.MoveWindow(&rc);
 
 	m_VideoDlg.ShowWindow(TRUE);
 
@@ -548,19 +467,13 @@ void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
 	int CurSel = m_TabCtrl.GetCurSel();
 
 	m_VideoDlg.ShowWindow(false);
-	//m_JcgkDlg.ShowWindow(false);
 	m_ManageDlg.ShowWindow(false);
 	m_FireMsgDlg.ShowWindow(false);
-	//m_RacingDlg.ShowWindow(false);
 
 	switch (CurSel)
 	{
-	case 3:
-		//m_JcgkDlg.ShowWindow(true);
-		break;
 	case 0:
 		m_VideoDlg.ShowWindow(true);
-		//m_ReplayDlg.ShowWindow(true);
 		break;
 	case 1:
 		m_ManageDlg.ShowWindow(true);
@@ -568,15 +481,12 @@ void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
 	case 2:
 		m_FireMsgDlg.ShowWindow(true);
 		break;
-	case 4:
-		//m_RacingDlg.ShowWindow(true);
-		break;
 	default:
-		//m_JcgkDlg.ShowWindow(true);
 		break;
 	}
 
 	*pResult = 0;
+
 }
 
 int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* CheCi, char* CheHao, char pos, char* SiJiHao)
@@ -586,19 +496,6 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* Ch
 	char OSDThree[100] = ""; //右下角
 	NET_DVR_SHOWSTRING_V30 struShowString = { 0 };
 	unsigned long dwReturned = 0;
-
-	/*if (!NET_DVR_GetDVRConfig(*pUid, NET_DVR_GET_SHOWSTRING_V30, 1, &struShowString, sizeof(NET_DVR_SHOWSTRING_V30), &dwReturned))
-	{
-		return -1;
-	}*/
-
-	/*CString CHName;
-	if (TrainBox[0] == 4)
-	{
-		CHName.Format("A节%s",IPCName.GetAt(pos));
-	}
-	else
-		CHName.Format("B节%s",IPCName.GetAt(pos));*/
 
 	sprintf_s(OSDOne, "%skm/h %skm", Speed, Mileage);
 	sprintf_s(OSDTwo, "车次:%s 车号:%s", CheCi, CheHao);
@@ -742,11 +639,6 @@ int CLT_LCWB_1ADlg::BROADCASTInit()
 	{
 		return -1;
 	}
-
-	//memset(&FireBAddr,0,sizeof(struct sockaddr_in));
-	//FireBAddr.sin_family=AF_INET;
-	//FireBAddr.sin_addr.s_addr=htonl(INADDR_BROADCAST);//套接字地址为广播地址
-	//FireBAddr.sin_port=htons(8000);//套接字广播端口号为8000
 
 	return 0;
 }
@@ -893,11 +785,7 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 {
 	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 	//WarVoice = _T("1号火焰 2号烟雾 探测器报警");
-#if 0
-	WarVoice = _T("Electric Cabinet 2 Senser Alarm");
-	//WarVoice = _T("Power room II-1 探测器报警");
-	theApp.FireFlag = 1;
-#endif
+
 	if (FAILED(CoInitialize(NULL)))
 	{
 		AfxMessageBox(_T("Error to intiliaze COM"));
@@ -997,37 +885,6 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 			// 切换窗口
 			dlg->m_VideoDlg.ChangeWndRects(0, video_num - 1);
 		}
-
-		/*====================
-		if (theApp.FireFlag != 0 && !WarVoice.IsEmpty())
-		{
-
-			if (lan != theApp.Language)
-			{
-				if (theApp.Language)
-				{
-					hr = SpFindBestToken(SPCAT_VOICES, L"language=409", NULL, &p);
-					if (SUCCEEDED(hr))
-					{
-						pVoice->SetVoice(p);
-					}
-				}
-				else
-				{
-					hr = SpFindBestToken(SPCAT_VOICES, L"language=804", NULL, &p);
-					if (SUCCEEDED(hr))// 
-					{
-						pVoice->SetVoice(p);
-					}
-				}
-				lan = theApp.Language;
-			}
-			pVoice->Speak(WarVoice.AllocSysString(), 0, NULL);
-			pVoice->WaitUntilDone(INFINITE);
-
-
-			//dlg->WarVoiceFun();
-		}*/
 
 		Sleep(3 * 1000);
 	}
