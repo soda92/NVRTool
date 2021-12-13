@@ -3,6 +3,18 @@
 #include "resource.h"
 #include "FireMsgDlg.h"
 #include "LT_LCWB_1A.h"
+#include <boost/algorithm/hex.hpp>
+
+#include <iostream>
+#include <iomanip>
+
+template <typename T>
+std::string HexToString(T uval)
+{
+	std::stringstream ss;
+	ss << "0X" << std::setw(sizeof(uval) * 2) << std::setfill('0') << std::hex << +uval;
+	return ss.str();
+}
 
 HANDLE fPort = 0;
 
@@ -87,7 +99,7 @@ UINT Thread_WXCL_FireData(LPVOID lParam)
 
 		//串口接收
 		memset(RecBuf, 0, sizeof(RecBuf));
-		ReadFile(fPort,RecBuf,100,&dwRet,NULL);//接收EF板卡信息
+		auto _ret = ReadFile(fPort,RecBuf,100,&dwRet,NULL);//接收EF板卡信息
 
 		//加入报文帧头和 本车他车AB节标志
 		unsigned char SendBuf[100] = "";
@@ -96,7 +108,15 @@ UINT Thread_WXCL_FireData(LPVOID lParam)
 		SendBuf[2] = theApp.Local[0];
 		SendBuf[3] = theApp.Local[1];
 
-		memcpy(&SendBuf[4],RecBuf,dwRet);
+#ifdef _DEBUG
+		std::string result;
+		for (int i = 0; i < 256; i++) {
+			result += HexToString<unsigned char>(RecBuf[i]).substr(2,2);
+		}
+
+		PLOGD << "RecBuf: " << result;
+#endif
+		memcpy(&SendBuf[4], RecBuf, dwRet);
 
 // 		CString str="";
 // 		str.Format("dwRet=%d",dwRet);

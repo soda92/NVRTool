@@ -938,7 +938,7 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 			pVoice->Speak(fWarVoice.AllocSysString(), 0, NULL);
 			pVoice->WaitUntilDone(INFINITE);
 			// TEST
-#ifdef TEST
+#ifdef TEST_DISABLED
 		}
 		else {
 			fWarVoice = "B节探头1报警.....";
@@ -990,10 +990,11 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 			PLOGD << "detector num: " << detector_num;
 			auto detector = "detector" + std::to_string(detector_num);
 			char video_num_cstr[21] = { '\0' };
+			// 读取对应IPC
 			GetPrivateProfileString("LT_WXCLCFG", detector.c_str(), "0", video_num_cstr, 20, ".//LT_WXCLCFG.ini");
 			int video_num = std::stoi(std::string(video_num_cstr));
 			PLOGD << "video num: " << video_num;
-			// 切换对应窗口
+			// 切换窗口
 			dlg->m_VideoDlg.ChangeWndRects(0, video_num - 1);
 		}
 
