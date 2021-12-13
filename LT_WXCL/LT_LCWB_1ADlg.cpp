@@ -499,7 +499,7 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* Ch
 
 	sprintf_s(OSDOne, "%skm/h %skm", Speed, Mileage);
 	sprintf_s(OSDTwo, "车次:%s 车号:%s", CheCi, CheHao);
-	sprintf_s(OSDThree, "%s%s 司机:%s", IPCName[pos], &theApp.Local[1], SiJiHao);
+	sprintf_s(OSDThree, "%s 司机:%s", IPCName[pos], SiJiHao);
 
 	struShowString.struStringInfo[0].wShowString = 1;
 	struShowString.struStringInfo[0].wStringSize = strlen(OSDOne);
