@@ -794,7 +794,7 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 
 	Sleep(3 * 1000);
 
-	HRESULT hr = -1;
+	HRESULT hr = E_FAIL;
 	ISpVoice* pVoice = NULL; //初始化COM
 	hr = CoCreateInstance(CLSID_SpVoice, NULL, CLSCTX_ALL, IID_ISpVoice, (void**)&pVoice);
 	pVoice->SetRate(1);
