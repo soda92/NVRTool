@@ -397,14 +397,6 @@ BOOL CJcgkDlg::OnInitDialog()
 	SetButton();
 	
  	m_brush.CreateSolidBrush(RGB(0,0,0));
-// 	newFont.CreatePointFont(120,"黑体");
-// 
-// 	CWnd *pWnd = GetTopWindow();
-// 	while (NULL != pWnd)
-// 	{
-// 		pWnd->SetFont(&newFont);
-// 		pWnd = pWnd->GetNextWindow();
-// 	}
 
 
 	//进度条颜色设置
@@ -428,21 +420,6 @@ BOOL CJcgkDlg::OnInitDialog()
 	m_pro7.SetBarColor(clor);
 	m_pro8.SetBarColor(clor);
 
-	/*USHORT max = 0xFFFF;
-	USHORT p = 0xc0 << 8 | 0xa7;
-
-	float a = (float)(20*p-10*max)/max;
-	
-	TRACE("v = %f\n",a);*/
-
-	/*SetProValue(1,800);
-	SetProValue(2,100);
-	SetProValue(3,300);
-	SetProValue(4,460);
-	SetProValue(5,280);
-	SetProValue(6,860);
-	SetProValue(7,300);
-	SetProValue(8,150);*/
 	//////////////////////////////////////////////////////////////////////////
 	//读配置文件中的表盘参数CH
 	char ch[60] = "";
@@ -491,11 +468,6 @@ BOOL CJcgkDlg::OnInitDialog()
 	//表初始化
 	MeterInit();
 
-// 	if (CJMKUdpInit() != -1)
-// 	{
-// 		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_CJMKUdpRec,this,0,NULL);
-// 	}
-	//SetTimer(2,10,NULL);
 	GetDlgItem(IDC_BUTTON1)->ShowWindow(FALSE);
 	//SetTimer(1,10000,NULL);
 
@@ -508,28 +480,6 @@ BOOL CJcgkDlg::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
 }
-
-// int CJcgkDlg::CJMKUdpInit()
-// {
-// 	//接收防火信息
-// 	CJMKRecUdpSoc = -1;
-// 	if (( CJMKRecUdpSoc= socket(AF_INET, SOCK_DGRAM, 0)) < 0)  
-// 	{  
-// 		TRACE("fire socket error!\n");  
-// 		return -1;  
-// 	}
-// 
-// 	sockaddr_in Addr;
-// 	memset(&Addr, 0, sizeof(Addr));
-// 	Addr.sin_family = AF_INET;
-// 	Addr.sin_port = htons(5168);
-// 	Addr.sin_addr.s_addr = INADDR_ANY;
-// 
-// 	if(bind(CJMKRecUdpSoc, (struct sockaddr *)&Addr, sizeof(sockaddr)) < 0)
-// 		return -1;
-// 
-// 	return 0;
-// }
 
 
 
@@ -968,20 +918,6 @@ void CJcgkDlg::SetButton()
 	GetDlgItem(IDC_BUTTON1)->MoveWindow(ox+4*width+5*space,oy,width,height);
 
 	GetDlgItem(IDC_STATIC_JCXX)->MoveWindow(310,10,150,30);
-	
-	/*button[0].SetWindowText("主断");
-	button[1].SetWindowText("预备");
-	button[2].SetWindowText("零位");
-	button[3].SetWindowText("劈相机");
-	button[4].SetWindowText("牵引电机");
-	button[5].SetWindowText("零压");
-	button[6].SetWindowText("原边过流");
-	button[7].SetWindowText("辅过流");
-	button[8].SetWindowText("励磁过流");
-	button[9].SetWindowText("供补过流");
-	button[10].SetWindowText("主接地");
-	button[11].SetWindowText("辅接地");
-	button[12].SetWindowText("控制接地");*/
 }
 
 void CJcgkDlg::SetProValue(char num,int value)
