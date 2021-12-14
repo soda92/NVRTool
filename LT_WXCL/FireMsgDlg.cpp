@@ -36,11 +36,10 @@ void CFireMsgDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CFireMsgDlg, CDialogEx)
 	ON_WM_SIZE()
-	ON_BN_CLICKED(IDC_BUTTON1, &CFireMsgDlg::OnBnClickedButton1)
-//	ON_WM_UNICHAR()
-ON_WM_TIMER()
-ON_WM_CTLCOLOR()
-ON_WM_PAINT()
+	ON_BN_CLICKED(IDC_BUTTON1, &CFireMsgDlg::OnBnClickedStopWarn)
+	ON_WM_TIMER()
+	ON_WM_CTLCOLOR()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 
@@ -513,7 +512,7 @@ int CFireMsgDlg::StopWarFun()
 	return 0;
 }
 
-void CFireMsgDlg::OnBnClickedButton1()
+void CFireMsgDlg::OnBnClickedStopWarn()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	struct sockaddr_in BAddr;
