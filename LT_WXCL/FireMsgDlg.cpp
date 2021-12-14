@@ -30,11 +30,7 @@ void CFireMsgDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_FireListB);
-	DDX_Control(pDX, IDC_LIST2, m_FireListT);
-
 	DDX_Control(pDX, IDC_BUTTON1, m_button1);
-	DDX_Control(pDX, IDC_STATIC1, m_static_B);
-	DDX_Control(pDX, IDC_STATIC2, m_static_T);
 }
 
 
@@ -64,19 +60,12 @@ BOOL CFireMsgDlg::OnInitDialog()
 	newFont1.CreatePointFont(170,"黑体");
 
 	m_button1.SetFont(&newFont1);
-	m_static_B.SetFont(&newFont1);
-	m_static_T.SetFont(&newFont1);
 
 	m_FireListB.SetBkColor(RGB(0,0,0));
 	m_FireListB.SetTextColor(RGB(255,255,255));
 
-	m_FireListT.SetBkColor(RGB(0,0,0));
-	m_FireListT.SetTextColor(RGB(255,255,255));
-
 	m_FireListB.SetColTextColor(1,RGB(0,255,0));
 	m_FireListB.SetColTextColor(2,RGB(0,255,0));
-	m_FireListT.SetColTextColor(1,RGB(0,255,0));
-	m_FireListT.SetColTextColor(2,RGB(0,255,0));
 
 	for(int i=0;i<4;i++)
 		f_fire_tex[i] = "";
@@ -112,13 +101,11 @@ void CFireMsgDlg::OnSize(UINT nType, int cx, int cy)
 	{		
 		CRect rc;
 		this->GetClientRect(&rc);
-		int x0=rc.right*0,y0=rc.bottom*0.08,width=rc.right*0.5,height=rc.bottom*1.1,space=20,widthSpace=20;
+		int x0 = rc.right * 0, y0 = rc.bottom * 0.08,
+			width = rc.right * 0.5, height = rc.bottom * 1.1, space = 20, widthSpace = 20;
 
-		GetDlgItem(IDC_STATIC1)->MoveWindow(x0-3, y0, width*2, height);
-		m_FireListB.MoveWindow(x0+100, y0+widthSpace, width*1.4, height*0.71-18);
-		
-		GetDlgItem(IDC_STATIC2)->MoveWindow(x0+width-3, y0, width+6, height);
-		m_FireListT.MoveWindow(x0+width+widthSpace-5,y0+widthSpace,width*0.9,height*0.71-18);
+		m_FireListB.MoveWindow(x0 + 100, y0 + widthSpace, width * 1.4, height * 0.71 - 18);
+
 	}
 }
 
@@ -127,31 +114,21 @@ int CFireMsgDlg::InitList()
 	//字体大小
 	int size=25;
 	m_FireListB.SetFontHW(size,size*0.5);
-	m_FireListT.SetFontHW(size,size*0.5);
 	m_FireListB.SetHeaderFontHW(size,size*0.4);
-	m_FireListT.SetHeaderFontHW(size,size*0.4);
 
 	//行高
 	m_FireListB.SetRowHeight(38);
-	m_FireListT.SetRowHeight(38);
 	m_FireListB.SetHeaderHeight(2);
-	m_FireListT.SetHeaderHeight(2);
 
 	DWORD dwStyle = m_FireListB.GetExtendedStyle();
 	dwStyle |= LVS_EX_FULLROWSELECT;//选中某行使整行高亮（只适用与report风格的listctrl）
 	dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）	
 	m_FireListB.SetExtendedStyle(dwStyle); //设置扩展风格
-	m_FireListT.SetExtendedStyle(dwStyle);
 
 	m_FireListB.InsertColumn(0,"  设备名称",LVCFMT_LEFT,200);
 	m_FireListB.InsertColumn(1,"  类型",LVCFMT_LEFT,120);	
 	m_FireListB.InsertColumn(2,"  状态",LVCFMT_LEFT,120);
 	m_FireListB.InsertColumn(3,"供应商",LVCFMT_LEFT,115);
-
-	m_FireListT.InsertColumn(0,"  设备名称",LVCFMT_LEFT,120);
-	m_FireListT.InsertColumn(1,"  类型",LVCFMT_LEFT,85);	
-	m_FireListT.InsertColumn(2,"  状态",LVCFMT_LEFT,85);
-	m_FireListT.InsertColumn(3,"供应商",LVCFMT_LEFT,66);
 
 	for (int i =0;i<8;i++)
 	{
@@ -159,17 +136,10 @@ int CFireMsgDlg::InitList()
 		//itoa(i+1,a,10);
 		sprintf_s(a,"%s探头%d",(i>3?"B节":"A节"),(i>3?i-3:i+1));
 		m_FireListB.InsertItem(i,a);
-		m_FireListT.InsertItem(i,a);
 
 		m_FireListB.SetItemText(i,1,"未知");
 		m_FireListB.SetItemText(i,2,"未知");
-		//m_FireListB.SetItemText(i,3,"未知");		
 		m_FireListB.SetItemText(i,3,"LTDW");
-
-		m_FireListT.SetItemText(i,1,"未知");
-		m_FireListT.SetItemText(i,2,"未知");
-		//m_FireListB.SetItemText(i,3,"未知");		
-		m_FireListT.SetItemText(i,3,"LTDW");
 	}
 
 	return 0;
@@ -191,10 +161,6 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"总线开路");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*pos),1,"总线开路");
-						}
 						
 					}
 				}
@@ -205,10 +171,6 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						if (pos < 2)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"总线短路");
-						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*pos),1,"总线短路");
 						}
 					}
 				}
@@ -226,10 +188,6 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"未安装");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*pos),1,"未安装");
-						}
 						continue;
 						break;
 					case 1://表示烟温复合（兼容烟感）
@@ -238,20 +196,12 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"烟感");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*pos),1,"烟感");
-						}
 						break;
 					case 2://表示高温
 						//m_FireList.SetItemText(i,1,"高温");
 						if (pos < 2)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"高温");
-						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),1,"高温");
 						}
 						break;
 					case 3://表示火焰
@@ -260,20 +210,12 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"火焰");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),1,"火焰");
-						}
 						break;
 					case 4://表示感温电缆（兼容火焰）
 						//m_FireList.SetItemText(i,1,"火焰");
 						if (pos < 2)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"火焰");
-						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),1,"火焰");
 						}
 						break;
 					case 5://表示烟感
@@ -282,20 +224,12 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"烟感");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),1,"烟感");
-						}
 						break;
 					default:
 						//m_FireList.SetItemText(i,1,"未知");
 						if (pos < 2)
 						{
 							m_FireListB.SetItemText(i+(5*pos),1,"未知");
-						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),1,"未知");
 						}
 						break;
 					}
@@ -308,10 +242,6 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),2,"离线");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),2,"离线");
-						}
 						continue;
 						break;
 					case 1://正常
@@ -320,10 +250,6 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),2,"正常");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),2,"正常");
-						}
 						break;
 					case 2://故障
 						//m_FireList.SetItemText(i,3,"故障");
@@ -331,20 +257,12 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),2,"故障");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),2,"故常");
-						}
 						break;
 					case 3://污染
 						//m_FireList.SetItemText(i,3,"污染");
 						if (pos < 2)
 						{
 							m_FireListB.SetItemText(i+(5*pos),2,"污染");
-						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),2,"污染");
 						}
 						break;
 					case 4://报警
@@ -356,11 +274,6 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 							m_FireListB.SetItemText(i+(5*pos),2,"报警");
 							m_FireListB.SetItemState(i+(5*pos), LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED);
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),2,"报警");
-							m_FireListB.SetItemState(i+(5*(pos-2)), LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED);
-						}
 						break;
 					default:
 						//m_FireList.SetItemText(i,3,"未知");
@@ -368,15 +281,8 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						{
 							m_FireListB.SetItemText(i+(5*pos),2,"未知");
 						}
-						else
-						{
-							m_FireListT.SetItemText(i+(5*(pos-2)),2,"未知");
-						}
 						break;
 					}
-
-
-					
 				}
 			}
 		}
@@ -422,21 +328,12 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 
 	switch (Train){
 	case 0://本车
-		startnum=Train*4;
-		m_FireList=&m_FireListB;
-		//SetTimer(201,1000,NULL);
+		startnum = Train * 4;
+		m_FireList = &m_FireListB;
 		break;
 	case 1:
-		startnum=Train*4;
-		m_FireList=&m_FireListB;
-		break;
-	case 2://他车
-		startnum=(Train-2)*5;
-		m_FireList=&m_FireListT;
-		break;
-	case 3:
-		startnum=(Train-2)*5;
-		m_FireList=&m_FireListT;
+		startnum = Train * 4;
+		m_FireList = &m_FireListB;
 		break;
 	default:
 		break;
@@ -565,15 +462,6 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 						m_FireList->SetItemTextColor(2,i,RGB(255,0,0));
 						break;
 					}
-
-					/*if (((buf[6+i] & 0xc0) >> 6) == 1)
-					{
-						m_FireList.SetItemText(i,2,"需要安装");
-					}
-					else if (((buf[6+i] & 0xc0) >> 6) == 0)
-					{
-						m_FireList.SetItemText(i,2,"不需要安装");
-					}*/
 				}
 
 				//防火报警状态
@@ -595,11 +483,6 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 						theApp.m_FireWarFlag = 2;
 						TRACE("m_FireWarFlag = 2\n");
 					}
-					/*else
-					{
-						theApp.m_FireWarFlag = 0;
-						TRACE("m_FireWarFlag = 0\n");
-					}*/
 						
 				}
 			}
@@ -634,10 +517,10 @@ void CFireMsgDlg::OnBnClickedButton1()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	struct sockaddr_in BAddr;
-	memset(&BAddr,0,sizeof(struct sockaddr_in));
-	BAddr.sin_family=AF_INET;
-	BAddr.sin_addr.s_addr=htonl(INADDR_BROADCAST);//套接字地址为广播地址
-	BAddr.sin_port=htons(8000);//套接字广播端口号为8000
+	memset(&BAddr, 0, sizeof(struct sockaddr_in));
+	BAddr.sin_family = AF_INET;
+	BAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);//套接字地址为广播地址
+	BAddr.sin_port = htons(8000);//套接字广播端口号为8000
 
 	//加入报文帧头和 本车他车AB节标志
 	unsigned char SendBuf[5] = "";
@@ -645,12 +528,12 @@ void CFireMsgDlg::OnBnClickedButton1()
 	SendBuf[1] = 0x04;
 	SendBuf[2] = theApp.Local[0];
 	SendBuf[3] = theApp.Local[1];
-	for(int i=0;i<4;i++)
+	for (int i = 0; i < 4; i++)
 	{
 		SendBuf[4] += SendBuf[i];
 	}
 	//MessageBox("停止报警");
-	sendto(theApp.BSoc,(char*)SendBuf,sizeof(SendBuf),0,(SOCKADDR *)&BAddr, sizeof(SOCKADDR));
+	sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
 	Sleep(0.3);
 }
 
@@ -661,37 +544,25 @@ void CFireMsgDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if(nIDEvent==201)
 	{
-		for(int i=0;i<4;i++)
+		for (int i = 0; i < 4; i++)
 		{
-			if(lastDataTime[i]>15)	//当超过15秒没有收到该节车厢数据时，初始化该节车厢列表
+			if (lastDataTime[i] > 15)	//当超过15秒没有收到该节车厢数据时，初始化该节车厢列表
 			{
 				//初始化列表
-				if(i<2)
+				if (i < 2)
 				{
-					for (int j =i*4;j<i*4+4;j++)		//本车
+					for (int j = i * 4; j < i * 4 + 4; j++)		//本车
 					{
-						m_FireListB.SetItemText(j,1,"无");
-						m_FireListB.SetItemText(j,2,"无");		
-						m_FireListB.SetItemText(j,3,"LTDW");
+						m_FireListB.SetItemText(j, 1, "无");
+						m_FireListB.SetItemText(j, 2, "无");
+						m_FireListB.SetItemText(j, 3, "LTDW");
 					}
 				}
-				else if(i<4)
-				{
-					for (int j =(i-2)*5;j<(i-2)*5+5;j++)		//他车
-					{
-						m_FireListT.SetItemText(j,1,"无");
-						m_FireListT.SetItemText(j,2,"无");		
-						m_FireListT.SetItemText(j,3,"LTDW");
-					}
-				}
-				lastDataTime[i]=0;
+				lastDataTime[i] = 0;
 			}
 			lastDataTime[i]++;
 		}
 	}
-	
-		
-
 
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -703,18 +574,15 @@ HBRUSH CFireMsgDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	// TODO:  在此更改 DC 的任何特性
 
-	if(nCtlColor   ==CTLCOLOR_DLG)      //对话框颜色  
-		return   m_brush;       //返加刷子
+	if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色  
+		return m_brush;       //返加刷子
 
-	if(nCtlColor == CTLCOLOR_STATIC)
+	if (nCtlColor == CTLCOLOR_STATIC)
 	{
-		pDC->SetTextColor(RGB(255,255,255));  
+		pDC->SetTextColor(RGB(255, 255, 255));
 		pDC->SetBkMode(TRANSPARENT);    //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合  
-		hbr=(HBRUSH)m_brush;
+		hbr = (HBRUSH)m_brush;
 	}
-
-
-
 	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
 	return hbr;
 }
@@ -726,17 +594,13 @@ void CFireMsgDlg::OnPaint()
 	// TODO: 在此处添加消息处理程序代码
 
 	//AB节 字
-	CFont font1,*oldfont; 
-	int textSize=200,ox=40,oy=20;
+	CFont font1, * oldfont;
+	int textSize = 200, ox = 40, oy = 20;
 
-	dc.SetTextColor(RGB(255,255,255));										//设置字体颜色
+	dc.SetTextColor(RGB(255, 255, 255));										//设置字体颜色
 	font1.CreatePointFont(textSize, _T("黑体"), &dc);						//设置字体
 
 	oldfont = dc.SelectObject(&font1);										//选择该字体进入PDC
 	dc.SetBkMode(TRANSPARENT);
-	//dc.TextOut(ox,oy,"本  机");					
-	//dc.TextOut(ox+390,oy,"补  机");				
-
-
 	// 不为绘图消息调用 CDialogEx::OnPaint()
 }
