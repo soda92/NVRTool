@@ -51,40 +51,40 @@ BOOL CFireMsgDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-	m_brush.CreateSolidBrush(RGB(0,0,0));
+	m_brush.CreateSolidBrush(RGB(0, 0, 0));
 
-	m_button1.SetBkColor(RGB(0,0,0));
-	m_button1.SetForeColor(RGB(255,255,255));
+	m_button1.SetBkColor(RGB(0, 0, 0));
+	m_button1.SetForeColor(RGB(255, 255, 255));
 
-	newFont1.CreatePointFont(170,"黑体");
+	newFont1.CreatePointFont(170, "黑体");
 
 	m_button1.SetFont(&newFont1);
 
-	m_FireListB.SetBkColor(RGB(0,0,0));
-	m_FireListB.SetTextColor(RGB(255,255,255));
+	m_FireListB.SetBkColor(RGB(0, 0, 0));
+	m_FireListB.SetTextColor(RGB(255, 255, 255));
 
-	m_FireListB.SetColTextColor(1,RGB(0,255,0));
-	m_FireListB.SetColTextColor(2,RGB(0,255,0));
+	m_FireListB.SetColTextColor(1, RGB(0, 255, 0));
+	m_FireListB.SetColTextColor(2, RGB(0, 255, 0));
 
-	for(int i=0;i<4;i++)
+	for (int i = 0; i < 4; i++)
 		f_fire_tex[i] = "";
 
 	InitList();
-	
+
 	//串口初始化
 	char FireCom[20] = "";
-	GetPrivateProfileString("LT_WXCLCFG","FireCom","COM2",FireCom,20,".//LT_WXCLCFG.ini");
+	GetPrivateProfileString("LT_WXCLCFG", "FireCom", "COM2", FireCom, 20, ".//LT_WXCLCFG.ini");
 	if (WXCL_FireComInit(FireCom) != -1)
-	{		
+	{
 		//向EF板卡发送TAX箱消息，然后接收EF板卡回复，并广播
-		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_WXCL_FireData,this,0,NULL);	
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_WXCL_FireData, this, 0, NULL);
 	}
 
-	for(int i=0;i<4;i++)
+	for (int i = 0; i < 4; i++)
 	{
-		lastDataTime[i]=0;
+		lastDataTime[i] = 0;
 	}
-	SetTimer(201,1000,NULL);
+	SetTimer(201, 1000, NULL);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常: OCX 属性页应返回 FALSE
@@ -97,7 +97,7 @@ void CFireMsgDlg::OnSize(UINT nType, int cx, int cy)
 
 	// TODO: 在此处添加消息处理程序代码
 	if (num++ > 0)
-	{		
+	{
 		CRect rc;
 		this->GetClientRect(&rc);
 		int x0 = rc.right * 0, y0 = rc.bottom * 0.08,
@@ -111,9 +111,9 @@ void CFireMsgDlg::OnSize(UINT nType, int cx, int cy)
 int CFireMsgDlg::InitList()
 {
 	//字体大小
-	int size=25;
-	m_FireListB.SetFontHW(size,size*0.5);
-	m_FireListB.SetHeaderFontHW(size,size*0.4);
+	int size = 25;
+	m_FireListB.SetFontHW(size, size * 0.5);
+	m_FireListB.SetHeaderFontHW(size, size * 0.4);
 
 	//行高
 	m_FireListB.SetRowHeight(38);
@@ -124,27 +124,27 @@ int CFireMsgDlg::InitList()
 	dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）	
 	m_FireListB.SetExtendedStyle(dwStyle); //设置扩展风格
 
-	m_FireListB.InsertColumn(0,"  设备名称",LVCFMT_LEFT,200);
-	m_FireListB.InsertColumn(1,"  类型",LVCFMT_LEFT,120);	
-	m_FireListB.InsertColumn(2,"  状态",LVCFMT_LEFT,120);
-	m_FireListB.InsertColumn(3,"供应商",LVCFMT_LEFT,115);
+	m_FireListB.InsertColumn(0, "  设备名称", LVCFMT_LEFT, 200);
+	m_FireListB.InsertColumn(1, "  类型", LVCFMT_LEFT, 120);
+	m_FireListB.InsertColumn(2, "  状态", LVCFMT_LEFT, 120);
+	m_FireListB.InsertColumn(3, "供应商", LVCFMT_LEFT, 115);
 
-	for (int i =0;i<8;i++)
+	for (int i = 0; i < 8; i++)
 	{
 		char a[20] = "";
 		//itoa(i+1,a,10);
-		sprintf_s(a,"%s探头%d",(i>3?"B节":"A节"),(i>3?i-3:i+1));
-		m_FireListB.InsertItem(i,a);
+		sprintf_s(a, "%s探头%d", (i > 3 ? "B节" : "A节"), (i > 3 ? i - 3 : i + 1));
+		m_FireListB.InsertItem(i, a);
 
-		m_FireListB.SetItemText(i,1,"未知");
-		m_FireListB.SetItemText(i,2,"未知");
-		m_FireListB.SetItemText(i,3,"LTDW");
+		m_FireListB.SetItemText(i, 1, "未知");
+		m_FireListB.SetItemText(i, 2, "未知");
+		m_FireListB.SetItemText(i, 3, "LTDW");
 	}
 
 	return 0;
 }
 
-int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
+int CFireMsgDlg::FireDec(unsigned char* buf, int len, char pos)
 {
 	if (buf[0] == 0xAA && buf[1] == 0xAA)
 	{
@@ -154,38 +154,38 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 			{
 				if (buf[6] == 0x01)
 				{
-					for (int i = 0;i < 5;i++)
+					for (int i = 0; i < 5; i++)
 					{
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"总线开路");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "总线开路");
 						}
-						
+
 					}
 				}
 				else if (buf[6] == 0x02)
 				{
-					for (int i = 0;i < 5;i++)
+					for (int i = 0; i < 5; i++)
 					{
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"总线短路");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "总线短路");
 						}
 					}
 				}
 			}
 			else
 			{
-				for (int i=0;i<5/*32*/;i++)//最大32个探头
+				for (int i = 0; i < 5/*32*/; i++)//最大32个探头
 				{
 
-					switch((buf[7+i] & 0x07))
+					switch ((buf[7 + i] & 0x07))
 					{
 					case 0://未安装
 						//m_FireList.SetItemText(i,1,"未安装");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"未安装");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "未安装");
 						}
 						continue;
 						break;
@@ -193,53 +193,53 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						//m_FireList.SetItemText(i,1,"烟感");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"烟感");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "烟感");
 						}
 						break;
 					case 2://表示高温
 						//m_FireList.SetItemText(i,1,"高温");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"高温");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "高温");
 						}
 						break;
 					case 3://表示火焰
 						//m_FireList.SetItemText(i,1,"火焰");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"火焰");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "火焰");
 						}
 						break;
 					case 4://表示感温电缆（兼容火焰）
 						//m_FireList.SetItemText(i,1,"火焰");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"火焰");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "火焰");
 						}
 						break;
 					case 5://表示烟感
 						//m_FireList.SetItemText(i,1,"烟感");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"烟感");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "烟感");
 						}
 						break;
 					default:
 						//m_FireList.SetItemText(i,1,"未知");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),1,"未知");
+							m_FireListB.SetItemText(i + (5 * pos), 1, "未知");
 						}
 						break;
 					}
 
-					switch(((buf[7+i] & 0x38) >> 3))
+					switch (((buf[7 + i] & 0x38) >> 3))
 					{
 					case 0://离线
 						//m_FireList.SetItemText(i,3,"离线");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),2,"离线");
+							m_FireListB.SetItemText(i + (5 * pos), 2, "离线");
 						}
 						continue;
 						break;
@@ -247,21 +247,21 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						//m_FireList.SetItemText(i,3,"正常");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),2,"正常");
+							m_FireListB.SetItemText(i + (5 * pos), 2, "正常");
 						}
 						break;
 					case 2://故障
 						//m_FireList.SetItemText(i,3,"故障");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),2,"故障");
+							m_FireListB.SetItemText(i + (5 * pos), 2, "故障");
 						}
 						break;
 					case 3://污染
 						//m_FireList.SetItemText(i,3,"污染");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),2,"污染");
+							m_FireListB.SetItemText(i + (5 * pos), 2, "污染");
 						}
 						break;
 					case 4://报警
@@ -270,15 +270,15 @@ int CFireMsgDlg::FireDec(unsigned char* buf,int len,char pos)
 						//联动					
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),2,"报警");
-							m_FireListB.SetItemState(i+(5*pos), LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED);
+							m_FireListB.SetItemText(i + (5 * pos), 2, "报警");
+							m_FireListB.SetItemState(i + (5 * pos), LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED);
 						}
 						break;
 					default:
 						//m_FireList.SetItemText(i,3,"未知");
 						if (pos < 2)
 						{
-							m_FireListB.SetItemText(i+(5*pos),2,"未知");
+							m_FireListB.SetItemText(i + (5 * pos), 2, "未知");
 						}
 						break;
 					}
@@ -294,38 +294,38 @@ int CFireMsgDlg::SendFireMsg()
 {
 
 	unsigned char SendBuf[100] = "";
-	memset(SendBuf,0,100);
+	memset(SendBuf, 0, 100);
 	SendBuf[0] = 0xAA;
 	SendBuf[1] = 0xAA;
 	SendBuf[2] = 0x4F;
-	
+
 	SendBuf[4] = 0x01;
 	if (((CLT_LCWB_1ADlg*)theApp.pMainDlg)->TaxStat)
 	{
 		SendBuf[5] = 0x11;
 
-		memcpy(&SendBuf[6],((CLT_LCWB_1ADlg*)theApp.pMainDlg)->TaxData.TAXDataBuf,72);
+		memcpy(&SendBuf[6], ((CLT_LCWB_1ADlg*)theApp.pMainDlg)->TaxData.TAXDataBuf, 72);
 	}
 	else
 		SendBuf[5] = 0x22;
 
-	for (int i = 0;i < 78;i++)
+	for (int i = 0; i < 78; i++)
 	{
 		SendBuf[78] += SendBuf[i];
 	}
 
-	return WXCL_SendMsg(SendBuf,79);
+	return WXCL_SendMsg(SendBuf, 79);
 }
 
-int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL SendFlag /*= FALSE*/ )
+int CFireMsgDlg::FireDataAnalyse(unsigned char* buf, int len, int Train, BOOL SendFlag /*= FALSE*/)
 {
 	//Train=0 本车A，1 本车B，2 他车A， 3 他车B
 	//CListCtrl m_FireListB;
 	//CListCtrl m_FireListT;
-	CListCtrlCl *m_FireList;
-	int startnum=0;			//A、B节标志
+	CListCtrlCl* m_FireList;
+	int startnum = 0;			//A、B节标志
 
-	switch (Train){
+	switch (Train) {
 	case 0://本车
 		startnum = Train * 4;
 		m_FireList = &m_FireListB;
@@ -337,11 +337,11 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 	default:
 		break;
 	}
-	
-	
+
+
 	if (buf[0] == 0xAA && buf[1] == 0xAA)
 	{
-		lastDataTime[Train]=0;	//计时器归零
+		lastDataTime[Train] = 0;	//计时器归零
 
 		short plen = buf[2] | buf[3] << 8;
 		if (plen != 0x2A)
@@ -350,7 +350,7 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 		}
 
 		unsigned char src = 0;
-		for (int i = 0;i < 41;i++)
+		for (int i = 0; i < 41; i++)
 		{
 			src += buf[i];
 		}
@@ -370,85 +370,85 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 				if (buf[5] == 0x01)
 				{
 					//FireStr = "总线开路";m_FireList.SetItemText(i,1,"未知");
-					for (int i = startnum;i < startnum+4;i++)
+					for (int i = startnum; i < startnum + 4; i++)
 					{
-						m_FireList->SetItemText(i,1,"总线开路");
-						m_FireList->SetItemTextColor(2,i,RGB(255,0,0));
+						m_FireList->SetItemText(i, 1, "总线开路");
+						m_FireList->SetItemTextColor(2, i, RGB(255, 0, 0));
 					}
 				}
 				else if (buf[5] == 0x02)
 				{
 					//FireStr = "总线短路";
-					for (int i = startnum;i < startnum+4;i++)
+					for (int i = startnum; i < startnum + 4; i++)
 					{
-						m_FireList->SetItemText(i,1,"总线短路");
-						m_FireList->SetItemTextColor(2,i,RGB(255,0,0));
+						m_FireList->SetItemText(i, 1, "总线短路");
+						m_FireList->SetItemTextColor(2, i, RGB(255, 0, 0));
 					}
 				}
 			}
 			else
 			{
 				bool WarFlag = false;
-				CString tmp_tex= "",ss = "";
-				for (int i = 0;i < 4;i++)
+				CString tmp_tex = "", ss = "";
+				for (int i = 0; i < 4; i++)
 				{
 					m_FireList->SetItemState(i, 0, LVIS_SELECTED);
-					switch((buf[6+i] & 0x07))
+					switch ((buf[6 + i] & 0x07))
 					{
-						case 0://未安装
-							m_FireList->SetItemText(startnum+i,1,"未安装");
-							continue;
-							break;
-						case 1://表示烟温复合（兼容烟感）
-							m_FireList->SetItemText(startnum+i,1,"烟感");
-							break;
-						case 2://表示高温
-							m_FireList->SetItemText(startnum+i,1,"高温");
-							break;
-						case 3://表示火焰
-							m_FireList->SetItemText(startnum+i,1,"火焰");
-							break;
-						case 4://表示感温电缆（兼容火焰）
-							m_FireList->SetItemText(startnum+i,1,"火焰");
-							break;
-						case 5://表示烟感
-							m_FireList->SetItemText(startnum+i,1,"烟感");
-							break;
-						default:
-							m_FireList->SetItemText(startnum+i,1,"未知");
-							break;
+					case 0://未安装
+						m_FireList->SetItemText(startnum + i, 1, "未安装");
+						continue;
+						break;
+					case 1://表示烟温复合（兼容烟感）
+						m_FireList->SetItemText(startnum + i, 1, "烟感");
+						break;
+					case 2://表示高温
+						m_FireList->SetItemText(startnum + i, 1, "高温");
+						break;
+					case 3://表示火焰
+						m_FireList->SetItemText(startnum + i, 1, "火焰");
+						break;
+					case 4://表示感温电缆（兼容火焰）
+						m_FireList->SetItemText(startnum + i, 1, "火焰");
+						break;
+					case 5://表示烟感
+						m_FireList->SetItemText(startnum + i, 1, "烟感");
+						break;
+					default:
+						m_FireList->SetItemText(startnum + i, 1, "未知");
+						break;
 					}
 
-					switch(((buf[6+i] & 0x38) >> 3))
+					switch (((buf[6 + i] & 0x38) >> 3))
 					{
 					case 0://离线
-						m_FireList->SetItemText(startnum+i,2,"离线");
-						m_FireList->SetItemTextColor(2,startnum+i,RGB(255,255,255));
+						m_FireList->SetItemText(startnum + i, 2, "离线");
+						m_FireList->SetItemTextColor(2, startnum + i, RGB(255, 255, 255));
 						continue;
 						break;
 					case 1://正常
-						m_FireList->SetItemText(startnum+i,2,"正常");
-						m_FireList->SetItemTextColor(2,startnum+i,RGB(0,255,0));
+						m_FireList->SetItemText(startnum + i, 2, "正常");
+						m_FireList->SetItemTextColor(2, startnum + i, RGB(0, 255, 0));
 						break;
 					case 2://故障
-						m_FireList->SetItemText(startnum+i,2,"故障");
-						m_FireList->SetItemTextColor(2,startnum+i,RGB(255,0,0));
+						m_FireList->SetItemText(startnum + i, 2, "故障");
+						m_FireList->SetItemTextColor(2, startnum + i, RGB(255, 0, 0));
 						break;
 					case 3://污染
-						m_FireList->SetItemText(startnum+i,2,"污染");
-						m_FireList->SetItemTextColor(2,startnum+i,RGB(255,255,0));
+						m_FireList->SetItemText(startnum + i, 2, "污染");
+						m_FireList->SetItemTextColor(2, startnum + i, RGB(255, 255, 0));
 						break;
 					case 4://报警
-						if(tmp_tex == "")
-							tmp_tex = (0 ==Train)?"A节探头":"B节探头";
+						if (tmp_tex == "")
+							tmp_tex = (0 == Train) ? "A节探头" : "B节探头";
 						else
 							tmp_tex += " ";
-						ss.Format("%d",i+1);
+						ss.Format("%d", i + 1);
 						tmp_tex += ss;
 
-						m_FireList->SetItemText(startnum+i,2,"报警");
-						m_FireList->SetItemTextColor(2,startnum+i,RGB(255,0,0));
-						m_FireList->SetItemState(startnum+i, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED);
+						m_FireList->SetItemText(startnum + i, 2, "报警");
+						m_FireList->SetItemTextColor(2, startnum + i, RGB(255, 0, 0));
+						m_FireList->SetItemState(startnum + i, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED);
 						//联动
 						if ((FireToCh[i] - 1) >= 0)
 						{
@@ -457,8 +457,8 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 						WarFlag = true;
 						break;
 					default:
-						m_FireList->SetItemText(startnum+i,2,"未知");
-						m_FireList->SetItemTextColor(2,i,RGB(255,0,0));
+						m_FireList->SetItemText(startnum + i, 2, "未知");
+						m_FireList->SetItemTextColor(2, i, RGB(255, 0, 0));
 						break;
 					}
 				}
@@ -468,7 +468,7 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 				{
 					theApp.m_FireWarFlag = 1;
 					TRACE("m_FireWarFlag = 1\n");
-					if(tmp_tex != ""){
+					if (tmp_tex != "") {
 						tmp_tex += "报警";
 						f_fire_tex[Train] = tmp_tex;
 					}
@@ -476,13 +476,13 @@ int CFireMsgDlg::FireDataAnalyse( unsigned char* buf,int len ,int Train,BOOL Sen
 				else
 				{
 					f_fire_tex[Train] = "";
-					memset(theApp.m_FireCH,0,sizeof(theApp.m_FireCH));
+					memset(theApp.m_FireCH, 0, sizeof(theApp.m_FireCH));
 					if (theApp.m_FireWarFlag == 1)
 					{
 						theApp.m_FireWarFlag = 2;
 						TRACE("m_FireWarFlag = 2\n");
 					}
-						
+
 				}
 			}
 			return 0;
@@ -502,13 +502,13 @@ int CFireMsgDlg::StopWarFun()
 	SendBuf[4] = 0x02;
 	SendBuf[5] = 0x01;
 	SendBuf[6] = 0x12;
-	SendBuf[7] = 0x01;		
+	SendBuf[7] = 0x01;
 
-	for (int i=0;i<15;i++)
+	for (int i = 0; i < 15; i++)
 	{
 		SendBuf[15] += SendBuf[i];
 	}
-	WXCL_SendMsg(SendBuf,16);
+	WXCL_SendMsg(SendBuf, 16);
 	return 0;
 }
 
@@ -541,7 +541,7 @@ void CFireMsgDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 
-	if(nIDEvent==201)
+	if (nIDEvent == 201)
 	{
 		for (int i = 0; i < 4; i++)
 		{

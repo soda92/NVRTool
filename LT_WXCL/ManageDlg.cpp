@@ -258,11 +258,7 @@ BOOL CManageDlg::IsHDD(char* Path)
 {
 	ULARGE_INTEGER FreeAv,TotalBytes,FreeBytes;
 	if (GetDiskFreeSpaceEx(Path,&FreeAv,&TotalBytes,&FreeBytes))
-	{		
-		/*CString strTotalBytes,strFreeBytes;
-
-		strTotalBytes.Format("%luG",TotalBytes.QuadPart/(ULONGLONG)(1024*1024*1024));
-		strFreeBytes.Format("%luG",FreeBytes.QuadPart/(ULONGLONG)(1024*1024*1024));*/
+	{
 
 		if (TotalBytes.QuadPart/(ULONGLONG)(1024*1024*1024) > 100)//判断总空间是否大于100G
 		{
@@ -277,13 +273,6 @@ int WINAPI Thread_Record(LPVOID lpPara)
 {
 	CManageDlg* dlg = (CManageDlg*) lpPara;
 
-	
-	/*for (int i=0;i<8;i++)
-	{
-		Path.Format("%s%d",HDDPath,i+1);
-		CreateDirectory(Path,NULL);
-	}*/
-	//CStringArray IPCName;
 	char sysLog[256] = "";
 
 	while(1)
@@ -320,40 +309,32 @@ int WINAPI Thread_Record(LPVOID lpPara)
 				return -1;
 			}
 		}
-		Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",theApp.HDDPath,TrainNum);	
-		//Path.Format("%s/VIDEO_RECORD/",theApp.HDDPath);
-		CreateDirectory(Path,NULL);
+		Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/", theApp.HDDPath, TrainNum);
+
+		CreateDirectory(Path, NULL);
 
 		for (int i=0;i < 6;i++)
 		{
 			if (dlg->RecordFlag[i] == 0)
 			{
-				
-				//File.Format("rtsp://admin:hk123456@192.168.101.7%d:554/",i);
-				File.Format("rtsp://admin:hk123456@192.168.10%d.%d%d:554/",atoi(&theApp.Local[0]),(theApp.Local[1]=='A'?7:8),i);
-				/*if (Video_StartRecord(i+1,File.GetBuffer(File.GetLength()),Path.GetBuffer(Path.GetLength())) == -1)
-				{
-					RecordFlag[i] = 0;
-					TRACE("%d port failed\n",i);
-				}*/
-				
-				
-				//if (Video_StartRecord(i+1,File.GetBuffer(File.GetLength()),Path.GetBuffer(Path.GetLength()),TrainNum,IPCName[i],i+1) == -1)
-				if (Video_StartRecord(i+1,File.GetBuffer(File.GetLength()),Path.GetBuffer(Path.GetLength()),TrainNum,IPCName[(theApp.Local[1]=='A'?i:i+6)],(theApp.Local[1]=='A'?i:i+6)+1) == -1)
+				File.Format("rtsp://admin:hk123456@192.168.10%d.%d%d:554/",
+					atoi(&theApp.Local[0]), (theApp.Local[1] == 'A' ? 7 : 8), i);
+				if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
+					Path.GetBuffer(Path.GetLength()),
+					TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i + 6)],
+					(theApp.Local[1] == 'A' ? i : i + 6) + 1) == -1)
 				{
 					dlg->RecordFlag[i] = 0;
-					TRACE("%d port failed\n",i);
-					sprintf_s(sysLog,"%d 通道录像连接错误！\n",i);
-					//theApp.SysLogWr(theApp.SysLogPath,sysLog);
+					TRACE("%d port failed\n", i);
+					sprintf_s(sysLog, "%d 通道录像连接错误！\n", i);
 				}
 				else
 				{
 					dlg->RecordFlag[i] = 1;
-					TRACE("path = %s\n",Path);
-					sprintf_s(sysLog,"%d 通道开始录像...\n",i);					
-					//theApp.SysLogWr(theApp.SysLogPath,sysLog);
+					TRACE("path = %s\n", Path);
+					sprintf_s(sysLog, "%d 通道开始录像...\n", i);
 				}
-					
+
 				Sleep(50);//必须等待一会。否则会出现录像文件存到下一个文件夹的问题。
 			}
 		}
@@ -363,30 +344,24 @@ int WINAPI Thread_Record(LPVOID lpPara)
 		{
 			if (dlg->RecordFlag[i] == 0)
 			{
-				File.Format("rtsp://admin:hk123456@192.168.10%d.%d%d:554/",atoi(&theApp.Local[0]),(theApp.Local[1]=='A'?8:7),i-6);
-				/*if (Video_StartRecord(i+1,File.GetBuffer(File.GetLength()),Path.GetBuffer(Path.GetLength())) == -1)
-				{
-					RecordFlag[i] = 0;
-					TRACE("%d port failed\n",i);
-				}*/
-				
-				
-				//if (Video_StartRecord(i+1,File.GetBuffer(File.GetLength()),Path.GetBuffer(Path.GetLength()),TrainNum,IPCName[i],i+1) == -1)
-				if (Video_StartRecord(i+1,File.GetBuffer(File.GetLength()),Path.GetBuffer(Path.GetLength()),TrainNum,IPCName[(theApp.Local[1]=='A'?i:i-6)],(theApp.Local[1]=='A'?i:i-6)+1) == -1)
+				File.Format("rtsp://admin:hk123456@192.168.10%d.%d%d:554/",
+					atoi(&theApp.Local[0]), (theApp.Local[1] == 'A' ? 8 : 7), i - 6);
+				if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
+					Path.GetBuffer(Path.GetLength()),
+					TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i - 6)],
+					(theApp.Local[1] == 'A' ? i : i - 6) + 1) == -1)
 				{
 					dlg->RecordFlag[i] = 0;
-					TRACE("%d port failed\n",i);
-					sprintf_s(sysLog,"%d 通道录像连接错误！\n",i);
-					//theApp.SysLogWr(theApp.SysLogPath,sysLog);
+					TRACE("%d port failed\n", i);
+					sprintf_s(sysLog, "%d 通道录像连接错误！\n", i);
 				}
 				else
 				{
 					dlg->RecordFlag[i] = 1;
-					TRACE("path = %s\n",Path);
-					sprintf_s(sysLog,"%d 通道开始录像...\n",i);					
-					//theApp.SysLogWr(theApp.SysLogPath,sysLog);
+					TRACE("path = %s\n", Path);
+					sprintf_s(sysLog, "%d 通道开始录像...\n", i);
 				}
-					
+
 				Sleep(50);//必须等待一会。否则会出现录像文件存到下一个文件夹的问题。
 			}
 		}
@@ -421,8 +396,8 @@ int CManageDlg::SetHDDState()
 		//格式化信息，并显示出来
 		CString strTotalBytes,strFreeBytes;
 
-		strTotalBytes.Format("%luG",TotalBytes.QuadPart/(ULONGLONG)(1024*1024*1024));
-		strFreeBytes.Format("%luG",FreeBytes.QuadPart/(ULONGLONG)(1024*1024*1024));
+		strTotalBytes.Format("%luG", TotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
+		strFreeBytes.Format("%luG", FreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
 		//strAllInfo.Format("Info:[c] %s %s \nU can use %luG",strTotalBytes,strFreeBytes, FreeAv.QuadPart/(ULONGLONG)(1024*1024*1024));/* 单位为G */
 		//MessageBox(strAllInfo);
 
@@ -437,11 +412,9 @@ int CManageDlg::SetHDDState()
 			//硬盘小于10G时将分别删除8个通道里最早的一个文件
 			TRACE("FreeBytes = %dG\n",FreeBytes.QuadPart/(ULONGLONG)(1024*1024*1024));
 			if (FreeBytes.QuadPart/(ULONGLONG)(1024*1024*1024) <= 9 && (TotalBytes.QuadPart/(ULONGLONG)(1024*1024*1024)) > 0)
-				//if(1)
 			{
-
 				CString Path;
-				Path.Format("%s/%s/",theApp.HDDPath,FindDir(theApp.HDDPath));								
+				Path.Format("%s/%s/", theApp.HDDPath, FindDir(theApp.HDDPath));
 				//Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",theApp.HDDPath,TrainNum);
 				//////////////////////////////////////////////////////////////////////////
 				FindAndDeleteRecord(Path);			
@@ -568,15 +541,6 @@ int CManageDlg::SetList()
 	m_IPCStateList.SetItemText(3,2,"高压室2");
 	m_IPCStateList.SetItemText(4,2,"左走廊");
 	m_IPCStateList.SetItemText(5,2,"右走廊");
-
-	/*m_IPCStateList.SetItemText(0,1,"IPC1");
-	m_IPCStateList.SetItemText(1,1,"IPC2");
-	m_IPCStateList.SetItemText(2,1,"IPC3");
-	m_IPCStateList.SetItemText(3,1,"IPC4");
-	m_IPCStateList.SetItemText(4,1,"IPC5");
-	m_IPCStateList.SetItemText(5,1,"IPC6");
-	m_IPCStateList.SetItemText(6,1,"IPC7");
-	m_IPCStateList.SetItemText(7,1,"IPC8");*/
 
 	//HDD LIST
 	m_HDDStateList.InsertItem(0,"1");

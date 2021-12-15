@@ -11,7 +11,7 @@ CMyEdit::CMyEdit()
 }
 
 BEGIN_MESSAGE_MAP(CMyEdit, CRichEditCtrl)
-	
+
 END_MESSAGE_MAP()
 
 // CVideoPlayWnd
@@ -48,7 +48,7 @@ void CVideoPlayWnd::OnPaint()
 	// TODO: 在此处添加消息处理程序代码
 	CRect rt;
 	this->GetClientRect(&rt);
-	dc.BitBlt(1,1,rt.right,rt.bottom,NULL,0,0, BLACKNESS);//表示使目标矩形区域颜色取反//画黑
+	dc.BitBlt(1, 1, rt.right, rt.bottom, NULL, 0, 0, BLACKNESS);//表示使目标矩形区域颜色取反//画黑
 	m_showText->CenterWindow();
 	/*CRect rr(rt.CenterPoint() , rt.BottomRight());
 	dc.DrawText("嘻嘻嘻哈哈啊哈哈哈" ,&rr , WHITENESS|DT_SINGLELINE|DT_VCENTER|DT_CENTER );*/
@@ -65,7 +65,7 @@ void CVideoPlayWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	/*if (WndIndex > 4)
 		return;*/
-	::SendMessageA(GetParent()->m_hWnd , MY_USER_FULL_SCREEN , NULL , WndIndex);
+	::SendMessageA(GetParent()->m_hWnd, MY_USER_FULL_SCREEN, NULL, WndIndex);
 	//CStatic::OnLButtonDblClk(nFlags, point);	
 }
 
@@ -82,18 +82,18 @@ int CVideoPlayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	// TODO:  在此添加您专用的创建代码
-	m_showText->Create(WS_CHILD|WS_VISIBLE, CRect( 0 , 0 , 120 , 20) , this , 9666);
-	
-	CHARFORMAT cf;   
-	cf.dwEffects = 1;   
-	cf.crTextColor = RGB(255, 0, 0);    
+	m_showText->Create(WS_CHILD | WS_VISIBLE, CRect(0, 0, 120, 20), this, 9666);
+
+	CHARFORMAT cf;
+	cf.dwEffects = 1;
+	cf.crTextColor = RGB(255, 0, 0);
 	cf.cbSize = sizeof(CHARFORMAT);
-	cf.dwEffects   = 0;
-	cf.dwMask      = CFM_COLOR;
-	m_showText->SetDefaultCharFormat(cf);  
-	LONG lStyle=GetWindowLong(m_showText->m_hWnd,GWL_EXSTYLE);	// 保存CRichEditCtrl的窗口风格
-	lStyle|=WS_EX_TRANSPARENT;	// CRichEditCtrl的窗口风格加入透明背景
-	SetWindowLong(m_showText->m_hWnd,GWL_EXSTYLE,lStyle);	// 重设CRichEditCtrl的新窗口风格
+	cf.dwEffects = 0;
+	cf.dwMask = CFM_COLOR;
+	m_showText->SetDefaultCharFormat(cf);
+	LONG lStyle = GetWindowLong(m_showText->m_hWnd, GWL_EXSTYLE);	// 保存CRichEditCtrl的窗口风格
+	lStyle |= WS_EX_TRANSPARENT;	// CRichEditCtrl的窗口风格加入透明背景
+	SetWindowLong(m_showText->m_hWnd, GWL_EXSTYLE, lStyle);	// 重设CRichEditCtrl的新窗口风格
 	m_showText->SetWindowTextA("无信号");
 	m_showText->EnableWindow(false);
 	m_showText->CenterWindow();
@@ -108,9 +108,5 @@ int CVideoPlayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 */
 void CVideoPlayWnd::setShowText(CString strText)
 {
-	//m_showText->ShowWindow(SW_HIDE);
 	m_showText->SetWindowTextA(strText);
-	//m_showText->Invalidate(true);
-	//m_showText->UpdateData();
-	//m_showText->ShowWindow(SW_NORMAL);
 }

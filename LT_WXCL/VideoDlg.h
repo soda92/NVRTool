@@ -18,10 +18,10 @@ public:
 	CRect m_videoPlayRects[32];//用来存放16个播放视频窗口的位置
 	CRect m_SingleWndRec;
 	void InitVideoPlayRect();//初始化16个位置元素
-	CVideoPlayWnd *m_videoPlayWnd[32];
+	CVideoPlayWnd* m_videoPlayWnd[32];
 	char CurrentBox;
 	char CurrentPage;
-	int ChangeWndRects(bool isSingle,int pos);//改变窗口布局
+	int ChangeWndRects(bool isSingle, int pos);//改变窗口布局
 // 对话框数据
 	enum { IDD = IDD_DIALOG_VIDEO };
 

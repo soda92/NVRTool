@@ -26,7 +26,7 @@ CLT_LCWB_1AApp::CLT_LCWB_1AApp()
 	// 支持重新启动管理器
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 	pMainDlg = NULL;
-	memset(Local,0,sizeof(Local));
+	memset(Local, 0, sizeof(Local));
 	Remote = 0;
 	BSoc = -1;
 	// TODO: 在此处添加构造代码，
@@ -68,7 +68,7 @@ BOOL CLT_LCWB_1AApp::InitInstance()
 
 	// 创建 shell 管理器，以防对话框包含
 	// 任何 shell 树视图控件或 shell 列表视图控件。
-	CShellManager *pShellManager = new CShellManager;
+	CShellManager* pShellManager = new CShellManager;
 
 	// 标准初始化
 	// 如果未使用这些功能并希望减小

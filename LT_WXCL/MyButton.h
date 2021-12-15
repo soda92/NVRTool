@@ -12,7 +12,7 @@
 
 class CMyButton : public CButton
 {
-// Construction
+	// Construction
 private:
 	int         m_Style;    //按钮形状（0-正常，1-当前，2-按下，3-锁定）
 	BOOL        b_InRect;           //鼠标进入标志
@@ -21,31 +21,31 @@ private:
 	COLORREF    m_BackColor;        //背景色
 	COLORREF    m_LockForeColor;    //锁定按钮的文字颜色
 	CRect       m_ButRect;          //按钮尺寸
-	CFont*      p_Font;             //字体
-	
-	void  DrawButton(CDC *pDC);     //画正常的按钮
+	CFont* p_Font;             //字体
+
+	void  DrawButton(CDC* pDC);     //画正常的按钮
 
 public:
 	void SetText(CString str);
 	void SetForeColor(COLORREF color);      //设置文本颜色
 	void SetBkColor(COLORREF color);        //设置背景颜色
-	void SetTextFont(int FontHight,LPCTSTR FontName);   //设置字体
+	void SetTextFont(int FontHight, LPCTSTR FontName);   //设置字体
 
 public:
 	CMyButton();
 
-// Attributes
+	// Attributes
 public:
 
-// Operations
+	// Operations
 public:
 
-// Overrides
-	// ClassWizard generated virtual function overrides
-	//{{AFX_VIRTUAL(CMyButton)
-	public:
+	// Overrides
+		// ClassWizard generated virtual function overrides
+		//{{AFX_VIRTUAL(CMyButton)
+public:
 	virtual void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	protected:
+protected:
 	virtual void PreSubclassWindow();
 	//}}AFX_VIRTUAL
 

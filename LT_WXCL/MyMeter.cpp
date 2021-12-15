@@ -8,7 +8,7 @@ MyMeter::~MyMeter()
 
 MyMeter::MyMeter(int ox_, int oy_, int R_, int max_, int cut_, CString unit_, CString name_, CString name1_, int num1_)
 //²ÎÊı£ºCDCÖ¸Õë,Ô²ĞÄx×ø±ê,Ô²ĞÄy×ø±ê,°ë¾¶R,×î´óÁ¿³Ìmax,Á¿³Ì·İÊıcut,²âÁ¿µ¥Î»unit,²âÁ¿ÏîÄ¿Ãûname£¬ÏîÄ¿1Ãû£¬ÏîÄ¿1Öµ
-{	
+{
 	//Ä¬ÈÏÖµ400, 240, 200, 2500, 5, _T("kPa"),_T("Ñ¹Á¦Öµ"),_T("±íºÅ"),1024
 	ox = ox_;						//±íÅÌÔ²ĞÄx×ø±ê
 	oy = oy_;						//±íÅÌÔ²ĞÄy×ø±ê
@@ -22,7 +22,7 @@ MyMeter::MyMeter(int ox_, int oy_, int R_, int max_, int cut_, CString unit_, CS
 
 	num_color = RGB(0, 0, 0);		//±í¿Ì¶ÈÊıÑÕÉ«
 	word_color = RGB(0, 0, 0);		//×ÖÑÕÉ«
-	word_size = 0.9*R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
+	word_size = 0.9 * R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
 	hand_type = 1;					//Ö¸ÕëÀàĞÍ 1Ö±Ïß£¬2Èı½ÇĞÎ
 	rect_width = 0.6 * R;			//ĞÅÏ¢±í¿í
 	rect_height = 0.25 * R;			//ĞÅÏ¢±í¸ß
@@ -48,10 +48,10 @@ MyMeter::MyMeter(int ox_, int oy_, int R_, int max_, int cut_, CString unit_, CS
 
 	pen[5].size = 10;				//5	Ö¸Õë¸ù
 	pen[5].color = RGB(255, 0, 0);
-	
+
 }
 
-MyMeter::MyMeter(int ox_,  int oy_,int R_, int mode_)//²ÎÊı£ºCDCÖ¸Õë£¬Ô²ĞÄ×ø±êx£¬Ô²ĞÄ×ø±êy£¬±íÑùÊ½mode£¨0Ä¬ÈÏ£¬1ÑùÊ½Ò»£¬2ÑùÊ½¶ş£¬3ÑùÊ½Èı£©
+MyMeter::MyMeter(int ox_, int oy_, int R_, int mode_)//²ÎÊı£ºCDCÖ¸Õë£¬Ô²ĞÄ×ø±êx£¬Ô²ĞÄ×ø±êy£¬±íÑùÊ½mode£¨0Ä¬ÈÏ£¬1ÑùÊ½Ò»£¬2ÑùÊ½¶ş£¬3ÑùÊ½Èı£©
 {
 	//Ä¬ÈÏÖµ400, 240, 200, 2500, 5, _T("kPa"),_T("Ñ¹Á¦Öµ"),_T("±íºÅ"),1024
 	ox = ox_;						//±íÅÌÔ²ĞÄx×ø±ê
@@ -66,7 +66,7 @@ MyMeter::MyMeter(int ox_,  int oy_,int R_, int mode_)//²ÎÊı£ºCDCÖ¸Õë£¬Ô²ĞÄ×ø±êx£
 
 	num_color = RGB(0, 0, 0);		//±í¿Ì¶ÈÊıÑÕÉ«
 	word_color = RGB(0, 0, 0);		//×ÖÑÕÉ«
-	word_size = 0.9*R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
+	word_size = 0.9 * R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
 	hand_type = 1;					//Ö¸ÕëÀàĞÍ 1Ö±Ïß£¬2Èı½ÇĞÎ
 	rect_width = 0.6 * R;			//ĞÅÏ¢±í¿í
 	rect_height = 0.25 * R;			//ĞÅÏ¢±í¸ß
@@ -111,7 +111,7 @@ MyMeter::MyMeter()//Ä¬ÈÏÖµ¹¹Ôìº¯Êı  Ê¹ÓÃÄ¬ÈÏÑùÊ½
 
 	num_color = RGB(0, 0, 0);		//±í¿Ì¶ÈÊıÑÕÉ«
 	word_color = RGB(0, 0, 0);		//×ÖÑÕÉ«
-	word_size = 0.9*R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
+	word_size = 0.9 * R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
 	hand_type = 1;					//Ö¸ÕëÀàĞÍ 1Ö±Ïß£¬2Èı½ÇĞÎ
 	rect_width = 0.6 * R;			//ĞÅÏ¢±í¿í
 	rect_height = 0.25 * R;			//ĞÅÏ¢±í¸ß
@@ -121,7 +121,7 @@ MyMeter::MyMeter()//Ä¬ÈÏÖµ¹¹Ôìº¯Êı  Ê¹ÓÃÄ¬ÈÏÑùÊ½
 
 	//»­±Ê
 	pen[0].size = 3;				//0 ¾ØĞÎ
-	pen[0].color= RGB(0, 0, 0);				
+	pen[0].color = RGB(0, 0, 0);
 
 	pen[1].size = 2;				//1 Ô²»¡
 	pen[1].color = RGB(0, 0, 0);
@@ -132,21 +132,21 @@ MyMeter::MyMeter()//Ä¬ÈÏÖµ¹¹Ôìº¯Êı  Ê¹ÓÃÄ¬ÈÏÑùÊ½
 	pen[3].size = 2;				//3 ´ó¿Ì¶È
 	pen[3].color = RGB(0, 0, 0);
 
-	pen[4].size =  R / 100;			//4 Ö¸Õë
+	pen[4].size = R / 100;			//4 Ö¸Õë
 	pen[4].color = RGB(255, 0, 0);
 
 	pen[5].size = 10;				//5	Ö¸Õë¸ù
 	pen[5].color = RGB(255, 0, 0);
 }
 
-void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
+void MyMeter::DrawMeter(CDC* pDC_, double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 {
 	// TODO: ÔÚ´Ë´¦Ìí¼ÓÊµÏÖ´úÂë.
 	pDC = pDC_;
-	CDC *mpDC = pDC;
+	CDC* mpDC = pDC;
 
 	//»­±ÊÊı×é
-	CPen *m_pen[6];
+	CPen* m_pen[6];
 	/*= {
 			{PS_SOLID, pen[0].size, pen[0].color},		//0 ¾ØĞÎ»­±Ê
 			{PS_SOLID, pen[1].size, pen[1].color},		//1 Ô²»¡»­±Ê
@@ -158,7 +158,7 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 
 	for (int i = 0; i < 6; i++)
 	{
-		m_pen[i] =new CPen(PS_SOLID, pen[i].size, pen[i].color);
+		m_pen[i] = new CPen(PS_SOLID, pen[i].size, pen[i].color);
 	}
 
 	//±í²ÎÊı
@@ -170,24 +170,24 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 	double MAX = max;					//Á¿³Ì
 	double cut_num = cut;				//±íÅÌ·Ö¸î·İÊı 
 	double all_num = cut_num * 10;		//×Ü¿Ì¶ÈÊı
-	double lenth = 0.08*r;				//¿Ì¶È³¤¶È
+	double lenth = 0.08 * r;				//¿Ì¶È³¤¶È
 	double MIN = MAX / 10 / cut_num;	//×î¿Ì¶ÈÖµ
 
 	//¾¯½äÇøÓò
 	int red = red_area / MAX * all_num;
-	CPen redpen1 ( PS_SOLID, pen[1].size, RGB(255,0,0) );
-	CPen redpen2 ( PS_SOLID, pen[2].size, RGB(255,0,0) );
-	CPen redpen3 ( PS_SOLID, pen[3].size, RGB(255,0,0) );
+	CPen redpen1(PS_SOLID, pen[1].size, RGB(255, 0, 0));
+	CPen redpen2(PS_SOLID, pen[2].size, RGB(255, 0, 0));
+	CPen redpen3(PS_SOLID, pen[3].size, RGB(255, 0, 0));
 
 	//»æÖÆ Ô²»¡
 	mpDC->SelectObject(m_pen[1]);																//Ñ¡Ôñ»­±Ê
-	mpDC->MoveTo(xStart + (r-pen[1].size/3) / 2, yStart + (r - pen[1].size / 3) * 0.86602540);	//ÆğÊ¼µã
+	mpDC->MoveTo(xStart + (r - pen[1].size / 3) / 2, yStart + (r - pen[1].size / 3) * 0.86602540);	//ÆğÊ¼µã
 	mpDC->AngleArc(xStart, yStart, (r - pen[1].size / 3), -60, 300);							//»­»¡
 	if (red_area)
 	{
 		mpDC->SelectObject(&redpen1);																	//Ñ¡Ôñ»­±Ê
 		mpDC->MoveTo(xStart + (r - pen[1].size / 3) / 2, yStart + (r - pen[1].size / 3) * 0.86602540);	//ÆğÊ¼µã
-		mpDC->AngleArc(xStart, yStart, (r - pen[1].size / 3), -60, 300* (1-red_area / MAX) );			//»­ºì»¡
+		mpDC->AngleArc(xStart, yStart, (r - pen[1].size / 3), -60, 300 * (1 - red_area / MAX));			//»­ºì»¡
 	}
 
 	//»­¿Ì¶È  ºÍ ÊıÖµ
@@ -195,8 +195,8 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 	CFont font;
 	CSize size;														//×Ö·û´®´óĞ¡												
 	CString value_num;												//¿Ì¶ÈÖµ×Ö·û´®
-	VERIFY(font.CreatePointFont(1.4*r, _T("ºÚÌå"), mpDC));				//ÉèÖÃ×ÖÌå
-	CFont *oldfont = mpDC->SelectObject(&font);						//Ñ¡Ôñ¸Ã×ÖÌå½øÈëPDC
+	VERIFY(font.CreatePointFont(1.4 * r, _T("ºÚÌå"), mpDC));				//ÉèÖÃ×ÖÌå
+	CFont* oldfont = mpDC->SelectObject(&font);						//Ñ¡Ôñ¸Ã×ÖÌå½øÈëPDC
 	mpDC->SetBkMode(TRANSPARENT);									//ÉèÖÃ×ÖÌå±³¾°Í¸Ã÷
 	mpDC->SetTextColor(num_color);									//ÉèÖÃ×ÖÌåÑÕÉ«
 
@@ -213,7 +213,7 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 				mpDC->SelectObject(m_pen[3]);						//Ñ¡Ôñ»­±Ê
 			}
 			mpDC->MoveTo(xStart + r * sin(Radians), yStart + r * cos(Radians));
-			mpDC->LineTo(xStart + (r - 2 * lenth)*sin(Radians), yStart + (r - 2 * lenth)*cos(Radians));
+			mpDC->LineTo(xStart + (r - 2 * lenth) * sin(Radians), yStart + (r - 2 * lenth) * cos(Radians));
 		}
 		else {
 			if (red_area != 0 && i >= red)
@@ -225,18 +225,18 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 				mpDC->SelectObject(m_pen[2]);								//Ñ¡Ôñ»­±Ê
 			}
 			mpDC->MoveTo(xStart + r * sin(Radians), yStart + r * cos(Radians));
-			mpDC->LineTo(xStart + (r - lenth)*sin(Radians), yStart + (r - lenth)*cos(Radians));
+			mpDC->LineTo(xStart + (r - lenth) * sin(Radians), yStart + (r - lenth) * cos(Radians));
 		}
 		if (i % 10 == 0)													/*Ã¿¸ô10¸ö¿Ì¶ÈÏÔÊ¾Ò»¸ö¿Ì¶È*/
 		{
 			if (red_area != 0 && i >= red)
 			{
-				mpDC->SetTextColor(RGB(255,0,0));							//ÉèÖÃ×ÖÌåÑÕÉ«Îªºì
+				mpDC->SetTextColor(RGB(255, 0, 0));							//ÉèÖÃ×ÖÌåÑÕÉ«Îªºì
 			}
-			value_num.Format(_T("%d"), i*(int)MIN);
+			value_num.Format(_T("%d"), i * (int)MIN);
 			size = mpDC->GetTextExtent(value_num, value_num.GetLength());	//¼ÆËã×Ö·û´®³¤ºÍ¸ß
-			x = xStart - (size.cx / 2) + (int)((double)(r * 70 / 100)*sin(Radians));
-			y = yStart - (size.cy / 2) + (int)((double)(r * 75 / 100)*cos(Radians));
+			x = xStart - (size.cx / 2) + (int)((double)(r * 70 / 100) * sin(Radians));
+			y = yStart - (size.cy / 2) + (int)((double)(r * 75 / 100) * cos(Radians));
 			mpDC->TextOut(x, y, value_num);
 		}
 	}
@@ -251,31 +251,31 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 	double cos1 = cos(Radians);
 	int r2;
 	CRgn rgn2;
-	CBrush brush,*oldbrush=NULL;
+	CBrush brush, * oldbrush = NULL;
 	CPoint pt[3];
-	CRect *rect1=NULL;
-	CRect *rect2=NULL;
-	CRect *rect3=NULL;
-	CRect *rect4=NULL;
-	CRect *rect5 = NULL;
+	CRect* rect1 = NULL;
+	CRect* rect2 = NULL;
+	CRect* rect3 = NULL;
+	CRect* rect4 = NULL;
+	CRect* rect5 = NULL;
 
 	switch (hand_type)
 	{
 	case 1:	//Ö±ÏßĞÍÖ¸Õë
-	{	mpDC->MoveTo(xStart + (r *0.8) * sin1, yStart + (r*0.8) * cos1);		//Ö¸ÕëÆğÊ¼µã
-		mpDC->LineTo(xStart, yStart);											//»­Ö¸Õë
-		//Ö¸Õë¸ù
-		r2 = 0.02*r;															//Ğ¡Ô²³ß´ç
-		mpDC->SelectObject(m_pen[5]);											//Ñ¡Ôñ»­±Ê
-		rect1 = new CRect(xStart + r2, yStart + r2, xStart - r2, yStart - r2);	//ÉèÖÃÍÖÔ²µÄÏŞ¶¨¾ØĞÎ£¨×óÉÏ½Ç×ø±ê£¬ÓÒÏÂ½Ç×ø±ê£©
-		mpDC->Ellipse(*rect1);													//»­ÍÖÔ²
-		break;
+	{	mpDC->MoveTo(xStart + (r * 0.8) * sin1, yStart + (r * 0.8) * cos1);		//Ö¸ÕëÆğÊ¼µã
+	mpDC->LineTo(xStart, yStart);											//»­Ö¸Õë
+	//Ö¸Õë¸ù
+	r2 = 0.02 * r;															//Ğ¡Ô²³ß´ç
+	mpDC->SelectObject(m_pen[5]);											//Ñ¡Ôñ»­±Ê
+	rect1 = new CRect(xStart + r2, yStart + r2, xStart - r2, yStart - r2);	//ÉèÖÃÍÖÔ²µÄÏŞ¶¨¾ØĞÎ£¨×óÉÏ½Ç×ø±ê£¬ÓÒÏÂ½Ç×ø±ê£©
+	mpDC->Ellipse(*rect1);													//»­ÍÖÔ²
+	break;
 	}
 	case 2:	//Èı½ÇĞÎÖ¸Õë
 	{
-		r2 = 0.08*r;//Ğ¡Ô²³ß´ç
-		pt[0].x = (int)(xStart + ((r - pen[4].size) *0.8) * sin1);
-		pt[0].y = (int)(yStart + ((r - pen[4].size)*0.8) * cos1);
+		r2 = 0.08 * r;//Ğ¡Ô²³ß´ç
+		pt[0].x = (int)(xStart + ((r - pen[4].size) * 0.8) * sin1);
+		pt[0].y = (int)(yStart + ((r - pen[4].size) * 0.8) * cos1);
 		pt[1].x = (int)(xStart + cos1 * r2);
 		pt[1].y = (int)(yStart - sin1 * r2);
 		pt[2].x = (int)(xStart - cos1 * r2);
@@ -285,10 +285,10 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 		rgn2.CreatePolygonRgn(pt, 3, ALTERNATE/*WINDING*/);						//´´½¨ÇøÓò         
 		brush.CreateSolidBrush(pen[4].color);									//´´½¨»­Ë¢        
 		mpDC->FillRgn(&rgn2, &brush);											//Ìî³äÇøÓò
-		
+
 		//Ö¸Õë¸ù
 		oldbrush = mpDC->SelectObject(&brush);									//Ñ¡ÔñĞÂ»­Ë¢£¬²¢´æ´¢¾É»­Ë¢
-		rect1=new CRect(xStart + r2, yStart + r2, xStart - r2, yStart - r2);	//ÉèÖÃÍÖÔ²µÄÏŞ¶¨¾ØĞÎ£¨×óÉÏ½Ç×ø±ê£¬ÓÒÏÂ½Ç×ø±ê£©
+		rect1 = new CRect(xStart + r2, yStart + r2, xStart - r2, yStart - r2);	//ÉèÖÃÍÖÔ²µÄÏŞ¶¨¾ØĞÎ£¨×óÉÏ½Ç×ø±ê£¬ÓÒÏÂ½Ç×ø±ê£©
 		mpDC->Ellipse(rect1);													//»­ÍÖÔ²
 		mpDC->SelectObject(oldbrush);											//·µ»Ø¾É»­Ë¢
 		break;
@@ -296,16 +296,16 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 	default:
 		break;
 	}
-	
+
 
 
 	//±íÅÌÖĞÑë ²âÁ¿µ¥Î»ÏÔÊ¾
 	size = mpDC->GetTextExtent(unit, unit.GetLength());							//¼ÆËã×Ö·û´®³¤ºÍ¸ß
-	if(mode!=4)mpDC->TextOut(xStart - size.cx*0.5, yStart + r * 0.3, unit);				//ÏÔÊ¾ µ¥Î»
+	if (mode != 4)mpDC->TextOut(xStart - size.cx * 0.5, yStart + r * 0.3, unit);				//ÏÔÊ¾ µ¥Î»
 	CString string1, string2;
 	CFont font1;
 	CFont font2;
-	int rectwith ;				//¿í
+	int rectwith;				//¿í
 	int recthigh;				//¸ß
 	int rect_y;					//ÉÏ±ß½ç¾àÔ²ĞÄ¸ß¶È²î	
 	int rectx;
@@ -320,7 +320,7 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 		//¾ØĞÎ²ÎÊı
 		rectwith = rect_width;				//¿í
 		recthigh = rect_height;				//¸ß
-		rect_y = 1.2*(int)r;				//ÉÏ±ß½ç¾àÔ²ĞÄ¸ß¶È²î	
+		rect_y = 1.2 * (int)r;				//ÉÏ±ß½ç¾àÔ²ĞÄ¸ß¶È²î	
 
 		//»æÖÆ¾ØĞÎ
 		mpDC->SelectObject(m_pen[0]);																//Ñ¡Ôñ»­±Ê
@@ -337,8 +337,8 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 		string2.Format(_T("%d"), num1);
 
 		mpDC->TextOut(xStart - rect_width + 10, yStart + r, name1);					//ÏÔÊ¾ ×ó±ßÏîÄ¿Ãû
-		mpDC->TextOut(xStart - rect_width + 10, yStart + 1.25*r, string2);			//ÏÔÊ¾ ×ó±ßÏîÄ¿Öµ
-		mpDC->TextOut(xStart + 10, yStart + 1.25*r, string1);						//ÏÔÊ¾ µ±Ç°Öµ  value_num×Ö·û´®£¨×óÉÏ½Çx×ø±ê£¬×óÉÏ½Çy×ø±ê£¬×Ö·û´®£©
+		mpDC->TextOut(xStart - rect_width + 10, yStart + 1.25 * r, string2);			//ÏÔÊ¾ ×ó±ßÏîÄ¿Öµ
+		mpDC->TextOut(xStart + 10, yStart + 1.25 * r, string1);						//ÏÔÊ¾ µ±Ç°Öµ  value_num×Ö·û´®£¨×óÉÏ½Çx×ø±ê£¬×óÉÏ½Çy×ø±ê£¬×Ö·û´®£©
 		mpDC->TextOut(xStart + 10, yStart + r, name);								//ÏÔÊ¾ ²âÁ¿ÏîÄ¿Ãû
 
 		mpDC->SelectObject(oldfont);												//»¹Ô­×ÖÌå
@@ -347,20 +347,20 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 	}
 	case 2:
 	{
-		rectx = 1.1*r; 
+		rectx = 1.1 * r;
 		mpDC->SelectObject(m_pen[0]);														//Ñ¡Ôñ»­±Ê
-		mpDC->MoveTo(xStart - rectx, yStart + 1.3*r);										//ÉÏ±ß¿ò
-		mpDC->LineTo(xStart - rectx, yStart - 1.1*r-1);
-		mpDC->LineTo(xStart + rectx-1, yStart - 1.1*r);
-		mpDC->LineTo(xStart + rectx-1, yStart + 1.3*r);
-		rect2 = new CRect(xStart - rectx, yStart+r, xStart-0.2*r, yStart + 1.3*r);			//1×ó
-		rect3 = new CRect(xStart - 0.2*r, yStart+r, xStart +1.1*r, yStart + 1.3*r);			//1ÓÒ
-		rect4 = new CRect(xStart - rectx, yStart + 1.3*r-1, xStart - 0.2*r, yStart + 1.6*r);//2×ó
-		rect5 = new CRect(xStart - 0.2*r, yStart + 1.3*r-1, xStart + 1.1*r, yStart + 1.6*r);//2ÓÒ
+		mpDC->MoveTo(xStart - rectx, yStart + 1.3 * r);										//ÉÏ±ß¿ò
+		mpDC->LineTo(xStart - rectx, yStart - 1.1 * r - 1);
+		mpDC->LineTo(xStart + rectx - 1, yStart - 1.1 * r);
+		mpDC->LineTo(xStart + rectx - 1, yStart + 1.3 * r);
+		rect2 = new CRect(xStart - rectx, yStart + r, xStart - 0.2 * r, yStart + 1.3 * r);			//1×ó
+		rect3 = new CRect(xStart - 0.2 * r, yStart + r, xStart + 1.1 * r, yStart + 1.3 * r);			//1ÓÒ
+		rect4 = new CRect(xStart - rectx, yStart + 1.3 * r - 1, xStart - 0.2 * r, yStart + 1.6 * r);//2×ó
+		rect5 = new CRect(xStart - 0.2 * r, yStart + 1.3 * r - 1, xStart + 1.1 * r, yStart + 1.6 * r);//2ÓÒ
 
 		mpDC->Rectangle(rect2);																//»æÖÆ
 		mpDC->Rectangle(rect3);
-		mpDC->Rectangle(rect4);													
+		mpDC->Rectangle(rect4);
 		mpDC->Rectangle(rect5);
 
 		//ĞÅÏ¢ÏÔÊ¾
@@ -370,10 +370,10 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 		string1.Format(_T("%d"), (int)METER_VALUE);									//ÊıÖµ×ª»¯³É×Ö·û´®
 		string2.Format(_T("%d"), num1);
 
-		mpDC->TextOut(xStart - 0.9*rectx, yStart + 1.1*r,name1);					//ÏÔÊ¾ 1×ó ÏîÄ¿Ãû
-		mpDC->TextOut(xStart , yStart + 1.1*r, string2);							//ÏÔÊ¾ 1ÓÒ ÏîÄ¿Öµ
-		mpDC->TextOut(xStart - 0.9*rectx, yStart + 1.4*r,  name);					//ÏÔÊ¾ 2×ó ²âÁ¿ÏîÄ¿Ãû
-		mpDC->TextOut(xStart , yStart + 1.4*r, string1);							//ÏÔÊ¾ 2ÓÒ µ±Ç°Öµ  value_num×Ö·û´®£¨×óÉÏ½Çx×ø±ê£¬×óÉÏ½Çy×ø±ê£¬×Ö·û´®£©
+		mpDC->TextOut(xStart - 0.9 * rectx, yStart + 1.1 * r, name1);					//ÏÔÊ¾ 1×ó ÏîÄ¿Ãû
+		mpDC->TextOut(xStart, yStart + 1.1 * r, string2);							//ÏÔÊ¾ 1ÓÒ ÏîÄ¿Öµ
+		mpDC->TextOut(xStart - 0.9 * rectx, yStart + 1.4 * r, name);					//ÏÔÊ¾ 2×ó ²âÁ¿ÏîÄ¿Ãû
+		mpDC->TextOut(xStart, yStart + 1.4 * r, string1);							//ÏÔÊ¾ 2ÓÒ µ±Ç°Öµ  value_num×Ö·û´®£¨×óÉÏ½Çx×ø±ê£¬×óÉÏ½Çy×ø±ê£¬×Ö·û´®£©
 
 		mpDC->SelectObject(oldfont);												//»¹Ô­×ÖÌå
 
@@ -388,15 +388,15 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 		string1.Format(_T("%d"), (int)METER_VALUE);									//ÊıÖµ×ª»¯³É×Ö·û´®
 
 		size = mpDC->GetTextExtent(unit, unit.GetLength());							//¼ÆËã×Ö·û´®³¤ºÍ¸ß
-		mpDC->TextOut(xStart - size.cx*0.5, yStart + r * 0.4, unit);				//ÏÔÊ¾ µ¥Î»
-		
+		mpDC->TextOut(xStart - size.cx * 0.5, yStart + r * 0.4, unit);				//ÏÔÊ¾ µ¥Î»
+
 		mpDC->SetTextColor(RGB(0, 0, 255));											//ÉèÖÃ²âÁ¿ÖµÑÕÉ«
 		size = mpDC->GetTextExtent(string1, string1.GetLength());					//¼ÆËã×Ö·û´®³¤ºÍ¸ß
-		mpDC->TextOut(xStart - size.cx*0.5, yStart + r * 0.2, string1);				//ÏÔÊ¾ µ±Ç°Öµ  value_num×Ö·û´®£¨×óÉÏ½Çx×ø±ê£¬×óÉÏ½Çy×ø±ê£¬×Ö·û´®£©
+		mpDC->TextOut(xStart - size.cx * 0.5, yStart + r * 0.2, string1);				//ÏÔÊ¾ µ±Ç°Öµ  value_num×Ö·û´®£¨×óÉÏ½Çx×ø±ê£¬×óÉÏ½Çy×ø±ê£¬×Ö·û´®£©
 		mpDC->SetTextColor(word_color);
-		
+
 		size = mpDC->GetTextExtent(name, name.GetLength());							//¼ÆËã×Ö·û´®³¤ºÍ¸ß
-		mpDC->TextOut(xStart - size.cx*0.5, yStart + r*0.8, name);					//ÏÔÊ¾ ²âÁ¿ÏîÄ¿Ãû
+		mpDC->TextOut(xStart - size.cx * 0.5, yStart + r * 0.8, name);					//ÏÔÊ¾ ²âÁ¿ÏîÄ¿Ãû
 
 
 		mpDC->SelectObject(oldfont);												//»¹Ô­×ÖÌå
@@ -430,7 +430,7 @@ void MyMeter::DrawMeter(CDC *pDC_,double METER_VALUE)	//²ÎÊı£º²âÁ¿Öµ
 	return;
 }
 
-void MyMeter::DrawMeter(CDC *pDC_)
+void MyMeter::DrawMeter(CDC* pDC_)
 {
 	DrawMeter(pDC_, 0);
 }
@@ -446,7 +446,7 @@ void MyMeter::set_R(int R)
 	this->R = R;
 }
 
-void MyMeter::set_range(int max, int cut,CString unit)
+void MyMeter::set_range(int max, int cut, CString unit)
 {
 	this->max = max;
 	this->cut = cut;
@@ -513,10 +513,10 @@ void MyMeter::use_mode(int num)
 		num1 = 1001;					//×ó±ßÏîÄ¿ ÊıÖµ
 		num_color = RGB(0, 0, 0);		//±í¿Ì¶ÈÊıÑÕÉ«
 		word_color = RGB(0, 0, 0);		//×ÖÑÕÉ«
-		word_size = 1.1*R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
+		word_size = 1.1 * R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
 		hand_type = 1;					//Ö¸ÕëÀàĞÍ 1Ö±Ïß£¬2Èı½ÇĞÎ
 		rect_width = R;					//ĞÅÏ¢±í¿í
-		rect_height = 0.3*R;			//ĞÅÏ¢±í¸ß
+		rect_height = 0.3 * R;			//ĞÅÏ¢±í¸ß
 		METER_VALUE = 0;				//²âÁ¿Öµ
 
 		//»­±Ê
@@ -553,7 +553,7 @@ void MyMeter::use_mode(int num)
 		num1 = 1002;					//×ó±ßÏîÄ¿ ÊıÖµ
 		num_color = RGB(0, 0, 0);		//±í¿Ì¶ÈÊıÑÕÉ«
 		word_color = RGB(0, 0, 0);		//×ÖÑÕÉ«
-		word_size = 1.1*R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
+		word_size = 1.1 * R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
 		hand_type = 2;					//Ö¸ÕëÀàĞÍ 1Ö±Ïß£¬2Èı½ÇĞÎ
 		METER_VALUE = 0;				//²âÁ¿Öµ
 
@@ -561,7 +561,7 @@ void MyMeter::use_mode(int num)
 		pen[0].size = 2;				//0 ¾ØĞÎ
 		pen[0].color = RGB(0, 0, 0);
 
-		pen[1].size = R/5;				//1 Ô²»¡
+		pen[1].size = R / 5;				//1 Ô²»¡
 		pen[1].color = RGB(45, 171, 224);
 
 		pen[2].size = 1;				//2 Ğ¡¿Ì¶È
@@ -597,10 +597,10 @@ void MyMeter::use_mode(int num)
 		num1 = 1003;					//×ó±ßÏîÄ¿ ÊıÖµ
 		num_color = RGB(0, 0, 0);		//±í¿Ì¶ÈÊıÑÕÉ«
 		word_color = RGB(0, 0, 0);		//×ÖÑÕÉ«
-		word_size = 1.1*R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
+		word_size = 1.1 * R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
 		hand_type = 1;					//Ö¸ÕëÀàĞÍ 1Ö±Ïß£¬2Èı½ÇĞÎ
 		rect_width = R;					//ĞÅÏ¢±í¿í
-		rect_height =0.3*R;				//ĞÅÏ¢±í¸ß
+		rect_height = 0.3 * R;				//ĞÅÏ¢±í¸ß
 		METER_VALUE = 0;				//²âÁ¿Öµ
 		red_area = 200;					//¾¯½äÖµ
 
@@ -636,10 +636,10 @@ void MyMeter::use_mode(int num)
 		name = _T("Ñ¹Á¦Öµ");					//²âÁ¿ÏîÄ¿Ãû);	//²ÎÊı£ºCDCÖ¸Õë,Ô²ĞÄx×ø±ê,Ô²ĞÄy×ø±ê,°ë¾¶R,×î´óÁ¿³Ìmax,Á¿³Ì·İÊıcut,µ±Ç°ÖµMETER_VALUE,µ¥Î»unit,ÏîÄ¿Ãûname
 		num_color = RGB(0, 0, 0);		//±í¿Ì¶ÈÊıÑÕÉ«
 		word_color = RGB(0, 0, 0);		//×ÖÑÕÉ«
-		word_size = 1.1*R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
+		word_size = 1.1 * R;				//×ÖÌå´óĞ¡	×¢£ºÒÔÊ®·ÖÖ®Ò»µã Îªµ¥Î» Àı£º120Öµ µÈÓÚ12ÏñËØ¸ß
 		hand_type = 1;					//Ö¸ÕëÀàĞÍ 1Ö±Ïß£¬2Èı½ÇĞÎ
 		rect_width = R;					//ĞÅÏ¢±í¿í
-		rect_height = 0.3*R;			//ĞÅÏ¢±í¸ß
+		rect_height = 0.3 * R;			//ĞÅÏ¢±í¸ß
 		METER_VALUE = 0;				//²âÁ¿Öµ
 
 		//»­±Ê
@@ -662,7 +662,7 @@ void MyMeter::use_mode(int num)
 		pen[5].color = RGB(255, 0, 0);
 
 		//DrawString(150, 50, _T("ÑùÊ½ËÄ"), 180, RGB(0,0,255));			//²âÊÔÓÃ
-		
+
 		break;
 	}
 	default:
@@ -670,12 +670,12 @@ void MyMeter::use_mode(int num)
 	}
 }
 
-void MyMeter::DrawString(int x, int y, CString str1,int size,COLORREF color)
+void MyMeter::DrawString(int x, int y, CString str1, int size, COLORREF color)
 {
 	CFont font1;
 	pDC->SetTextColor(color);											//ÉèÖÃ×ÖÌåÑÕÉ«
 	font1.CreatePointFont(size, _T("ºÚÌå"), pDC);						//ÉèÖÃ×ÖÌå
-	CFont *oldfont1 = pDC->SelectObject(&font1);						//Ñ¡Ôñ¸Ã×ÖÌå½øÈëPDC
+	CFont* oldfont1 = pDC->SelectObject(&font1);						//Ñ¡Ôñ¸Ã×ÖÌå½øÈëPDC
 	pDC->TextOut(x, y, str1);
 	pDC->SelectObject(oldfont1);										//»¹Ô­×ÖÌå
 }
@@ -684,6 +684,6 @@ void MyMeter::DrawRect(int x, int y, int width, int height)
 {
 	//»æÖÆ¾ØĞÎ
 	pDC->SelectObject(&pen[0]);											//Ñ¡Ôñ»­±Ê
-	CRect rect1(x, y, x+width, y+height);								//×ó¾ØĞÎ (×óÉÏ½Ç×ø±ê£¬ÓÒÏÂ½Ç×ø±ê)
+	CRect rect1(x, y, x + width, y + height);								//×ó¾ØĞÎ (×óÉÏ½Ç×ø±ê£¬ÓÒÏÂ½Ç×ø±ê)
 	pDC->Rectangle(&rect1);												//»æÖÆ
 }

@@ -41,7 +41,7 @@ public:
 
 	COLORREF m_color;
 
-	LRESULT OnLayout( WPARAM wParam, LPARAM lParam );
+	LRESULT OnLayout(WPARAM wParam, LPARAM lParam);
 
 };
 

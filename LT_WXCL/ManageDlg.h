@@ -16,7 +16,7 @@ public:
 	int InitList();
 	int SetList();
 
-	int m_RecordCallBack(LONG nPort,char* error);
+	int m_RecordCallBack(LONG nPort, char* error);
 
 	int SetIPCState();
 	int SetHDDState();
@@ -25,7 +25,7 @@ public:
 	BOOL IsHDD(char* Path);
 
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_DIALOG_MANAGE };
 
 protected:

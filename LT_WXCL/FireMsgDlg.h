@@ -15,14 +15,14 @@ public:
 	virtual ~CFireMsgDlg();
 
 	int InitList();
-	int FireDec(unsigned char* buf,int len,char pos);//pos 0-本A 1-本B 2-他A 3-他B 
+	int FireDec(unsigned char* buf, int len, char pos);//pos 0-本A 1-本B 2-他A 3-他B 
 
 	int SendFireMsg();
 	int StopWarFun();
 
-	int FireDataAnalyse(unsigned char* buf,int len ,int Train,BOOL SendFlag = FALSE);
+	int FireDataAnalyse(unsigned char* buf, int len, int Train, BOOL SendFlag = FALSE);
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_DIALOG_FIRE };
 	int num;
 

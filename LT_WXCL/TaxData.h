@@ -1,16 +1,16 @@
 //TexData.h
 #pragma once
 
-typedef struct _TAXTIME{
+typedef struct _TAXTIME {
 	unsigned short Year;
 	unsigned char Month;
 	unsigned char Day;
 	unsigned char Hour;
 	unsigned char Minute;
 	unsigned char Second;
-}TAXTIME,*pTAXTIME;
+}TAXTIME, * pTAXTIME;
 
-typedef struct _TAXDATA{
+typedef struct _TAXDATA {
 	TAXTIME  TAXTime;		//时间
 	unsigned char FactRoute;	//实际交路号
 	unsigned short ValvePressure;	//阀缸压力
@@ -37,16 +37,16 @@ typedef struct _TAXDATA{
 	unsigned short PipePressure;//管压
 	unsigned char TAXDataBuf[72];//TAX数组
 
-}TAXDATA, *pTAXDATA;
+}TAXDATA, * pTAXDATA;
 
-int TaxCOMInit(char* COM,char Parity);
+int TaxCOMInit(char* COM, char Parity);
 UINT Thread_TaxData(LPVOID lParam);
 UINT Thread_UdpTax(LPVOID lParam);
 
 int TaxNetInit(char* ip);
 
 //int TaxRead(HANDLE Port,UCHAR* Buf,int BufLen);
-int AnalyseTax(UCHAR * szBuf,TAXDATA *TaxData);
+int AnalyseTax(UCHAR* szBuf, TAXDATA* TaxData);
 
-int PweCOMInit(char* COM,char Parity);
-	UINT Thread_PweData(LPVOID lParam);
+int PweCOMInit(char* COM, char Parity);
+UINT Thread_PweData(LPVOID lParam);

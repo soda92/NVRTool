@@ -17,12 +17,12 @@ public:
 	virtual ~CJcgkDlg();
 	CStatic lable[8][5];
 	void ProCtrlInit();
-	void SetProValue(char num,int value);
+	void SetProValue(char num, int value);
 
 	CButton button[13];
 	void SetButton();
 
-	void SetButtonWar(char num,BOOL WFlag);
+	void SetButtonWar(char num, BOOL WFlag);
 
 	void FlushAll();
 	float CH[11][2];
@@ -39,19 +39,19 @@ public:
 	HANDLE CPort;
 	int CJMKComInit(char* com);
 	int CJMK_SendMsg(char Flag);//1-状态 2-表
-	int CJMK_DecFun(unsigned int data,float VMax,float Max);
-	int CJMK_MsgDec(unsigned char* buf,int len ,int Train,char Flag);
+	int CJMK_DecFun(unsigned int data, float VMax, float Max);
+	int CJMK_MsgDec(unsigned char* buf, int len, int Train, char Flag);
 	char buttonFlagTemp[13];
 
 	void ShowZhuZT(bool flag);
 	//////////////////////////////////////////////////////////////////////////
 
-	MyMeter *m_Meter[4];
+	MyMeter* m_Meter[4];
 	int MeterInit();
 	unsigned int MeterValue[4];
 	int CJMKUdpInit();
 	SOCKET CJMKRecUdpSoc;
-	int CJMK_MeterSet(int No,unsigned int num);
+	int CJMK_MeterSet(int No, unsigned int num);
 
 	//////////////////////////////////////////////////////////////////////////
 // 对话框数据
@@ -62,7 +62,7 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
-	virtual BOOL OnInitDialog();	
+	virtual BOOL OnInitDialog();
 	CProgressCtrl m_pro1;
 	CProgressCtrl m_pro2;
 	CProgressCtrl m_pro3;
@@ -83,15 +83,15 @@ public:
 private:
 	int lastDataTime[8];
 
-	CFont newFont,newFont1;
+	CFont newFont, newFont1;
 
 	CMyButton m_button[5];
 
 public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	CStatic m_static_Train;
-// 	CButton m_button_BCA;
-// 	CButton m_button_BCB;
-// 	CButton m_button_TCA;
-// 	CButton m_button_TCB;
+	// 	CButton m_button_BCA;
+	// 	CButton m_button_BCB;
+	// 	CButton m_button_TCA;
+	// 	CButton m_button_TCB;
 };

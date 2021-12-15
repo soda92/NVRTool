@@ -19,7 +19,7 @@ public:
 	CRacingDlg(CWnd* pParent = NULL);   // 标准构造函数
 	virtual ~CRacingDlg();
 
-// 对话框数据
+	// 对话框数据
 	enum { IDD = IDD_DIALOG_RACING };
 
 protected:
@@ -37,8 +37,8 @@ public:
 
 	void set_Upath(string UP);
 
-	CStatic *m_static_text[24];
-	CStatic *m_static_value[24];   //0-5本车A， 6-11本车B， 12-17他车A， 18-23他车B
+	CStatic* m_static_text[24];
+	CStatic* m_static_value[24];   //0-5本车A， 6-11本车B， 12-17他车A， 18-23他车B
 
 
 	CFont newFont;
@@ -46,8 +46,8 @@ public:
 
 	int SendFireMsg();
 
-	bool isCopy(string path,string date,string days);
-	int Copy_File(string date,string days,string Upath);
+	bool isCopy(string path, string date, string days);
+	int Copy_File(string date, string days, string Upath);
 
 	int LdleMsgAnalysis(unsigned char* buf, int len, int Train, BOOL SendFlag = FALSE);
 

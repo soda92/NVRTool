@@ -79,10 +79,10 @@ UINT Thread_LdleDataAnalysis(LPVOID lParam)
 	unsigned char RecBuf[1024] = "";
 
 	struct sockaddr_in BAddr;
-	memset(&BAddr,0,sizeof(struct sockaddr_in));
-	BAddr.sin_family=AF_INET;
-	BAddr.sin_addr.s_addr=htonl(INADDR_BROADCAST);//套接字地址为广播地址
-	BAddr.sin_port=htons(8000);//套接字广播端口号为8000
+	memset(&BAddr, 0, sizeof(struct sockaddr_in));
+	BAddr.sin_family = AF_INET;
+	BAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);//套接字地址为广播地址
+	BAddr.sin_port = htons(8000);//套接字广播端口号为8000
 
 	while (1)
 	{
@@ -94,7 +94,7 @@ UINT Thread_LdleDataAnalysis(LPVOID lParam)
 		ReadFile(LdlePort, RecBuf, 1024, &dwRet, NULL);
 
 		//存储空转数据
-		
+
 
 		//加入报文帧头和 本车他车AB节标志
 		unsigned char SendBuf[1024] = "";
@@ -103,13 +103,13 @@ UINT Thread_LdleDataAnalysis(LPVOID lParam)
 		SendBuf[2] = theApp.Local[0];
 		SendBuf[3] = theApp.Local[1];
 
-		memcpy(&SendBuf[4],RecBuf,18);
+		memcpy(&SendBuf[4], RecBuf, 18);
 
 		if (dwRet > 0)
 		{
 			//发送重联机车 广播
 			//广播数据(接收在LT_WXCLDlg->OnInitDialog->Thread_FireRec线程)
-			sendto(theApp.BSoc,(char*)SendBuf,sizeof(SendBuf),0,(SOCKADDR *)&BAddr, sizeof(SOCKADDR));
+			sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
 		}
 
 		/*

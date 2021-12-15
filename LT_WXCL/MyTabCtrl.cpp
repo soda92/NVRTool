@@ -21,7 +21,7 @@ IMPLEMENT_DYNAMIC(CMyTabCtrl, CTabCtrl)
 
 CMyTabCtrl::CMyTabCtrl()
 {
-	
+
 }
 
 CMyTabCtrl::~CMyTabCtrl()
@@ -42,10 +42,10 @@ void CMyTabCtrl::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
 	char        szTabText[100];
 	RECT        rect;
 	UINT        bkColor;
-	CBrush      *cbr;
+	CBrush* cbr;
 	TC_ITEM     tci;
 
-	CBrush m_brRed(RGB(255,0,0)),m_brYellow(RGB(255,255,0)),m_brMagenta(RGB(0,255,255)),m_brWhite(RGB(0,0,0)),m_brBlue(RGB(0,0,255));
+	CBrush m_brRed(RGB(255, 0, 0)), m_brYellow(RGB(255, 255, 0)), m_brMagenta(RGB(0, 255, 255)), m_brWhite(RGB(0, 0, 0)), m_brBlue(RGB(0, 0, 255));
 
 	switch (lpDrawItemStruct->itemID)
 
@@ -107,11 +107,11 @@ void CMyTabCtrl::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 
 
-	tci.mask        = TCIF_TEXT;
+	tci.mask = TCIF_TEXT;
 
-	tci.pszText     = szTabText;
+	tci.pszText = szTabText;
 
-	tci.cchTextMax  = sizeof(szTabText)-1;
+	tci.cchTextMax = sizeof(szTabText) - 1;
 
 
 
@@ -119,7 +119,7 @@ void CMyTabCtrl::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 
 
-	CDC *dc = CDC::FromHandle(lpDrawItemStruct->hDC);
+	CDC* dc = CDC::FromHandle(lpDrawItemStruct->hDC);
 
 
 

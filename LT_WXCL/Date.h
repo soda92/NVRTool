@@ -18,7 +18,6 @@ public:
 	void addOneDay();
 	void addDay(int n);
 	string tostring();//20190101 格式
-	CDate stringtodate(string strDate); //20190101 格式
 
 private:
 	int year;
