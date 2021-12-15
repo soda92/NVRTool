@@ -41,7 +41,8 @@ public:
 
 	int VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd);
 
-	int VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* CheCi, char* CheHao, char pos, char* SiJiHao);
+	int VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* CheCi,
+        char* CheHao, char pos, char* SiJiHao);
 	int TimeCFG();
 
 	TAXDATA TaxData;

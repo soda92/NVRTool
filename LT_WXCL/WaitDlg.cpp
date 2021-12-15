@@ -41,7 +41,6 @@ BOOL CWaitDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	// TODO:  在此添加额外的初始化
-
 	m_brush.CreateSolidBrush(RGB(0, 0, 0));
 
 	MoveWindow(0, 0, SCREEN_X, SCREEN_Y);

@@ -15,13 +15,13 @@ public:
 	virtual ~CVideoDlg();
 
 	BOOL FullScreenFlag;
-	CRect m_videoPlayRects[32];//用来存放16个播放视频窗口的位置
+	CRect m_videoPlayRects[32]; //用来存放16个播放视频窗口的位置
 	CRect m_SingleWndRec;
-	void InitVideoPlayRect();//初始化16个位置元素
+	void InitVideoPlayRect(); //初始化16个位置元素
 	CVideoPlayWnd* m_videoPlayWnd[32];
 	char CurrentBox;
 	char CurrentPage;
-	int ChangeWndRects(bool isSingle, int pos);//改变窗口布局
+	int ChangeWndRects(bool isSingle, int pos); //改变窗口布局
 // 对话框数据
 	enum { IDD = IDD_DIALOG_VIDEO };
 
@@ -33,8 +33,6 @@ public:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnBnClickedButtonBa();
 	afx_msg void OnBnClickedButtonBb();
-	afx_msg void OnBnClickedButtonTa();
-	afx_msg void OnBnClickedButtonTb();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
 public:

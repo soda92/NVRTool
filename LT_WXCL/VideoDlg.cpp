@@ -48,8 +48,6 @@ void CVideoDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CVideoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_BA, &CVideoDlg::OnBnClickedButtonBa)
 	ON_BN_CLICKED(IDC_BUTTON_BB, &CVideoDlg::OnBnClickedButtonBb)
-	ON_BN_CLICKED(IDC_BUTTON_TA, &CVideoDlg::OnBnClickedButtonTa)
-	ON_BN_CLICKED(IDC_BUTTON_TB, &CVideoDlg::OnBnClickedButtonTb)
 	ON_MESSAGE(MY_USER_FULL_SCREEN, &CVideoDlg::OnMyUserFullScreen)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_BUTTON_TURN, &CVideoDlg::OnBnClickedButtonTurn)
@@ -77,7 +75,8 @@ BOOL CVideoDlg::OnInitDialog()
 
 	for (int i = 0; i < 32; i++)
 	{
-		m_videoPlayWnd[i]->Create(" ", WS_VISIBLE | WS_CHILD | WS_BORDER | SS_NOTIFY, m_videoPlayRects[i], this, 6000 + i);
+		m_videoPlayWnd[i]->Create(" ", WS_VISIBLE | WS_CHILD | WS_BORDER | SS_NOTIFY,
+			m_videoPlayRects[i], this, 6000 + i);
 		m_videoPlayWnd[i]->WndIndex = i;
 		/*CString t;
 		t.Format("%d",i);
@@ -100,40 +99,39 @@ void CVideoDlg::InitVideoPlayRect()
 {
 	CRect bigRect(0, 0, SCREEN_X, SCREEN_Y / 40 * 38 - 10);
 	int WidthTemp = 35;
-	int width = bigRect.Width();//高度，
-	int height = bigRect.Height();//宽度
-	int screenBeginX = bigRect.TopLeft().x;//左上角坐标x
-	int screenBeginY = bigRect.TopLeft().y;//左上角坐标y
-	int screenEndX = bigRect.BottomRight().x;//右下角坐标x
-	int screenEndY = bigRect.BottomRight().y - WidthTemp;//右下角坐标y
+	int width = bigRect.Width(); //高度，
+	int height = bigRect.Height(); //宽度
+	int screenBeginX = bigRect.TopLeft().x; //左上角坐标x
+	int screenBeginY = bigRect.TopLeft().y; //左上角坐标y
+	int screenEndX = bigRect.BottomRight().x; //右下角坐标x
+	int screenEndY = bigRect.BottomRight().y - WidthTemp; //右下角坐标y
 	int lm = 1;
 
 	//////////////////////////////////////////////////////////////////////////
 	//按钮位置
 	GetDlgItem(IDC_BUTTON_BA)->MoveWindow(0, screenEndY, 100, 45);
 	GetDlgItem(IDC_BUTTON_BB)->MoveWindow(100, screenEndY, 100, 45);
-	GetDlgItem(IDC_BUTTON_TA)->MoveWindow(200, screenEndY, 100, 45);
-	GetDlgItem(IDC_BUTTON_TB)->MoveWindow(300, screenEndY, 100, 45);
 
 	GetDlgItem(IDC_BUTTON_TRUN)->MoveWindow(450, screenEndY, 100, 45);
-
-	//GetDlgItem(IDC_BUTTON_TA)->ShowWindow(FALSE);
-	//GetDlgItem(IDC_BUTTON_TB)->ShowWindow(FALSE);
 
 	GetDlgItem(IDC_STATIC)->MoveWindow(600, screenEndY + 5, 120, 20);
 	//////////////////////////////////////////////////////////////////////////
 
 	for (int i = 0; i < 8; i++)
 	{
-		m_videoPlayRects[4 * i] = CRect(0, 0, screenEndX / 4 * 2 - 2 * lm, screenEndY / 4 * 2 - lm);//1
-
-		m_videoPlayRects[4 * i + 1] = CRect(screenEndX / 4 * 2 + lm, 0, screenEndX / 4 * 4 - lm, screenEndY / 4 * 2 - lm);//2
-
-		m_videoPlayRects[4 * i + 2] = CRect(0, screenEndY / 4 * 2 + lm, screenEndX / 4 * 2 - 2 * lm, screenEndY / 4 * 4);//3
-
-		m_videoPlayRects[4 * i + 3] = CRect(screenEndX / 4 * 2 + lm, screenEndY / 4 * 2 + lm, screenEndX / 4 * 4 - lm, screenEndY / 4 * 4);//4
+		m_videoPlayRects[4 * i] = CRect(
+			0, 0,
+			screenEndX / 4 * 2 - 2 * lm, screenEndY / 4 * 2 - lm); //1
+		m_videoPlayRects[4 * i + 1] = CRect(
+			screenEndX / 4 * 2 + lm, 0,
+			screenEndX / 4 * 4 - lm, screenEndY / 4 * 2 - lm); //2
+		m_videoPlayRects[4 * i + 2] = CRect(
+			0, screenEndY / 4 * 2 + lm,
+			screenEndX / 4 * 2 - 2 * lm, screenEndY / 4 * 4); //3
+		m_videoPlayRects[4 * i + 3] = CRect(
+			screenEndX / 4 * 2 + lm, screenEndY / 4 * 2 + lm,
+			screenEndX / 4 * 4 - lm, screenEndY / 4 * 4); //4
 	}
-
 
 	//全屏
 	m_SingleWndRec = CRect(0, 0, screenEndX / 4 * 4 - lm, screenEndY / 4 * 4);
@@ -200,68 +198,6 @@ void CVideoDlg::OnBnClickedButtonBb()
 	}
 }
 
-
-void CVideoDlg::OnBnClickedButtonTa()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	for (int i = 0; i < 4; i++)
-	{
-		m_button[i].SetBkColor(RGB(0, 0, 0));
-	}
-	m_button[2].SetBkColor(RGB(100, 200, 100));
-
-	SetDlgItemText(IDC_STATIC, "当前：补机A");
-	CurrentPage = 0;
-	FullScreenFlag = FALSE;
-	CurrentBox = 2;
-
-	for (int i = 0; i < 32; i++)
-	{
-		m_videoPlayWnd[i]->MoveWindow(&m_videoPlayRects[i]);
-	}
-
-	for (int i = 0; i < 32; i++)
-	{
-		if ((i <= 8 * CurrentBox + 3 && i >= 8 * CurrentBox))
-		{
-			m_videoPlayWnd[i]->ShowWindow(SW_SHOW);
-		}
-		else
-			m_videoPlayWnd[i]->ShowWindow(SW_HIDE);
-	}
-}
-
-
-void CVideoDlg::OnBnClickedButtonTb()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	for (int i = 0; i < 4; i++)
-	{
-		m_button[i].SetBkColor(RGB(0, 0, 0));
-	}
-	m_button[3].SetBkColor(RGB(100, 200, 100));
-
-	SetDlgItemText(IDC_STATIC, "当前：补机B");
-	CurrentPage = 0;
-	FullScreenFlag = FALSE;
-	CurrentBox = 3;
-
-	for (int i = 0; i < 32; i++)
-	{
-		m_videoPlayWnd[i]->MoveWindow(&m_videoPlayRects[i]);
-	}
-
-	for (int i = 0; i < 32; i++)
-	{
-		if ((i <= 8 * CurrentBox + 3 && i >= 8 * CurrentBox))
-		{
-			m_videoPlayWnd[i]->ShowWindow(SW_SHOW);
-		}
-		else
-			m_videoPlayWnd[i]->ShowWindow(SW_HIDE);
-	}
-}
-
 afx_msg LRESULT CVideoDlg::OnMyUserFullScreen(WPARAM wParam, LPARAM lParam)
 {
 	/*char buf[20] = "";
@@ -274,6 +210,27 @@ afx_msg LRESULT CVideoDlg::OnMyUserFullScreen(WPARAM wParam, LPARAM lParam)
 	FullScreenFlag = ~FullScreenFlag;
 
 	return 0;
+}
+
+void CVideoDlg::OnBnClickedButtonTurn()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	if (FullScreenFlag)
+		return;
+
+	if (++CurrentPage > 1)
+		CurrentPage = 0;
+
+	for (int i = 0; i < 32; i++)
+	{
+		m_videoPlayWnd[i]->MoveWindow(&m_videoPlayRects[i]);
+		if (i <= 8 * CurrentBox + 3 + 4 * CurrentPage && i >= 8 * CurrentBox + 4 * CurrentPage)
+		{
+			m_videoPlayWnd[i]->ShowWindow(TRUE);
+		}
+		else
+			m_videoPlayWnd[i]->ShowWindow(FALSE);
+	}
 }
 
 int CVideoDlg::ChangeWndRects(bool isSingle, int pos)
@@ -328,26 +285,3 @@ HBRUSH CVideoDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	return hbr;
 }
 
-
-void CVideoDlg::OnBnClickedButtonTurn()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if (FullScreenFlag)
-		return;
-
-	if (++CurrentPage > 1)
-		CurrentPage = 0;
-
-	for (int i = 0; i < 32; i++)
-	{
-		m_videoPlayWnd[i]->MoveWindow(&m_videoPlayRects[i]);
-		if (i <= 8 * CurrentBox + 3 + 4 * CurrentPage && i >= 8 * CurrentBox + 4 * CurrentPage)
-		{
-			m_videoPlayWnd[i]->ShowWindow(TRUE);
-		}
-		else
-			m_videoPlayWnd[i]->ShowWindow(FALSE);
-	}
-
-
-}

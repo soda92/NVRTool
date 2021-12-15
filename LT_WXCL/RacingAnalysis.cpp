@@ -111,13 +111,6 @@ UINT Thread_LdleDataAnalysis(LPVOID lParam)
 			//广播数据(接收在LT_WXCLDlg->OnInitDialog->Thread_FireRec线程)
 			sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
 		}
-
-		/*
-		if (dwRet > 0)
-		{
-		dlg->LdleMsgAnalysis(RecBuf, dwRet, TRUE);
-		}*/
-
 		Sleep(1 * 1000);
 	}
 
