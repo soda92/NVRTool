@@ -128,12 +128,10 @@
     <ClInclude Include="MyButton.h" />
     <ClInclude Include="MyTabCtrl.h" />
     <ClInclude Include="MyTable.h" />
-    <ClInclude Include="RacingAnalysis.h" />
     <ClInclude Include="FireMsgDlg.h" />
     <ClInclude Include="LT_LCWB_1A.h" />
     <ClInclude Include="LT_LCWB_1ADlg.h" />
     <ClInclude Include="ManageDlg.h" />
-    <ClInclude Include="RacingDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -150,12 +148,10 @@
     <ClCompile Include="MyButton.cpp" />
     <ClCompile Include="MyTabCtrl.cpp" />
     <ClCompile Include="MyTable.cpp" />
-    <ClCompile Include="RacingAnalysis.cpp" />
     <ClCompile Include="FireMsgDlg.cpp" />
     <ClCompile Include="LT_LCWB_1A.cpp" />
     <ClCompile Include="LT_LCWB_1ADlg.cpp" />
     <ClCompile Include="ManageDlg.cpp" />
-    <ClCompile Include="RacingDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

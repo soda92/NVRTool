@@ -9,7 +9,6 @@
 #include "TaxData.h"
 #include "FireMsgDlg.h"
 
-#include "RacingDlg.h"
 #include "MyButton.h"
 #include "MyTabCtrl.h"
 
@@ -26,7 +25,6 @@ public:
 	CVideoDlg m_VideoDlg;
 	CManageDlg m_ManageDlg;
 	CFireMsgDlg m_FireMsgDlg;
-	CRacingDlg m_RacingDlg;
 
 
 	unsigned char OsdIndex;

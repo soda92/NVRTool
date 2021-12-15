@@ -83,7 +83,7 @@ int CVideoPlayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// TODO:  在此添加您专用的创建代码
 	m_showText->Create(WS_CHILD | WS_VISIBLE, CRect(0, 0, 120, 20), this, 9666);
 
-	CHARFORMAT cf;
+	CHARFORMAT cf = {0};
 	cf.dwEffects = 1;
 	cf.crTextColor = RGB(255, 0, 0);
 	cf.cbSize = sizeof(CHARFORMAT);

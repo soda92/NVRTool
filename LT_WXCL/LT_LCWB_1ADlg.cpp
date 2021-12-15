@@ -13,6 +13,10 @@
 #include "WaitDlg.h"
 #include <Dbt.h>
 
+#include <sapi.h> // 导入语音头文件
+#include "sphelper.h"
+#pragma comment(lib, "sapi.lib")
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -20,14 +24,12 @@
 // CLT_WXCLDlg 对话框
 
 extern char IPCName[12][50];
-
 char FirstDriveFromMask(ULONG unitmask);
 
-#include <sapi.h> // 导入语音头文件
-#include "sphelper.h"
-#pragma comment(lib, "sapi.lib")
 CString WarVoice;
 int WINAPI Thread_Voice(LPVOID lpPara);
+
+
 
 CLT_LCWB_1ADlg::CLT_LCWB_1ADlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CLT_LCWB_1ADlg::IDD, pParent)
@@ -268,30 +270,6 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 				char Remote[10] = "";
 				Remote[0] = RecBuf[2];
 				Remote[1] = RecBuf[3];
-
-				//存储本节车的空转数据
-				if (Remote[0] == theApp.Local[0] && Remote[1] == theApp.Local[1])
-				{
-					dlg->m_RacingDlg.saveData(&RecBuf[4]);
-				}
-
-				//解析数据
-				if (Remote[0] == theApp.Local[0] && Remote[1] == 'A') //本车A
-				{
-					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4], 41, 0);
-				}
-				if (Remote[0] == theApp.Local[0] && Remote[1] == 'B') //本车B
-				{
-					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4], 41, 1);
-				}
-				if (Remote[0] != theApp.Local[0] && Remote[1] == 'A') //他车A
-				{
-					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4], 41, 2);
-				}
-				if (Remote[0] != theApp.Local[0] && Remote[1] == 'B') //他车B
-				{
-					dlg->m_RacingDlg.LdleMsgAnalysis(&RecBuf[4], 41, 3);
-				}
 			}
 		}
 		memset(RecBuf, 0, sizeof(RecBuf));
@@ -723,8 +701,8 @@ BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 					if (MessageBox(detectMsg, "U盘插入提示", MB_SYSTEMMODAL | MB_YESNO) == 6)
 					{
 						//拷贝文件
-						m_RacingDlg.set_Upath(decDriver.GetBuffer(0));
-						m_RacingDlg.copyToU();
+						/*m_RacingDlg.set_Upath(decDriver.GetBuffer(0));
+						m_RacingDlg.copyToU();*/
 					}
 				}
 				file1.Close();
