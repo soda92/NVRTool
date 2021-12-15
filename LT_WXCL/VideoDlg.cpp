@@ -5,6 +5,7 @@
 #include "LT_LCWB_1A.h"
 #include "VideoDlg.h"
 #include "afxdialogex.h"
+#include "resource.h"
 
 
 // CVideoDlg ¶Ô»°¿ò
@@ -39,8 +40,6 @@ void CVideoDlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Control(pDX, IDC_BUTTON_BA, m_button[0]);
 	DDX_Control(pDX, IDC_BUTTON_BB, m_button[1]);
-	DDX_Control(pDX, IDC_BUTTON_TA, m_button[2]);
-	DDX_Control(pDX, IDC_BUTTON_TB, m_button[3]);
 	DDX_Control(pDX, IDC_BUTTON_TURN, m_BTurn);
 }
 
@@ -112,7 +111,7 @@ void CVideoDlg::InitVideoPlayRect()
 	GetDlgItem(IDC_BUTTON_BA)->MoveWindow(0, screenEndY, 100, 45);
 	GetDlgItem(IDC_BUTTON_BB)->MoveWindow(100, screenEndY, 100, 45);
 
-	GetDlgItem(IDC_BUTTON_TRUN)->MoveWindow(450, screenEndY, 100, 45);
+	GetDlgItem(IDC_BUTTON_TURN)->MoveWindow(450, screenEndY, 100, 45);
 
 	GetDlgItem(IDC_STATIC)->MoveWindow(600, screenEndY + 5, 120, 20);
 	//////////////////////////////////////////////////////////////////////////

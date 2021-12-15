@@ -42,7 +42,7 @@ void CRacingDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_STATIC_B, m_static_B);
-	DDX_Control(pDX, IDC_STATIC_T, m_static_T);
+
 }
 
 
@@ -214,7 +214,6 @@ BOOL CRacingDlg::OnInitDialog()
 	newFont1.CreatePointFont(170, "ºÚÌå");
 
 	m_static_B.SetFont(&newFont1);
-	m_static_T.SetFont(&newFont1);
 
 
 	for (int i = 0; i < 4; i++)

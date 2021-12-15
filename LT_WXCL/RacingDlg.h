@@ -64,7 +64,7 @@ private:
 public:
 	afx_msg void OnPaint();
 	CStatic m_static_B;
-	CStatic m_static_T;
+
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 

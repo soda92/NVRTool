@@ -66,7 +66,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>HCNetSDK.lib;PlayCtrl.lib;VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lib/HCNetSDK.lib;lib/PlayCtrl.lib;lib/VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -98,7 +98,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>HCNetSDK.lib;PlayCtrl.lib;VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>lib/HCNetSDK.lib;lib/PlayCtrl.lib;lib/VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -139,7 +139,6 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TaxData.h" />
     <ClInclude Include="VideoDlg.h" />
-    <ClInclude Include="VideoPlay.h" />
     <ClInclude Include="VideoPlayWnd.h" />
     <ClInclude Include="WaitDlg.h" />
   </ItemGroup>

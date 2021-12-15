@@ -37,7 +37,6 @@ ipch
 *.png
 *.psd
 res
-res（旧）
 
 
 # 日志文件
@@ -48,4 +47,7 @@ LT_WXCL/log.txt
 !LT_WXCL_Dll/HCNetSDKCom/*.dll
 !LT_WXCL_Dll/*.lib
 !LT_WXCL_Dll/HCNetSDKCom/*.lib
-!LT_WXCL/*.lib
+!LT_WXCL/**/*.lib
+
+# OLD
+*-OLD
