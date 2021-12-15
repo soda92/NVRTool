@@ -37,10 +37,10 @@ protected:
 public:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	void setShowText(CString strText);
-	int WndIndex;
+	int WndIndex = 0;
 
 public:
-	CMyEdit* m_showText;
+	CMyEdit* m_showText = new CMyEdit;
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnPaint();

@@ -20,7 +20,6 @@ IMPLEMENT_DYNAMIC(CVideoPlayWnd, CStatic)
 
 CVideoPlayWnd::CVideoPlayWnd()
 {
-	m_showText = new CMyEdit;
 }
 
 CVideoPlayWnd::~CVideoPlayWnd()
