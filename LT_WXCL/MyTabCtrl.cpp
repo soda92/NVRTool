@@ -40,7 +40,6 @@ void CMyTabCtrl::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	char        szTabText[100];
-	RECT        rect;
 	UINT        bkColor;
 	CBrush* cbr;
 	TC_ITEM     tci;

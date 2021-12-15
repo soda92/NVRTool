@@ -434,7 +434,7 @@ BOOL CJcgkDlg::OnInitDialog()
 		{
 			for (int j = 0; j < 2; j++)
 			{
-				CH[i][j] = strtod(chTmp, NULL);
+				CH[i][j] = static_cast<float>(strtod(chTmp, NULL));
 				chTmp = strchr(chTmp, ',') + 1;
 			}
 		}
@@ -644,14 +644,14 @@ void CJcgkDlg::ProCtrlInit()
 		}
 	}
 
-	m_pro1.SetRange(0, CH[0][1]);
-	m_pro2.SetRange(0, CH[1][1]);
-	m_pro3.SetRange(0, CH[2][1]);
-	m_pro4.SetRange(0, CH[3][1]);
-	m_pro5.SetRange(0, CH[4][1]);
-	m_pro6.SetRange(0, CH[5][1]);
-	m_pro7.SetRange(0, CH[6][1]);
-	m_pro8.SetRange(0, CH[7][1]);
+	m_pro1.SetRange(0, static_cast<short>(CH[0][1]));
+	m_pro2.SetRange(0, static_cast<short>(CH[1][1]));
+	m_pro3.SetRange(0, static_cast<short>(CH[2][1]));
+	m_pro4.SetRange(0, static_cast<short>(CH[3][1]));
+	m_pro5.SetRange(0, static_cast<short>(CH[4][1]));
+	m_pro6.SetRange(0, static_cast<short>(CH[5][1]));
+	m_pro7.SetRange(0, static_cast<short>(CH[6][1]));
+	m_pro8.SetRange(0, static_cast<short>(CH[7][1]));
 
 
 }

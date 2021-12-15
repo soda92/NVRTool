@@ -7,7 +7,6 @@
 #include "LT_LCWB_1ADlg.h"
 #include "afxdialogex.h"
 
-#include "PlayM4.h"
 #include "HCNetSDK.h"
 
 #include "VideoPlay.h"
@@ -502,19 +501,19 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* Ch
 	sprintf_s(OSDThree, "%s 司机:%s", IPCName[pos], SiJiHao);
 
 	struShowString.struStringInfo[0].wShowString = 1;
-	struShowString.struStringInfo[0].wStringSize = strlen(OSDOne);
+	struShowString.struStringInfo[0].wStringSize = static_cast<WORD>(strlen(OSDOne));
 	strcpy(struShowString.struStringInfo[0].sString, OSDOne);
 	struShowString.struStringInfo[0].wShowStringTopLeftX = 400;
 	struShowString.struStringInfo[0].wShowStringTopLeftY = 32;
 
 	struShowString.struStringInfo[1].wShowString = 1;
-	struShowString.struStringInfo[1].wStringSize = strlen(OSDTwo);
+	struShowString.struStringInfo[1].wStringSize = static_cast<WORD>(strlen(OSDTwo));
 	strcpy(struShowString.struStringInfo[1].sString, OSDTwo);
 	struShowString.struStringInfo[1].wShowStringTopLeftX = 0;
 	struShowString.struStringInfo[1].wShowStringTopLeftY = 540;
 
 	struShowString.struStringInfo[2].wShowString = 1;
-	struShowString.struStringInfo[2].wStringSize = strlen(OSDThree);
+	struShowString.struStringInfo[2].wStringSize = static_cast<WORD>(strlen(OSDThree));
 	strcpy(struShowString.struStringInfo[2].sString, OSDThree);
 	struShowString.struStringInfo[2].wShowStringTopLeftX = 360; //320
 	struShowString.struStringInfo[2].wShowStringTopLeftY = 540;
@@ -522,7 +521,7 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* Ch
 	if (m_ManageDlg.RecordFlag[pos])
 	{
 		struShowString.struStringInfo[3].wShowString = 1;
-		struShowString.struStringInfo[3].wStringSize = strlen("REC");
+		struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen("REC"));
 		strcpy(struShowString.struStringInfo[3].sString, "REC");
 		struShowString.struStringInfo[3].wShowStringTopLeftX = 5;
 		struShowString.struStringInfo[3].wShowStringTopLeftY = 80;

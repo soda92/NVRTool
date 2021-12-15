@@ -6,7 +6,6 @@
 #include "LT_LCWB_1A.h"
 #include "LT_LCWB_1ADlg.h"
 #include "HCNetSDK.h"
-#include "PlayM4.h"
 
 CString texportNo;
 
@@ -283,7 +282,7 @@ int TaxNetInit(char* ip)
 	memset(&TaxAddr, 0, sizeof(TaxAddr));
 	TaxAddr.sin_family = AF_INET;
 	TaxAddr.sin_port = htons(10010);
-	TaxAddr.sin_addr.s_addr = inet_addr(ip);
+	InetPton(AF_INET, ip, &TaxAddr.sin_addr.s_addr);
 
 	return 0;
 }

@@ -100,10 +100,14 @@ void CFireMsgDlg::OnSize(UINT nType, int cx, int cy)
 	{
 		CRect rc;
 		this->GetClientRect(&rc);
-		int x0 = rc.right * 0, y0 = rc.bottom * 0.08,
-			width = rc.right * 0.5, height = rc.bottom * 1.1, space = 20, widthSpace = 20;
+		int x0 = rc.right * 0, 
+			y0 = static_cast<int>(rc.bottom * 0.08),
+			width = static_cast<int>(rc.right * 0.5),
+			height = static_cast<int>(rc.bottom * 1.1), space = 20, widthSpace = 20;
 
-		m_FireListB.MoveWindow(x0 + 100, y0 + widthSpace, width * 1.4, height * 0.71 - 18);
+		m_FireListB.MoveWindow(x0 + 100, y0 + widthSpace, 
+			static_cast<int>(width * 1.4),
+				static_cast<int>(height * 0.71 - 18));
 
 	}
 }
@@ -112,8 +116,8 @@ int CFireMsgDlg::InitList()
 {
 	//字体大小
 	int size = 25;
-	m_FireListB.SetFontHW(size, size * 0.5);
-	m_FireListB.SetHeaderFontHW(size, size * 0.4);
+	m_FireListB.SetFontHW(size, static_cast<int>(size * 0.5));
+	m_FireListB.SetHeaderFontHW(size, static_cast<int>(size * 0.4));
 
 	//行高
 	m_FireListB.SetRowHeight(38);
@@ -488,8 +492,7 @@ int CFireMsgDlg::FireDataAnalyse(unsigned char* buf, int len, int Train, BOOL Se
 			return 0;
 		}
 	}
-	else
-		return -1;
+	return -1;
 }
 
 int CFireMsgDlg::StopWarFun()
@@ -533,7 +536,7 @@ void CFireMsgDlg::OnBnClickedStopWarn()
 	}
 	//MessageBox("停止报警");
 	sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
-	Sleep(0.3);
+	Sleep(1);
 }
 
 

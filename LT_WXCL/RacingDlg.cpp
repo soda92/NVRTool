@@ -355,7 +355,7 @@ bool CRacingDlg::isCopy(string path, string date, string days)
 	string date1, date2, current;
 	int n = 0;
 
-	for (int i = 0; i < date.length(); i++)
+	for (int i = 0; i < static_cast<int>(date.length()); i++)
 	{
 		if (date[i] != '-')
 		{
@@ -370,7 +370,7 @@ bool CRacingDlg::isCopy(string path, string date, string days)
 	OutputDebugStringA(cdate1.tostring().c_str());
 
 	//将天数转换为int类型
-	for (int i = 0; i < days.length(); i++)
+	for (int i = 0; i < static_cast<int>(days.length()); i++)
 	{
 		int num = days[i] - 48;
 		n = n * 10 + num;
@@ -506,7 +506,7 @@ int CRacingDlg::Copy_File(string date, string days, string Upath)
 			{
 				if (temp[i] == '\\' || temp[i] == '/')
 				{
-					for (int j = i + 1; j < temp.length(); j++)
+					for (int j = i + 1; j < static_cast<int>(temp.length()); j++)
 					{
 						strUpath += temp[j];
 					}
@@ -715,7 +715,6 @@ int CRacingDlg::LdleMsgAnalysis(unsigned char* buf, int len, int Train, BOOL Sen
 	lastDataTime[Train] = 0;	//计时器归零
 
 	//变量
-	CListCtrl* m_FireList;	//Train=0 本车A，1 本车B，2 他车A， 3 他车B
 	int startnum = 0;			//A、B节标志
 
 	int Wheelset1, Wheelset2, Wheelset3, Wheelset4, WheelsetNum;
@@ -749,11 +748,7 @@ int CRacingDlg::LdleMsgAnalysis(unsigned char* buf, int len, int Train, BOOL Sen
 	SetDlgItemText(static_value_handle1 + (Train * 6) + 4, strWheelset3);
 	SetDlgItemText(static_value_handle1 + (Train * 6) + 5, strWheelset4);
 
-	/*
-	if (SendFlag)
-	{
-	sendto(FireBSoc, (char*)buf, len, 0, (sockaddr*)&FireBAddr, sizeof(FireBAddr));
-	}*/
+	return 0;
 }
 
 //空转数据存储函数
@@ -795,7 +790,8 @@ void CRacingDlg::saveData(unsigned char* buf)
 		m_date += "_01.skz";
 
 
-		FILE* fh = fopen(m_date, "ab+");
+		FILE* fh = nullptr;
+		fopen_s(&fh, m_date, "ab+");
 
 		if (!fh)
 		{
@@ -871,7 +867,7 @@ void WINAPI Thread_FileManage(LPVOID lParam)
 			fileList.push_back(finder.GetFileName());
 		}
 
-		for (int i = 0; i < fileList.size(); i++)
+		for (int i = 0; i < static_cast<int>(fileList.size()); i++)
 		{
 			CString tempfilename = fileList[i];
 			int n = tempfilename.Find('_');

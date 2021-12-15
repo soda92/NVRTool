@@ -453,6 +453,7 @@
 #define REGISTER_NAME_LEN               64 //终端注册GK名称最大长度
 
 //光纤
+#undef MAX_PORT_NUM
 #define MAX_PORT_NUM            64  //最大端口数
 #define MAX_SINGLE_CARD_PORT_NO 4   //光纤收发器单卡最大端口数
 #define MAX_FUNC_CARD_NUM       32  //光纤收发器最大功能卡数
@@ -1331,6 +1332,8 @@ NET_DVR_IsSupport()返回值
 #define SET_PRESET        8    /* 设置预置点 */
 #define CLE_PRESET        9    /* 清除预置点 */
 
+#undef ZOOM_IN
+#undef ZOOM_OUT
 #define ZOOM_IN            11    /* 焦距以速度SS变大(倍率变大) */
 #define ZOOM_OUT        12    /* 焦距以速度SS变小(倍率变小) */
 #define FOCUS_NEAR      13  /* 焦点以速度SS前调 */

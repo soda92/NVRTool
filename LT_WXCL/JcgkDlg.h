@@ -90,8 +90,4 @@ private:
 public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	CStatic m_static_Train;
-	// 	CButton m_button_BCA;
-	// 	CButton m_button_BCB;
-	// 	CButton m_button_TCA;
-	// 	CButton m_button_TCB;
 };

@@ -5,7 +5,6 @@
 #include "stdafx.h"
 #include "LT_LCWB_1A.h"
 #include "LT_LCWB_1ADlg.h"
-#include "SkinH.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

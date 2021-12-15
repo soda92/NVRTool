@@ -14,7 +14,8 @@
 #define _VEDIOPLAY_API  extern "C" __declspec(dllimport)
 #endif
 
-#define MAX_PORT_NUM 99//最大支持的通道数
+#undef MAX_PORT_NUM
+#define MAX_PORT_NUM 99 //最大支持的通道数
 
 
 _VEDIOPLAY_API int __stdcall Video_Init();
