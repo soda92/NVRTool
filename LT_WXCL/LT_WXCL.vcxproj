@@ -66,7 +66,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SkinH.lib;HCNetSDK.lib;PlayCtrl.lib;VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HCNetSDK.lib;PlayCtrl.lib;VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -98,7 +98,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>SkinH.lib;HCNetSDK.lib;PlayCtrl.lib;VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>HCNetSDK.lib;PlayCtrl.lib;VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -118,7 +118,6 @@
   <ItemGroup>
     <None Include="..\README.md" />
     <None Include=".editorconfig" />
-    <None Include="res\LT_WXCL.ico" />
     <None Include="res\LT_WXCL.rc2" />
   </ItemGroup>
   <ItemGroup>

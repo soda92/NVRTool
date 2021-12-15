@@ -4,10 +4,8 @@ Debug
 
 # 生成的文件
 *.dll
-!LT_WXCL_Dll/*.dll
-!LT_WXCL_Dll/HCNetSDKCom/*.dll
-!LT_WXCL_Dll/*.lib
-!LT_WXCL_Dll/HCNetSDKCom/*.lib
+*.lib
+
 *.she
 *.exe
 *.lib
@@ -44,3 +42,10 @@ res（旧）
 
 # 日志文件
 LT_WXCL/log.txt
+
+# 要用到的文件
+!LT_WXCL_Dll/*.dll
+!LT_WXCL_Dll/HCNetSDKCom/*.dll
+!LT_WXCL_Dll/*.lib
+!LT_WXCL_Dll/HCNetSDKCom/*.lib
+!LT_WXCL/*.lib

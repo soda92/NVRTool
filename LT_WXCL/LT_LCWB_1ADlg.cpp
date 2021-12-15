@@ -32,7 +32,7 @@ int WINAPI Thread_Voice(LPVOID lpPara);
 CLT_LCWB_1ADlg::CLT_LCWB_1ADlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CLT_LCWB_1ADlg::IDD, pParent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	//m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	memset(lUserID, -1, sizeof(lUserID));
 	memset(lRealPlayHandle, -1, sizeof(lRealPlayHandle));
 	TaxStat = FALSE;
@@ -183,7 +183,7 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 {
 	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 
-	struct sockaddr_in addr;
+	struct sockaddr_in addr = {0};
 	int addrLen = sizeof(addr);
 	unsigned char RecBuf[1024] = "";
 
@@ -579,7 +579,7 @@ int CLT_LCWB_1ADlg::TimeCFG()
 {
 	SYSTEMTIME Time;
 	GetLocalTime(&Time);
-	NET_DVR_TIME NvrTime;
+	NET_DVR_TIME NvrTime = {0};
 
 	NvrTime.dwYear = Time.wYear;
 	NvrTime.dwMonth = Time.wMonth;
