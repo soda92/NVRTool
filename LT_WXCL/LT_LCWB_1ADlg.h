@@ -4,7 +4,6 @@
 
 #pragma once
 #include "afxcmn.h"
-#include "JcgkDlg.h"
 #include "VideoDlg.h"
 #include "ManageDlg.h"
 #include "TaxData.h"
@@ -24,7 +23,6 @@ class CLT_LCWB_1ADlg : public CDialogEx
 public:
 	CLT_LCWB_1ADlg(CWnd* pParent = NULL);	// 标准构造函数
 
-	CJcgkDlg m_JcgkDlg;
 	CVideoDlg m_VideoDlg;
 	CManageDlg m_ManageDlg;
 	CFireMsgDlg m_FireMsgDlg;

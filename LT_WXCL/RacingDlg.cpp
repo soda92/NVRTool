@@ -884,7 +884,7 @@ void WINAPI Thread_FileManage(LPVOID lParam)
 			nmonth = atoi(strmonth);
 			nday = atoi(strday);
 
-			SYSTEMTIME filetime;
+			SYSTEMTIME filetime = {0};
 			filetime.wYear = nyear;
 			filetime.wMonth = nmonth;
 			filetime.wDay = nday;

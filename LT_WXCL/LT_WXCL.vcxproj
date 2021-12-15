@@ -131,11 +131,9 @@
     <ClInclude Include="MyTable.h" />
     <ClInclude Include="RacingAnalysis.h" />
     <ClInclude Include="FireMsgDlg.h" />
-    <ClInclude Include="JcgkDlg.h" />
     <ClInclude Include="LT_LCWB_1A.h" />
     <ClInclude Include="LT_LCWB_1ADlg.h" />
     <ClInclude Include="ManageDlg.h" />
-    <ClInclude Include="MyMeter.h" />
     <ClInclude Include="RacingDlg.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -156,11 +154,9 @@
     <ClCompile Include="MyTable.cpp" />
     <ClCompile Include="RacingAnalysis.cpp" />
     <ClCompile Include="FireMsgDlg.cpp" />
-    <ClCompile Include="JcgkDlg.cpp" />
     <ClCompile Include="LT_LCWB_1A.cpp" />
     <ClCompile Include="LT_LCWB_1ADlg.cpp" />
     <ClCompile Include="ManageDlg.cpp" />
-    <ClCompile Include="MyMeter.cpp" />
     <ClCompile Include="RacingDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

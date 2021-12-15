@@ -521,7 +521,7 @@ int CManageDlg::SetList()
 	for (int i = 0; i < 6; i++)
 	{
 		char a[20];
-		_itoa(i + 1, a, 10);
+		_itoa_s(i + 1, a, 10);
 		m_IPCStateList.InsertItem(i, a);
 		sprintf_s(a, "IPC");
 		m_IPCStateList.SetItemText(i, 1, a);

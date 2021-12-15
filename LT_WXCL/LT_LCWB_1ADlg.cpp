@@ -221,22 +221,6 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 				Remote[0] = RecBuf[2];
 				Remote[1] = RecBuf[3];
 
-				if (Remote[0] == theApp.Local[0] && Remote[1] == 'A' && dlg->m_JcgkDlg.CurrentPage == 0)
-				{
-					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5], 10, 0, RecBuf[4]);
-				}
-				if (Remote[0] == theApp.Local[0] && Remote[1] == 'B' && dlg->m_JcgkDlg.CurrentPage == 1)
-				{
-					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5], 10, 1, RecBuf[4]);
-				}
-				if (Remote[0] != theApp.Local[0] && Remote[1] == 'A' && dlg->m_JcgkDlg.CurrentPage == 2)
-				{
-					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5], 10, 2, RecBuf[4]);
-				}
-				if (Remote[0] != theApp.Local[0] && Remote[1] == 'B' && dlg->m_JcgkDlg.CurrentPage == 3)
-				{
-					dlg->m_JcgkDlg.CJMK_MsgDec(&RecBuf[5], 10, 3, RecBuf[4]);
-				}
 			}
 			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x03)
 			{
