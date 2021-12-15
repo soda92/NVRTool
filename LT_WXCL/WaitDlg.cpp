@@ -46,7 +46,7 @@ BOOL CWaitDlg::OnInitDialog()
 	MoveWindow(0, 0, SCREEN_X, SCREEN_Y);
 	CenterWindow();
 
-	GetDlgItem(IDC_STATIC_TXT)->MoveWindow(SCREEN_X * 2 / 7, SCREEN_Y / 2, SCREEN_X * 3 / 5, SCREEN_Y / 3);
+	GetDlgItem(IDC_STATIC_LOADING)->MoveWindow(SCREEN_X * 2 / 7, SCREEN_Y / 2, SCREEN_X * 3 / 5, SCREEN_Y / 3);
 	SetTimer(1, 1000, NULL);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -56,15 +56,19 @@ BOOL CWaitDlg::OnInitDialog()
 
 void CWaitDlg::OnTimer(UINT_PTR nIDEvent)
 {
+#if defined(_DEBUG)
+    OnOK();
+#else
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	char buf[200] = "";
 	sprintf_s(buf, "系统数据加载中。。。 %dS", Num);
-	SetDlgItemText(IDC_STATIC_TXT, buf);
-	if (--Num < 0)
+	SetDlgItemText(IDC_STATIC_LOADING, buf);
+    if (--Num < 0)
 	{
 		KillTimer(1);
 		OnOK();
 	}
+#endif
 	CDialogEx::OnTimer(nIDEvent);
 }
 

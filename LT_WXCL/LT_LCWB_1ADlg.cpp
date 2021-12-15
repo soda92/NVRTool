@@ -45,6 +45,7 @@ void CLT_LCWB_1ADlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_TAB1, m_TabCtrl);
+    DDX_Control(pDX, IDC_BUTTON_STOPWARN, stop_warn);
 }
 
 BEGIN_MESSAGE_MAP(CLT_LCWB_1ADlg, CDialogEx)
@@ -52,7 +53,7 @@ BEGIN_MESSAGE_MAP(CLT_LCWB_1ADlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CLT_LCWB_1ADlg::OnTcnSelchangeTab1)
 	ON_WM_TIMER()
-	//ON_WM_DEVICECHANGE()
+    ON_BN_CLICKED(IDC_BUTTON_STOPWARN, &CLT_LCWB_1ADlg::OnBnClickedStopWarn)
 	ON_WM_CTLCOLOR()
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
@@ -320,24 +321,34 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	arColors.Add(RGB(255, 170, 100));
 
 	//******************************
+
+    stop_warn.SetBkColor(RGB(0, 0, 0));
+    stop_warn.SetForeColor(RGB(255, 255, 255));
+
+    newFont1.CreatePointFont(140, "黑体");
+    stop_warn.SetFont(&newFont1);
+
+#if !defined(_DEBUG)
 	CWaitDlg dlg;
 	dlg.DoModal();
+#endif
 
 	theApp.pMainDlg = this;
 	GetPrivateProfileString("LT_WXCLCFG", "Local", "", theApp.Local, 10, ".//LT_WXCLCFG.ini");
 	theApp.Remote = GetPrivateProfileInt("LT_WXCLCFG", "Remote", 0, ".//LT_WXCLCFG.ini");
 
-	///***
+	///**************
 
-	m_button1.SetBkColor(RGB(0, 0, 0));
-	m_button1.SetForeColor(RGB(255, 255, 255));
+	stop_warn.SetBkColor(RGB(0, 0, 0));
+	stop_warn.SetForeColor(RGB(255, 255, 255));
 
 	MoveWindow(0, 0, SCREEN_X, SCREEN_Y);
 	CenterWindow();
 
 	m_TabCtrl.SetItemSize(CSize(150, 40));
 
-	m_TabCtrl.MoveWindow(-3, -3, SCREEN_X + 3, SCREEN_Y + 3);
+    m_TabCtrl.MoveWindow(-3, -3, SCREEN_X + 3, SCREEN_Y + 3);
+    stop_warn.MoveWindow(SCREEN_X - 125, 3, 120, 35);
 
 	m_TabCtrl.InsertItem(0, "视频预览");
 	m_VideoDlg.Create(IDD_DIALOG_VIDEO, GetDlgItem(IDC_TAB1));
@@ -763,6 +774,32 @@ BOOL CLT_LCWB_1ADlg::OnEraseBkgnd(CDC* pDC)
 
 	return CDialogEx::OnEraseBkgnd(pDC);
 }
+
+
+void CLT_LCWB_1ADlg::OnBnClickedStopWarn()
+{
+    // TODO: 在此添加控件通知处理程序代码
+    struct sockaddr_in BAddr;
+    memset(&BAddr, 0, sizeof(struct sockaddr_in));
+    BAddr.sin_family = AF_INET;
+    BAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);//套接字地址为广播地址
+    BAddr.sin_port = htons(8000);//套接字广播端口号为8000
+
+    //加入报文帧头和 本车他车AB节标志
+    unsigned char SendBuf[5] = "";
+    SendBuf[0] = 0xFF;
+    SendBuf[1] = 0x04;
+    SendBuf[2] = theApp.Local[0];
+    SendBuf[3] = theApp.Local[1];
+    for (int i = 0; i < 4; i++)
+    {
+        SendBuf[4] += SendBuf[i];
+    }
+    //MessageBox("停止报警");
+    sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
+    Sleep(1);
+}
+
 
 int WINAPI Thread_Voice(LPVOID lpPara)
 {

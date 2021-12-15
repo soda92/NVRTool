@@ -31,8 +31,8 @@ CManageDlg::~CManageDlg()
 void CManageDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LIST1, m_IPCStateList);
-	DDX_Control(pDX, IDC_LIST2, m_HDDStateList);
+	DDX_Control(pDX, IDC_LIST_IPC, m_IPCStateList);
+	DDX_Control(pDX, IDC_LIST_HDD, m_HDDStateList);
 	DDX_Control(pDX, IDC_STATIC1, m_static_device);
 	DDX_Control(pDX, IDC_STATIC2, m_static_hard);
 }

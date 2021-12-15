@@ -71,11 +71,14 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CMyTable m_TabCtrl;
-	CMyButton m_button1;
+	CMyButton stop_warn;
 
 	afx_msg void OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg BOOL OnDeviceChange(UINT nEventType, DWORD_PTR dwData);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+
+    CFont newFont1;
+    afx_msg void OnBnClickedStopWarn();
 };

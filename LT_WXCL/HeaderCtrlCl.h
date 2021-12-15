@@ -44,5 +44,3 @@ public:
 	LRESULT OnLayout(WPARAM wParam, LPARAM lParam);
 
 };
-
-

@@ -29,14 +29,12 @@ CFireMsgDlg::~CFireMsgDlg()
 void CFireMsgDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LIST1, m_FireListB);
-	DDX_Control(pDX, IDC_BUTTON1, m_button1);
+	DDX_Control(pDX, IDC_LIST_FIRE, m_FireListB);
 }
 
 
 BEGIN_MESSAGE_MAP(CFireMsgDlg, CDialogEx)
 	ON_WM_SIZE()
-	ON_BN_CLICKED(IDC_BUTTON1, &CFireMsgDlg::OnBnClickedStopWarn)
 	ON_WM_TIMER()
 	ON_WM_CTLCOLOR()
 	ON_WM_PAINT()
@@ -52,13 +50,6 @@ BOOL CFireMsgDlg::OnInitDialog()
 
 	// TODO:  在此添加额外的初始化
 	m_brush.CreateSolidBrush(RGB(0, 0, 0));
-
-	m_button1.SetBkColor(RGB(0, 0, 0));
-	m_button1.SetForeColor(RGB(255, 255, 255));
-
-	newFont1.CreatePointFont(170, "黑体");
-
-	m_button1.SetFont(&newFont1);
 
 	m_FireListB.SetBkColor(RGB(0, 0, 0));
 	m_FireListB.SetTextColor(RGB(255, 255, 255));
@@ -514,31 +505,6 @@ int CFireMsgDlg::StopWarFun()
 	WXCL_SendMsg(SendBuf, 16);
 	return 0;
 }
-
-void CFireMsgDlg::OnBnClickedStopWarn()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	struct sockaddr_in BAddr;
-	memset(&BAddr, 0, sizeof(struct sockaddr_in));
-	BAddr.sin_family = AF_INET;
-	BAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);//套接字地址为广播地址
-	BAddr.sin_port = htons(8000);//套接字广播端口号为8000
-
-	//加入报文帧头和 本车他车AB节标志
-	unsigned char SendBuf[5] = "";
-	SendBuf[0] = 0xFF;
-	SendBuf[1] = 0x04;
-	SendBuf[2] = theApp.Local[0];
-	SendBuf[3] = theApp.Local[1];
-	for (int i = 0; i < 4; i++)
-	{
-		SendBuf[4] += SendBuf[i];
-	}
-	//MessageBox("停止报警");
-	sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
-	Sleep(1);
-}
-
 
 void CFireMsgDlg::OnTimer(UINT_PTR nIDEvent)
 {

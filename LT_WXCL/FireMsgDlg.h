@@ -37,15 +37,13 @@ public:
 	CListCtrlCl m_FireListB;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnBnClickedStopWarn();
 
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
 private:
 	CBrush m_brush;
-	CMyButton m_button1;
-	CFont newFont1;
+
 public:
 	afx_msg void OnPaint();
 
