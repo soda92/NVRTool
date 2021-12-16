@@ -144,7 +144,7 @@ void CVideoDlg::OnBnClickedButtonBa()
 	}
 	m_button[0].SetBkColor(RGB(100, 200, 100));
 
-	SetDlgItemText(IDC_STATIC, "当前：本机A");
+	SetDlgItemText(IDC_STATIC, _T("当前：本机A"));
 	CurrentPage = 0;
 	FullScreenFlag = FALSE;
 	CurrentBox = 0;
@@ -175,7 +175,7 @@ void CVideoDlg::OnBnClickedButtonBb()
 	}
 	m_button[1].SetBkColor(RGB(100, 200, 100));
 
-	SetDlgItemText(IDC_STATIC, "当前：本机B");
+	SetDlgItemText(IDC_STATIC, _T("当前：本机B"));
 
 	FullScreenFlag = FALSE;
 	CurrentBox = 1;

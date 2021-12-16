@@ -36,7 +36,7 @@ ipch
 # 资源文件
 *.png
 *.psd
-res
+!/LT_WXCL/res/LT_WXCL.rc2
 
 
 # 日志文件

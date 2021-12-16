@@ -330,11 +330,11 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
     m_TabCtrl.MoveWindow(-3, -3, SCREEN_X + 3, SCREEN_Y + 3);
     stop_warn.MoveWindow(SCREEN_X - 125, 3, 120, 35);
 
-	m_TabCtrl.InsertItem(0, "视频预览");
+	m_TabCtrl.InsertItem(0, _T("视频预览"));
 	m_VideoDlg.Create(IDD_DIALOG_VIDEO, GetDlgItem(IDC_TAB1));
-	m_TabCtrl.InsertItem(1, "设备管理");
+	m_TabCtrl.InsertItem(1, _T("设备管理"));
 	m_ManageDlg.Create(IDD_DIALOG_MANAGE, GetDlgItem(IDC_TAB1));
-	m_TabCtrl.InsertItem(2, "火警信息");
+	m_TabCtrl.InsertItem(2, _T("火警信息"));
 	m_FireMsgDlg.Create(IDD_DIALOG_FIRE, GetDlgItem(IDC_TAB1));
 
 	CRect rc; //标签页里的窗口大小

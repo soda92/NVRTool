@@ -6,7 +6,7 @@
 #include "WaitDlg.h"
 #include "afxdialogex.h"
 
-char Num = 30;
+int Num = 30;
 // CWaitDlg 对话框
 
 IMPLEMENT_DYNAMIC(CWaitDlg, CDialogEx)
@@ -61,9 +61,9 @@ void CWaitDlg::OnTimer(UINT_PTR nIDEvent)
     OnOK();
 #else
     // TODO: 在此添加消息处理程序代码和/或调用默认值
-    char buf[200] = "";
-    sprintf_s(buf, "系统数据加载中··· %dS", Num);
-    SetDlgItemText(IDC_STATIC_LOADING, buf);
+    CString message{ _T("") };
+    message.Format(_T("系统数据加载中··· %dS"), Num);
+    SetDlgItemText(IDC_STATIC_LOADING, message);
     if (--Num < 0)
     {
         KillTimer(1);
@@ -80,7 +80,7 @@ HBRUSH CWaitDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
     // TODO:  在此更改 DC 的任何特性
     if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色  
-        return m_brush;       // 返回画笔
+        return m_brush;                 // 返回画笔
 
     if (nCtlColor == CTLCOLOR_STATIC)
     {

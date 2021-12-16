@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1961595-B145-44BF-B50A-CBE7DE7C9419}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		.github\workflows\copydeps.ps1 = .github\workflows\copydeps.ps1
 	EndProjectSection
 EndProject
 Global

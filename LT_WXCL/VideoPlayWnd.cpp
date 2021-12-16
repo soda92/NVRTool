@@ -88,7 +88,7 @@ int CVideoPlayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	LONG lStyle = GetWindowLong(m_showText->m_hWnd, GWL_EXSTYLE);	// 保存CRichEditCtrl的窗口风格
 	lStyle |= WS_EX_TRANSPARENT;	// CRichEditCtrl的窗口风格加入透明背景
 	SetWindowLong(m_showText->m_hWnd, GWL_EXSTYLE, lStyle);	// 重设CRichEditCtrl的新窗口风格
-	m_showText->SetWindowTextA("无信号");
+	m_showText->SetWindowText(_T("无信号"));
 	m_showText->EnableWindow(false);
 	m_showText->CenterWindow();
 	return 0;
@@ -102,5 +102,5 @@ int CVideoPlayWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 */
 void CVideoPlayWnd::setShowText(CString strText)
 {
-	m_showText->SetWindowTextA(strText);
+	m_showText->SetWindowText(strText);
 }

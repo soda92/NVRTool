@@ -53,13 +53,13 @@ int CManageDlg::SetIPCState()
     {
         if (RecordFlag[i] == 1)
         {
-            m_IPCStateList.SetItemText(i, 4, "录像");
+            m_IPCStateList.SetItemText(i, 4, _T("录像"));
 
             m_IPCStateList.SetItemTextColor(4, i, RGB(0, 255, 0));
         }
         else
         {
-            m_IPCStateList.SetItemText(i, 4, "未录像");
+            m_IPCStateList.SetItemText(i, 4, _T("未录像"));
             m_IPCStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
         }
         Sleep(100);
@@ -310,7 +310,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
             res = GetLastError();
             if (res == 3)
             {
-                dlg->MessageBox("录像存储路径不正确，请修改配置文件中的路径。");
+                dlg->MessageBox(_T("录像存储路径不正确，请修改配置文件中的路径。"));
                 return -1;
             }
         }
@@ -450,7 +450,7 @@ BOOL CManageDlg::OnInitDialog()
     m_brush.CreateSolidBrush(RGB(0, 0, 0));
 
     //字体
-    newFont1.CreatePointFont(170, "黑体");
+    newFont1.CreatePointFont(170, _T("黑体"));
     m_static_device.SetFont(&newFont1);
     m_static_hard.SetFont(&newFont1);
 
@@ -476,8 +476,8 @@ BOOL CManageDlg::OnInitDialog()
 
 
     // TODO:  在此添加额外的初始化
-    GetPrivateProfileString("LT_WXCLCFG", "HDD", "D://", theApp.HDDPath, 20, ".//LT_WXCLCFG.ini");
-    GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No00000", TrainNum, 50, ".//LT_WXCLCFG.ini");
+    GetPrivateProfileString(_T("LT_WXCLCFG"), _T("HDD"), _T("D://"), theApp.HDDPath, 20, _T(".//LT_WXCLCFG.ini"));
+    GetPrivateProfileString(_T("LT_WXCLCFG"), _T("TrainNum"), _T("No00000"), TrainNum, 50, _T(".//LT_WXCLCFG.ini"));
 
     InitList();
     SetList();
@@ -498,19 +498,18 @@ int CManageDlg::InitList()
     m_IPCStateList.SetExtendedStyle(dwStyle); //设置扩展风格
     m_HDDStateList.SetExtendedStyle(dwStyle);
 
-    m_IPCStateList.InsertColumn(0, "序号", LVCFMT_LEFT, 60);
-    m_IPCStateList.InsertColumn(1, "设备名称", LVCFMT_LEFT, 120);
-    m_IPCStateList.InsertColumn(2, "   位置", LVCFMT_LEFT, 140);
-    m_IPCStateList.InsertColumn(3, "版本号", LVCFMT_LEFT, 100);
-    m_IPCStateList.InsertColumn(4, "  状态", LVCFMT_LEFT, 120);
-    m_IPCStateList.InsertColumn(5, "供应商", LVCFMT_LEFT, 115);
-
-    m_HDDStateList.InsertColumn(0, "序号", LVCFMT_LEFT, 60);
-    m_HDDStateList.InsertColumn(1, "设备名称", LVCFMT_LEFT, 120);
-    m_HDDStateList.InsertColumn(2, " 总容量", LVCFMT_LEFT, 120);
-    m_HDDStateList.InsertColumn(3, " 剩余", LVCFMT_LEFT, 100);
-    m_HDDStateList.InsertColumn(4, "  状态", LVCFMT_LEFT, 120);
-    m_HDDStateList.InsertColumn(5, "供应商", LVCFMT_LEFT, 135);
+    m_IPCStateList.InsertColumn(0, _T("序号"), LVCFMT_LEFT, 60);
+    m_IPCStateList.InsertColumn(1, _T("设备名称"), LVCFMT_LEFT, 120);
+    m_IPCStateList.InsertColumn(2, _T("   位置"), LVCFMT_LEFT, 140);
+    m_IPCStateList.InsertColumn(3, _T("版本号"), LVCFMT_LEFT, 100);
+    m_IPCStateList.InsertColumn(4, _T("  状态"), LVCFMT_LEFT, 120);
+    m_IPCStateList.InsertColumn(5, _T("供应商"), LVCFMT_LEFT, 115);
+    m_HDDStateList.InsertColumn(0, _T("序号"), LVCFMT_LEFT, 60);
+    m_HDDStateList.InsertColumn(1, _T("设备名称"), LVCFMT_LEFT, 120);
+    m_HDDStateList.InsertColumn(2, _T(" 总容量"), LVCFMT_LEFT, 120);
+    m_HDDStateList.InsertColumn(3, _T(" 剩余"), LVCFMT_LEFT, 100);
+    m_HDDStateList.InsertColumn(4, _T("  状态"), LVCFMT_LEFT, 120);
+    m_HDDStateList.InsertColumn(5, _T("供应商"), LVCFMT_LEFT, 135);
 
     return 0;
 }
@@ -525,35 +524,35 @@ int CManageDlg::SetList()
         m_IPCStateList.InsertItem(i, a);
         sprintf_s(a, "IPC");
         m_IPCStateList.SetItemText(i, 1, a);
-        m_IPCStateList.SetItemText(i, 3, "V1.0.0");
-        m_IPCStateList.SetItemText(i, 4, "未录像");
+        m_IPCStateList.SetItemText(i, 3, _T("V1.0.0"));
+        m_IPCStateList.SetItemText(i, 4, _T("未录像"));
         m_IPCStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
-        m_IPCStateList.SetItemText(i, 5, "LTDW");
+        m_IPCStateList.SetItemText(i, 5, _T("LTDW"));
     }
     for (int i = 0; i < 12; i++)
     {
         char ipc[60] = "";
         char temp[20] = "";
         sprintf_s(temp, "IPC%d", i + 1);
-        GetPrivateProfileString("LT_WXCLCFG", temp, "无", ipc, 60, ".//LT_WXCLCFG.ini");
+        GetPrivateProfileString(_T("LT_WXCLCFG"), temp, _T("无"), ipc, 60, _T(".//LT_WXCLCFG.ini"));
         strcpy_s(IPCName[i], ipc);
     }
 
-    m_IPCStateList.SetItemText(0, 2, "路况");
-    m_IPCStateList.SetItemText(1, 2, "司机室");
-    m_IPCStateList.SetItemText(2, 2, "高压室1");
-    m_IPCStateList.SetItemText(3, 2, "高压室2");
-    m_IPCStateList.SetItemText(4, 2, "左走廊");
-    m_IPCStateList.SetItemText(5, 2, "右走廊");
+    m_IPCStateList.SetItemText(0, 2, _T("路况"));
+    m_IPCStateList.SetItemText(1, 2, _T("司机室"));
+    m_IPCStateList.SetItemText(2, 2, _T("高压室1"));
+    m_IPCStateList.SetItemText(3, 2, _T("高压室2"));
+    m_IPCStateList.SetItemText(4, 2, _T("左走廊"));
+    m_IPCStateList.SetItemText(5, 2, _T("右走廊"));
 
     //HDD LIST
-    m_HDDStateList.InsertItem(0, "1");
-    m_HDDStateList.SetItemText(0, 1, "硬盘");
-    m_HDDStateList.SetItemText(0, 2, "0");
-    m_HDDStateList.SetItemText(0, 3, "0");
-    m_HDDStateList.SetItemText(0, 4, "错误");
+    m_HDDStateList.InsertItem(0, _T("1"));
+    m_HDDStateList.SetItemText(0, 1, _T("硬盘"));
+    m_HDDStateList.SetItemText(0, 2, _T("0"));
+    m_HDDStateList.SetItemText(0, 3, _T("0"));
+    m_HDDStateList.SetItemText(0, 4, _T("错误"));
     m_HDDStateList.SetItemTextColor(4, 0, RGB(255, 0, 0));
-    m_HDDStateList.SetItemText(0, 5, "LTDW");
+    m_HDDStateList.SetItemText(0, 5, _T("LTDW"));
 
     return 0;
 }
