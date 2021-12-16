@@ -12,7 +12,6 @@
 #include "MyButton.h"
 #include "MyTabCtrl.h"
 
-#include "MyTable.h"
 
 
 // CLT_WXCLDlg ¶Ô»°¿ò
@@ -66,7 +65,7 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	CMyTable m_TabCtrl;
+	CMyTabCtrl m_TabCtrl;
 	CMyButton stop_warn;
 
 	afx_msg void OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult);

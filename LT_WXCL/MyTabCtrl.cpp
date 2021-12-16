@@ -1,78 +1,135 @@
-// MyTabCtrl.cpp : 实现文件
+// MyTable.cpp : 实现文件
 //
+
 #include "stdafx.h"
-#include "LT_LCWB_1A.h"
 #include "MyTabCtrl.h"
 
-#define RED     RGB(255,0,0)
-#define YELLOW  RGB(255,255,0)
-#define MAGENTA RGB(255,0,255)
-#define WHITE   RGB(255,255,255)
-#define BLUE    RGB(0,0,255)
 
 // CMyTabCtrl
+
 IMPLEMENT_DYNAMIC(CMyTabCtrl, CTabCtrl)
 
 CMyTabCtrl::CMyTabCtrl()
 {
+	m_fontHeight = 25;
+	m_fontWith = 11;
+
+	m_R = 60;
+	m_G = 180;
+	m_B = 58;
+	m_Gradient = 5;
 }
 
 CMyTabCtrl::~CMyTabCtrl()
 {
 }
 
+
 BEGIN_MESSAGE_MAP(CMyTabCtrl, CTabCtrl)
-    ON_WM_DRAWITEM()
+	ON_WM_ERASEBKGND()
+
 END_MESSAGE_MAP()
 
+
+
 // CMyTabCtrl 消息处理程序
-void CMyTabCtrl::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct)
+
+
+
+
+void CMyTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
-    // TODO: 在此添加消息处理程序代码和/或调用默认值
-    char        szTabText[100];
-    UINT        bkColor;
-    CBrush* cbr;
-    TC_ITEM     tci;
-    CBrush m_brRed(RGB(255, 0, 0)), m_brYellow(RGB(255, 255, 0)), m_brMagenta(RGB(0, 255, 255)), m_brWhite(RGB(0, 0, 0)), m_brBlue(RGB(0, 0, 255));
-    switch (lpDrawItemStruct->itemID)
-    {
-    case 0:
-        cbr = &m_brRed;
-        bkColor = RED;
-        break;
-    case 1:
-        cbr = &m_brYellow;
-        bkColor = YELLOW;
-        break;
-    case 2:
-        cbr = &m_brMagenta;
-        bkColor = MAGENTA;
-        break;
-    case 3:
-        cbr = &m_brWhite;
-        bkColor = WHITE;
-        break;
-    case 4:
-        cbr = &m_brBlue;
-        bkColor = BLUE;
-        break;
-    }
+	//创建画刷
+	//CBrush      cbr;
+	//cbr.CreateSolidBrush(RGB(0,0,0));
 
-    memset(szTabText, '\0', sizeof(szTabText));
-    tci.mask = TCIF_TEXT;
-    tci.pszText = szTabText;
-    tci.cchTextMax = sizeof(szTabText) - 1;
+	//获取选项卡文字内容
+    char     szTabText[100]={0};
+	TC_ITEM     tci;
+	tci.mask = TCIF_TEXT;
+	tci.pszText = szTabText;
+	tci.cchTextMax = sizeof(szTabText) - 1;
+	GetItem(lpDrawItemStruct->itemID, &tci);
 
-    GetItem(lpDrawItemStruct->itemID, &tci);
-    CDC* dc = CDC::FromHandle(lpDrawItemStruct->hDC);
-    dc->FillRect(&lpDrawItemStruct->rcItem, cbr);
-    dc->SetBkColor(bkColor);
 
-    TextOut(lpDrawItemStruct->hDC,
-        lpDrawItemStruct->rcItem.left,
-        lpDrawItemStruct->rcItem.top,
-        tci.pszText,
-        lstrlen(tci.pszText));
+	if (lpDrawItemStruct->itemState)
+	{
+		CDC* dc = CDC::FromHandle(lpDrawItemStruct->hDC);
 
-    CTabCtrl::OnDrawItem(nIDCtl, lpDrawItemStruct);
+		CRect tRect;
+		GetItemRect(lpDrawItemStruct->itemID, &tRect);//得到Item的尺寸
+		int R = m_R, G = m_G, B = m_B;
+		CRect nRect(tRect);//拷贝尺寸到新的容器中
+		//画分割线 
+		CBrush _brush;
+		_brush.CreateSolidBrush(RGB(R - 15, G - 15, B - 15));
+		CRect m_rect(tRect);
+		m_rect.right = nRect.left++;
+		dc->FillRect(&m_rect, &_brush); //填充背景 
+		_brush.DeleteObject();
+
+
+        // 渐变颜色绘制
+		for (int j = tRect.top; j <= tRect.bottom; j++)
+		{
+			nRect.bottom = nRect.top + 1;
+			CBrush _brush;
+			_brush.CreateSolidBrush(RGB(R, G, B));//创建画刷 
+			dc->FillRect(&nRect, &_brush);        //填充背景 
+			_brush.DeleteObject();                //释放画刷 
+			R -= m_Gradient; G -= m_Gradient; B -= m_Gradient;
+			if (R < 0)R = 0;
+			if (G < 0)G = 0;
+			if (B < 0)B = 0;
+			nRect.top = nRect.bottom;
+		}
+		dc->SetBkMode(TRANSPARENT);
+
+		dc->SetTextColor(RGB(255, 255, 255));
+		CFont nFont, * nOldFont;
+		nFont.CreateFont(m_fontHeight, m_fontWith, 0, 0, 0, FALSE, FALSE, 0, 0, 0, 0, 0, 0, _TEXT("黑体"));//创建字体 
+		nOldFont = dc->SelectObject(&nFont);
+		RECT rc;
+		rc = lpDrawItemStruct->rcItem;
+		rc.top += 12;
+		dc->DrawText(tci.pszText, lstrlen(tci.pszText), &rc, DT_CENTER | DT_VCENTER);
+
+	}
+	else
+	{
+		CBrush      cbr;
+		cbr.CreateSolidBrush(RGB(0, 0, 0));
+		//填充选项卡背景
+		CDC* dc = CDC::FromHandle(lpDrawItemStruct->hDC);
+		dc->FillRect(&lpDrawItemStruct->rcItem, &cbr);
+		//绘制选项卡文字
+		dc->SetBkColor(RGB(0, 0, 0));
+		dc->SetTextColor(RGB(255, 255, 255));
+		CFont nFont, * nOldFont;
+		nFont.CreateFont(m_fontHeight, m_fontWith, 0, 0, 0, FALSE, FALSE, 0, 0, 0, 0, 0, 0, _TEXT("黑体"));//创建字体 
+		nOldFont = dc->SelectObject(&nFont);
+		RECT rc;
+		rc = lpDrawItemStruct->rcItem;
+		rc.top += 12;
+		dc->DrawText(tci.pszText, lstrlen(tci.pszText), &rc, DT_CENTER | DT_VCENTER);
+	}
+}
+
+
+BOOL CMyTabCtrl::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	CRect   rect;
+	GetClientRect(&rect);
+
+	//创建画刷
+	CBrush   brush;
+	brush.CreateSolidBrush(RGB(0, 0, 0));
+
+	//填充控件背景
+	pDC->FillRect(&rect, &brush);
+
+	//return CTabCtrl::OnEraseBkgnd(pDC);
+	return true;
 }

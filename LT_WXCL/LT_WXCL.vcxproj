@@ -128,7 +128,6 @@
     <ClInclude Include="ListCtrlCl.h" />
     <ClInclude Include="MyButton.h" />
     <ClInclude Include="MyTabCtrl.h" />
-    <ClInclude Include="MyTable.h" />
     <ClInclude Include="FireMsgDlg.h" />
     <ClInclude Include="LT_LCWB_1A.h" />
     <ClInclude Include="LT_LCWB_1ADlg.h" />
@@ -148,7 +147,6 @@
     <ClCompile Include="ListCtrlCl.cpp" />
     <ClCompile Include="MyButton.cpp" />
     <ClCompile Include="MyTabCtrl.cpp" />
-    <ClCompile Include="MyTable.cpp" />
     <ClCompile Include="FireMsgDlg.cpp" />
     <ClCompile Include="LT_LCWB_1A.cpp" />
     <ClCompile Include="LT_LCWB_1ADlg.cpp" />
