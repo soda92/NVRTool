@@ -3,7 +3,6 @@
 #include "resource.h"
 #include "FireMsgDlg.h"
 #include "LT_LCWB_1A.h"
-#include <boost/algorithm/hex.hpp>
 
 #include <iostream>
 #include <iomanip>
