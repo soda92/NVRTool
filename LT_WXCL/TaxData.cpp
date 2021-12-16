@@ -170,6 +170,7 @@ int TaxNetInit(char* ip)
 }
 
 
+// 从szBuf解析 TaxData 数据
 int AnalyseTax(UCHAR* szBuf, TAXDATA* TaxData)
 {
 	UCHAR Tax40_Check, Tax32_Check, Tax72_Check;
@@ -316,7 +317,6 @@ int AnalyseTax(UCHAR* szBuf, TAXDATA* TaxData)
 				return 40;
 			}
 		}
-
 	}
 	return 0;
 }
@@ -359,6 +359,8 @@ int PweCOMInit(char* COM, char Parity) {
 }
 
 
+// 智能电源
+// 如果不发送该报文，系统会断电重启
 UINT Thread_PweData(LPVOID lParam) {
 
 	CLT_LCWB_1ADlg* MainDlg = (CLT_LCWB_1ADlg*)lParam;

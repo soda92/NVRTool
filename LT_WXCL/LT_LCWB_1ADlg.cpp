@@ -343,9 +343,6 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	m_TabCtrl.SetMinTabWidth(rc.Width() / 7);
 
 	rc.top += 40;
-	rc.bottom -= 0;
-	rc.left += 0;
-	rc.right -= 0;
 
 	m_VideoDlg.MoveWindow(&rc);
 	m_ManageDlg.MoveWindow(&rc);

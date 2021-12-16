@@ -13,9 +13,7 @@ CMyTable::CMyTable()
 {
 	m_fontHeight = 25;
 	m_fontWith = 11;
-	// 	m_R = 120;
-	// 	m_G = 60;
-	// 	m_B = 58;
+
 	m_R = 60;
 	m_G = 180;
 	m_B = 58;
@@ -71,13 +69,15 @@ void CMyTable::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		dc->FillRect(&m_rect, &_brush); //ÃÓ≥‰±≥æ∞ 
 		_brush.DeleteObject();
 
+
+        // Ω•±‰—’…´ªÊ÷∆
 		for (int j = tRect.top; j <= tRect.bottom; j++)
 		{
 			nRect.bottom = nRect.top + 1;
 			CBrush _brush;
 			_brush.CreateSolidBrush(RGB(R, G, B));//¥¥Ω®ª≠À¢ 
-			dc->FillRect(&nRect, &_brush); //ÃÓ≥‰±≥æ∞ 
-			_brush.DeleteObject(); // Õ∑≈ª≠À¢ 
+			dc->FillRect(&nRect, &_brush);        //ÃÓ≥‰±≥æ∞ 
+			_brush.DeleteObject();                // Õ∑≈ª≠À¢ 
 			R -= m_Gradient; G -= m_Gradient; B -= m_Gradient;
 			if (R < 0)R = 0;
 			if (G < 0)G = 0;
