@@ -14,8 +14,8 @@ BEGIN_MESSAGE_MAP(CMyEdit, CRichEditCtrl)
 
 END_MESSAGE_MAP()
 
-// CVideoPlayWnd
 
+// CVideoPlayWnd
 IMPLEMENT_DYNAMIC(CVideoPlayWnd, CStatic)
 
 CVideoPlayWnd::CVideoPlayWnd()
@@ -49,8 +49,6 @@ void CVideoPlayWnd::OnPaint()
 	this->GetClientRect(&rt);
 	dc.BitBlt(1, 1, rt.right, rt.bottom, NULL, 0, 0, BLACKNESS);//表示使目标矩形区域颜色取反//画黑
 	m_showText->CenterWindow();
-	/*CRect rr(rt.CenterPoint() , rt.BottomRight());
-	dc.DrawText("嘻嘻嘻哈哈啊哈哈哈" ,&rr , WHITENESS|DT_SINGLELINE|DT_VCENTER|DT_CENTER );*/
 }
 
 /*
@@ -62,10 +60,7 @@ void CVideoPlayWnd::OnPaint()
 void CVideoPlayWnd::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	/*if (WndIndex > 4)
-		return;*/
 	::SendMessageA(GetParent()->m_hWnd, MY_USER_FULL_SCREEN, NULL, WndIndex);
-	//CStatic::OnLButtonDblClk(nFlags, point);	
 }
 
 

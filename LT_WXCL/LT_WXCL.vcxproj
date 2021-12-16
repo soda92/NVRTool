@@ -124,6 +124,7 @@
     <ClInclude Include="Date.h" />
     <ClInclude Include="FireData.h" />
     <ClInclude Include="HeaderCtrlCl.h" />
+    <ClInclude Include="include\VideoPlay.h" />
     <ClInclude Include="ListCtrlCl.h" />
     <ClInclude Include="MyButton.h" />
     <ClInclude Include="MyTabCtrl.h" />

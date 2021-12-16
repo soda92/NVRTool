@@ -26,11 +26,11 @@ public:
 	CManageDlg m_ManageDlg;
 	CFireMsgDlg m_FireMsgDlg;
 
-
 	unsigned char OsdIndex;
 
 	LONG lUserID[32];
 	LONG lRealPlayHandle[32];
+    char ip[200][32];
 
 	CBrush m_brush;
 	CFont newFont;
@@ -43,8 +43,6 @@ public:
 
 	TAXDATA TaxData;
 	BOOL TaxStat;
-
-
 
 	//////////////////////////////////////////////////////////////////////////
 	int BROADCASTInit();

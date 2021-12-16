@@ -21,8 +21,15 @@ public:
 	CVideoPlayWnd* m_videoPlayWnd[32];
 	char CurrentBox;
 	char CurrentPage;
-	int ChangeWndRects(bool isSingle, int pos); //改变窗口布局
-// 对话框数据
+
+    // 当前是否全屏
+    bool fullscreened = false;
+    // 全屏窗口索引
+    int fullscreen_id = 0;
+    // 改变窗口布局
+	int ChangeWndRects(bool isSingle, int pos); 
+
+    // 对话框数据
 	enum { IDD = IDD_DIALOG_VIDEO };
 
 protected:

@@ -11,95 +11,14 @@ CString texportNo;
 
 HANDLE tPort, pPort;
 UCHAR DataBuf[256];
-//TAXDATA TaxData;
+
 
 SOCKET TaxSoc;
 sockaddr_in TaxAddr;
 
-UINT Thread_UdpTax(LPVOID lParam) {
-
-	CLT_LCWB_1ADlg* MainDlg = (CLT_LCWB_1ADlg*)lParam;
-
-	struct sockaddr_in addr;
-	int addrLen = sizeof(addr);
-	TAXDATA TaxBuf;
-
-	while (1)
-	{
-		memset(&TaxBuf, 0, sizeof(TaxBuf));
-		int res = recvfrom(TaxSoc, (char*)&TaxBuf, sizeof(TaxBuf), 0, (struct sockaddr*)&addr, &addrLen);
-		if (res > 0)
-		{
-
-			if (TaxBuf.Speed == 0)
-			{
-				continue;
-			}
-			MainDlg->TaxStat = TRUE;
-
-			memcpy(&MainDlg->TaxData, &TaxBuf, sizeof(MainDlg->TaxData));
-
-			/*char buf[256] = "";
-			sprintf_s(buf,"no = %d,num = %d,dr = %d",MainDlg->TaxData.EngineNo,MainDlg->TaxData.TrainNum,MainDlg->TaxData.DriverNo);
-			MainDlg->MessageBox(buf);*/
-
-			if (MainDlg->TaxData.TAXTime.Year != 0 && MainDlg->TaxData.TAXTime.Month != 0)
-			{
-				//校时
-				SYSTEMTIME time;
-				GetLocalTime(&time);
-				if (time.wYear != MainDlg->TaxData.TAXTime.Year || time.wMonth != MainDlg->TaxData.TAXTime.Month || time.wDay != MainDlg->TaxData.TAXTime.Day || time.wHour != MainDlg->TaxData.TAXTime.Hour || time.wMinute != MainDlg->TaxData.TAXTime.Minute)
-				{
-					time.wYear = MainDlg->TaxData.TAXTime.Year;
-					time.wMonth = MainDlg->TaxData.TAXTime.Month;
-					time.wDay = MainDlg->TaxData.TAXTime.Day;
-					time.wHour = MainDlg->TaxData.TAXTime.Hour;
-					time.wMinute = MainDlg->TaxData.TAXTime.Minute;
-					time.wSecond = MainDlg->TaxData.TAXTime.Second;
-
-					SetLocalTime(&time);
-					NET_DVR_TIME NvrTime;
-
-					NvrTime.dwYear = time.wYear;
-					NvrTime.dwMonth = time.wMonth;
-					NvrTime.dwDay = time.wDay;
-
-					NvrTime.dwHour = time.wHour;
-					NvrTime.dwMinute = time.wMinute;
-					NvrTime.dwSecond = time.wSecond;
-
-					for (int i = 0; i < 16; i++)
-					{
-						if (MainDlg->lUserID[i] > 0)
-						{
-							NET_DVR_SetDVRConfig(MainDlg->lUserID[i], NET_DVR_SET_TIMECFG, 0, &NvrTime, sizeof(NvrTime));
-						}
-
-					}
-				}
-			}
-
-
-		}
-	}
-
-	return 0;
-
-}
-//int TaxRead(HANDLE Port,UCHAR* Buf,int BufLen)
-//{
-//	DWORD dwRet;
-//	ReadFile(Port,&Buf,1,&dwRet,NULL);
-//	if (Buf[0] == )
-//	{
-//	}
-//}
-
 UINT Thread_TaxData(LPVOID lParam) {
-
 	CLT_LCWB_1ADlg* MainDlg = (CLT_LCWB_1ADlg*)lParam;
 
-	//CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_UdpTax,lParam,0,NULL);//udp接收tax线程
 	int TAX_TYPE;
 	DWORD dwRet;
 	char Num = 0;
@@ -113,27 +32,17 @@ UINT Thread_TaxData(LPVOID lParam) {
 	BAddr.sin_port = htons(8000);//套接字广播端口号为8000
 	unsigned char SendBuf[256] = "";
 
-	//Sleep(1000);//tax延时1S接收
 	unsigned char num = 0;
 	while (1)
 	{
 		memset(&DataBuf, 0x00, sizeof(DataBuf));
-		ReadFile(tPort, &DataBuf, 256, &dwRet, NULL);
+        ReadFile(tPort, &DataBuf, 256, &dwRet, NULL);
 
 		memset(&TaxBuf, 0, sizeof(TaxBuf));
 
 		TAX_TYPE = AnalyseTax(DataBuf, &TaxBuf);
 		if (TAX_TYPE > 0)
 		{
-
-			//TaxBuf.Speed = 5;
-			//TRACE("1111 %d\n",dwRet);
-			/*
-			if (TaxBuf.Speed == 0)
-			{
-				continue;
-			}
-			*/
 
 			MainDlg->TaxStat = TRUE;
 			memcpy(&MainDlg->TaxData, &TaxBuf, sizeof(MainDlg->TaxData));
@@ -154,19 +63,15 @@ UINT Thread_TaxData(LPVOID lParam) {
 
 				}
 
-
 				//校时
-
 				if (MainDlg->TaxData.TAXTime.Year != 0 && MainDlg->TaxData.TAXTime.Month != 0 && MainDlg->TaxData.TAXTime.Day != 0)
 				{
 					CTime curTime = CTime::GetCurrentTime();
 					CTime TaxTime(MainDlg->TaxData.TAXTime.Year, MainDlg->TaxData.TAXTime.Month, MainDlg->TaxData.TAXTime.Day, MainDlg->TaxData.TAXTime.Hour, MainDlg->TaxData.TAXTime.Minute, MainDlg->TaxData.TAXTime.Second);
 					CTimeSpan span = curTime - TaxTime;
 
-					//if (time.wYear != MainDlg->TaxData.TAXTime.Year || time.wMonth != MainDlg->TaxData.TAXTime.Month || time.wDay != MainDlg->TaxData.TAXTime.Day || time.wHour != MainDlg->TaxData.TAXTime.Hour || time.wMinute != MainDlg->TaxData.TAXTime.Minute)
 					if (span.GetTotalSeconds() > 60 || span.GetTotalSeconds() < -60)
 					{
-						//MainDlg->SetFireText("set time");
 						TRACE("tax set time\n");
 						SYSTEMTIME time;
 						GetLocalTime(&time);
@@ -194,20 +99,12 @@ UINT Thread_TaxData(LPVOID lParam) {
 							{
 								NET_DVR_SetDVRConfig(MainDlg->lUserID[i], NET_DVR_SET_TIMECFG, 0, &NvrTime, sizeof(NvrTime));
 							}
-
 						}
 					}
 				}
-
-
 			}
-			//////////////////////////////////////////////////////////////////////////
-			//Sleep(50);
 		}
-
 	}
-
-
 	return 0;
 }
 
@@ -215,18 +112,6 @@ int TaxCOMInit(char* COM, char Parity) {
 	DCB Dcb;
 	COMMTIMEOUTS CommTimeouts;
 
-	/*CTime curTime  = CTime::GetCurrentTime();
-	int sec1 = curTime.GetSecond();
-	CTime a(2019,1,12,9,40,0);
-	CTimeSpan span = curTime - a;
-	INT64 sec = span.GetTotalSeconds();
-
-	if (span.GetTotalSeconds() > 60 || span.GetTotalSeconds() < -60)
-	{
-		TRACE("1111");
-	}*/
-	//int TAX_TYPE;
-	//DWORD dwRet;
 	tPort = CreateFile(COM,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
@@ -243,8 +128,7 @@ int TaxCOMInit(char* COM, char Parity) {
 	GetCommState(tPort, &Dcb);
 	Dcb.BaudRate = 28800;
 	Dcb.ByteSize = 8;
-	//Dcb.Parity =NOPARITY;
-	//Dcb.Parity =ODDPARITY;
+
 	Dcb.Parity = Parity;
 	Dcb.StopBits = ONESTOPBIT;
 	SetCommState(tPort, &Dcb);
@@ -256,8 +140,6 @@ int TaxCOMInit(char* COM, char Parity) {
 	CommTimeouts.WriteTotalTimeoutConstant = 0;
 	CommTimeouts.WriteTotalTimeoutMultiplier = 0;
 	SetCommTimeouts(tPort, &CommTimeouts);
-
-
 
 	return 0;
 }
@@ -444,18 +326,6 @@ int PweCOMInit(char* COM, char Parity) {
 	DCB Dcb;
 	COMMTIMEOUTS CommTimeouts;
 
-	/*CTime curTime  = CTime::GetCurrentTime();
-	int sec1 = curTime.GetSecond();
-	CTime a(2019,1,12,9,40,0);
-	CTimeSpan span = curTime - a;
-	INT64 sec = span.GetTotalSeconds();
-
-	if (span.GetTotalSeconds() > 60 || span.GetTotalSeconds() < -60)
-	{
-		TRACE("1111");
-	}*/
-	//int TAX_TYPE;
-	//DWORD dwRet;
 	pPort = CreateFile(COM,
 		GENERIC_READ | GENERIC_WRITE,
 		0,
@@ -472,8 +342,7 @@ int PweCOMInit(char* COM, char Parity) {
 	GetCommState(pPort, &Dcb);
 	Dcb.BaudRate = 9600;
 	Dcb.ByteSize = 8;
-	//Dcb.Parity =NOPARITY;
-	//Dcb.Parity =ODDPARITY;
+
 	Dcb.Parity = Parity;
 	Dcb.StopBits = ONESTOPBIT;
 	SetCommState(pPort, &Dcb);
@@ -494,13 +363,11 @@ UINT Thread_PweData(LPVOID lParam) {
 
 	CLT_LCWB_1ADlg* MainDlg = (CLT_LCWB_1ADlg*)lParam;
 
-	//CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Thread_UdpTax,lParam,0,NULL);//udp接收tax线程
 	unsigned char SendBuf[3] = "";
 	SendBuf[0] = 0x55;
 	SendBuf[1] = 0x88;
 	SendBuf[2] = 0x99;
 
-	//Sleep(1000);//tax延时1S接收
 	unsigned char num = 0;
 	while (1)
 	{

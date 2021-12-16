@@ -6,6 +6,7 @@
 #include "VideoDlg.h"
 #include "afxdialogex.h"
 #include "resource.h"
+#include "LT_LCWB_1ADlg.h"
 
 
 // CVideoDlg 对话框
@@ -17,7 +18,7 @@ CVideoDlg::CVideoDlg(CWnd* pParent /*=NULL*/)
 {
 	for (int i = 0; i < 32; i++)
 	{
-		m_videoPlayWnd[i] = new CVideoPlayWnd;//实例化12个播放窗口
+		m_videoPlayWnd[i] = new CVideoPlayWnd; //实例化12个播放窗口
 	}
 
 	FullScreenFlag = FALSE;
@@ -77,9 +78,7 @@ BOOL CVideoDlg::OnInitDialog()
 		m_videoPlayWnd[i]->Create(" ", WS_VISIBLE | WS_CHILD | WS_BORDER | SS_NOTIFY,
 			m_videoPlayRects[i], this, 6000 + i);
 		m_videoPlayWnd[i]->WndIndex = i;
-		/*CString t;
-		t.Format("%d",i);
-		m_videoPlayWnd[i]->setShowText(t);*/
+
 		if (i >= 4)
 		{
 			m_videoPlayWnd[i]->ShowWindow(SW_HIDE);
@@ -199,50 +198,36 @@ void CVideoDlg::OnBnClickedButtonBb()
 
 afx_msg LRESULT CVideoDlg::OnMyUserFullScreen(WPARAM wParam, LPARAM lParam)
 {
-	/*char buf[20] = "";
-	sprintf_s(buf,"index= %d",lParam);
-	MessageBox(buf);*/
+
 	TRACE("index= %d \n", lParam);
 
 	ChangeWndRects(FullScreenFlag, lParam);
 
+    fullscreen_id = static_cast<int>(lParam);
 	FullScreenFlag = ~FullScreenFlag;
 
 	return 0;
 }
 
-void CVideoDlg::OnBnClickedButtonTurn()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	if (FullScreenFlag)
-		return;
-
-	if (++CurrentPage > 1)
-		CurrentPage = 0;
-
-	for (int i = 0; i < 32; i++)
-	{
-		m_videoPlayWnd[i]->MoveWindow(&m_videoPlayRects[i]);
-		if (i <= 8 * CurrentBox + 3 + 4 * CurrentPage && i >= 8 * CurrentBox + 4 * CurrentPage)
-		{
-			m_videoPlayWnd[i]->ShowWindow(TRUE);
-		}
-		else
-			m_videoPlayWnd[i]->ShowWindow(FALSE);
-	}
-}
-
 int CVideoDlg::ChangeWndRects(bool isSingle, int pos)
 {
-
+    CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)theApp.m_pMainWnd;
 	if (!isSingle)
 	{
+        // 防止重复操作
+        if (fullscreened && fullscreen_id == pos) {
+            return 0;
+        }
 		for (int i = 0; i < 32; i++)
 		{
 			if (i == pos)
 			{
 				m_videoPlayWnd[i]->MoveWindow(&m_SingleWndRec);
+                
 				m_videoPlayWnd[i]->ShowWindow(TRUE);
+                if (!fullscreened) {
+                    fullscreened = true;
+                }
 			}
 			else
 			{
@@ -262,25 +247,47 @@ int CVideoDlg::ChangeWndRects(bool isSingle, int pos)
 			else
 				m_videoPlayWnd[i]->ShowWindow(FALSE);
 		}
+        fullscreened = false;
 	}
 	return 0;
 }
+
+void CVideoDlg::OnBnClickedButtonTurn()
+{
+    if (FullScreenFlag)
+        return;
+
+    if (++CurrentPage > 1)
+        CurrentPage = 0;
+
+    for (int i = 0; i < 32; i++)
+    {
+        m_videoPlayWnd[i]->MoveWindow(&m_videoPlayRects[i]);
+        if (i <= 8 * CurrentBox + 3 + 4 * CurrentPage && i >= 8 * CurrentBox + 4 * CurrentPage)
+        {
+            m_videoPlayWnd[i]->ShowWindow(TRUE);
+        }
+        else
+            m_videoPlayWnd[i]->ShowWindow(FALSE);
+    }
+}
+
 
 HBRUSH CVideoDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
-	// TODO:  在此更改 DC 的任何特性
-	if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色  
-		return   m_brush;       //返加刷子
+	if (nCtlColor == CTLCOLOR_DLG)
+		return   m_brush;
 
 	if (nCtlColor == CTLCOLOR_STATIC)
 	{
 		pDC->SetTextColor(RGB(255, 255, 255));
-		pDC->SetBkMode(TRANSPARENT);    //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合  
+        // 忽略静态控件的背景颜色设置
+		pDC->SetBkMode(TRANSPARENT); 
 		hbr = (HBRUSH)m_brush;
 	}
-	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+
 	return hbr;
 }
 

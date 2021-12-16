@@ -41,7 +41,6 @@ typedef struct _TAXDATA {
 
 int TaxCOMInit(char* COM, char Parity);
 UINT Thread_TaxData(LPVOID lParam);
-UINT Thread_UdpTax(LPVOID lParam);
 
 int TaxNetInit(char* ip);
 

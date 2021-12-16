@@ -120,7 +120,7 @@ int WINAPI Thread_Play(LPVOID lpPara)
 {
 	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 	char ip[30] = "";
-	Sleep(5 * 1000);
+	//Sleep(5 * 1000);
 
 	int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
 
@@ -131,8 +131,8 @@ int WINAPI Thread_Play(LPVOID lpPara)
 		Sleep(50);
 	}
 
-	while (1)
-	{
+	/*while (1)
+	{*/
 		for (int i = 0; i < 32; i++)
 		{
 
@@ -147,7 +147,10 @@ int WINAPI Thread_Play(LPVOID lpPara)
 					continue;
 
 				TRACE("ipc ip = %s\n", ip);
-				int res = dlg->VideoPlay(ip, &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]), dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
+                strcpy_s(dlg->ip[i], ip);
+
+				int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
+                    dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
 				if (res < 0)
 				{
 					//TRACE("ipc %s error\n",ip);
@@ -159,7 +162,7 @@ int WINAPI Thread_Play(LPVOID lpPara)
 		}
 
 		Sleep(5 * 1000);
-	}
+	//}
 
 	return 0;
 }
@@ -225,7 +228,7 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 				Remote[1] = RecBuf[3];
 
 			}
-			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x03)
+			else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x03) //校时
 			{
 				char Remote[10] = "";
 				Remote[0] = RecBuf[2];
@@ -234,7 +237,6 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 				if (strcmp(Remote, theApp.Local) && Remote[0] == theApp.Local[0])
 				{
 					memcpy(&dlg->TaxData, &RecBuf[4], sizeof(dlg->TaxData));
-					//校时
 
 					if (dlg->TaxData.TAXTime.Year != 0 && dlg->TaxData.TAXTime.Month != 0 && dlg->TaxData.TAXTime.Day != 0)
 					{
@@ -539,7 +541,8 @@ int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
 	NET_DVR_PREVIEWINFO struPlayInfo = { 0 };
 	struPlayInfo.hPlayWnd = hWnd;  //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
 	struPlayInfo.lChannel = 1;	   //预览通道号
-	struPlayInfo.dwStreamType = 1; //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
+
+	struPlayInfo.dwStreamType = 0; //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
 	struPlayInfo.dwLinkMode = 0;   //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
 
 	*pHandle = NET_DVR_RealPlay_V40(*pUid, &struPlayInfo, NULL, NULL);
@@ -848,13 +851,17 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 			if (fWarVoice.GetAt(0) == 'A')
 			{
 				PLOGD << "switch to A...";
-				dlg->m_VideoDlg.OnBnClickedButtonBa();
+                if (dlg->m_VideoDlg.CurrentBox != 0) {
+                    dlg->m_VideoDlg.OnBnClickedButtonBa();
+                }
 			}
 			if (fWarVoice.GetAt(0) == 'B')
 			{
 				PLOGD << "switch to B...";
-				dlg->m_VideoDlg.OnBnClickedButtonBb();
-			}
+                if (dlg->m_VideoDlg.CurrentBox != 1) {
+                    dlg->m_VideoDlg.OnBnClickedButtonBa();
+                }
+            }
 
 			// A节探头2报警.....
 			PLOGD << "fWarVoice.GetLength()" << fWarVoice.GetLength();

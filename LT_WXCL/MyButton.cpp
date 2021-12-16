@@ -59,8 +59,6 @@ void CMyButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 
 void CMyButton::PreSubclassWindow()
 {
-	// TODO: Add your specialized code here and/or call the base class
-	//ModifyStyle( 0, BS_OWNERDRAW );        //设置按钮属性为自画式	
 	SetButtonStyle(GetButtonStyle() | BS_OWNERDRAW);
 
 	CButton::PreSubclassWindow();
