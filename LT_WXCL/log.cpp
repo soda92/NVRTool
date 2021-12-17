@@ -27,9 +27,9 @@ namespace logn {
     // 日志消息结构
     struct log
     {
-        std::string time;
+        std::wstring time;
         int level;
-        std::string message;
+        std::wstring message;
     };
     
     value log_value;
@@ -49,9 +49,9 @@ namespace logn {
     {
         object const& obj = jv.as_object();
         return log{
-            value_to<std::string>(obj.at("time")),
+            value_to<std::wstring>(obj.at("time")),
             value_to<int>(obj.at("level")),
-            value_to<std::string>(obj.at("message"))
+            value_to<std::wstring>(obj.at("message"))
         };
     }
 
@@ -59,7 +59,7 @@ namespace logn {
     constexpr auto filename{ "systemlog.txt" };
 
     // 解析vector到json
-    json::value parse_value(std::vector<std::string> values)
+    json::value parse_value(std::vector<std::wstring> values)
     {
         json::stream_parser p;
         json::error_code ec;
@@ -78,15 +78,15 @@ namespace logn {
     /// 读取文件
     /// </summary>
     /// <returns></returns>
-    std::vector<std::string> readfile() {
+    std::vector<std::wstring> readfile() {
 #ifdef DEBUG
         boost::filesystem::path full_path(boost::filesystem::current_path());
 #endif // DEBUG
 
-        std::ifstream f{ filename };
+        std::wifstream f{ filename };
         f.imbue(std::locale(std::cout.getloc()));
-        std::string line;
-        std::vector<std::string> lines;
+        std::wstring line;
+        std::vector<std::wstring> lines;
         while (std::getline(f, line)) {
             lines.push_back(line);
         }
@@ -107,7 +107,7 @@ namespace logn {
             logn::log _log = logs[i];
             int nItem;
             // translation
-            if (_log.message == "system exit") {
+            /*if (_log.message == "system exit") {
                 nItem = dlg->m_logDlg.log_list.InsertItem(0, _TEXT("系统退出"));
             }
             else if (_log.message == "system startup") {
@@ -115,7 +115,8 @@ namespace logn {
             }
             else {
                 nItem = dlg->m_logDlg.log_list.InsertItem(0, _TEXT("未知事件"));
-            }
+            }*/
+            nItem = dlg->m_logDlg.log_list.InsertItem(0, CString(_log.message.c_str()));
             dlg->m_logDlg.log_list.SetItemText(nItem, 1, CString(_log.time.c_str()));
         }
     }
@@ -133,7 +134,7 @@ namespace logn {
         catch (const std::exception&)
         {
             PLOGD << "error loading config";
-            log_value = parse_value(std::vector<std::string>{"[]"});
+            log_value = parse_value(std::vector<std::wstring>{L"[]"});
         }
     }
 

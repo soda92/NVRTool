@@ -6,9 +6,9 @@ namespace logn {
 
     struct log
     {
-        std::string time;
+        std::wstring time;
         int level;
-        std::string message;
+        std::wstring message;
     };
 
     void update();
