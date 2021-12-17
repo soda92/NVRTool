@@ -1,19 +1,17 @@
-#include "log.h"
 
-#include "LogDlg.h"
 #include "stdafx.h"
-#include "LT_LCWB_1A.h"
-#include "LT_LCWB_1ADlg.h"
 
 // 需要注意引用顺序，否则会导致编译错误
 #include <vector>
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <boost/json/src.hpp>
+#include <boost/json.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/date_time.hpp>
+#include <boost/date_time/time_facet.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
 
 using namespace boost;
 using boost::json::value_to_tag;
@@ -22,15 +20,10 @@ using boost::json::value;
 using boost::json::value_to;
 using boost::json::object;
 
+#include "log.h"
+
 
 namespace logn {
-    // 日志消息结构
-    struct log
-    {
-        std::string time;
-        int level;
-        std::string message;
-    };
     
     value log_value;
 
@@ -58,7 +51,11 @@ namespace logn {
 
     constexpr auto filename{ "systemlog.txt" };
 
-    // 解析vector到json
+    /// <summary>
+    /// 解析vector到json
+    /// </summary>
+    /// <param name="values">文件内容</param>
+    /// <returns>json::value</returns>
     json::value parse_value(std::vector<std::string> values)
     {
         json::stream_parser p;
@@ -96,31 +93,6 @@ namespace logn {
     std::vector<logn::log> logs;
 
     /// <summary>
-    /// 更新到List
-    /// </summary>
-    /// <param name="logs"></param>
-    void update() {
-        CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)theApp.m_pMainWnd;
-        dlg->m_logDlg.log_list;
-        auto len = logs.size();
-        for (size_t i = 0; i < len; i++) {
-            logn::log _log = logs[i];
-            int nItem;
-            // translation
-            if (_log.message == "system exit") {
-                nItem = dlg->m_logDlg.log_list.InsertItem(0, _TEXT("系统退出"));
-            }
-            else if (_log.message == "system startup") {
-                nItem = dlg->m_logDlg.log_list.InsertItem(0, _TEXT("系统启动"));
-            }
-            else {
-                nItem = dlg->m_logDlg.log_list.InsertItem(0, _TEXT("未知事件"));
-            }
-            dlg->m_logDlg.log_list.SetItemText(nItem, 1, CString(_log.time.c_str()));
-        }
-    }
-
-    /// <summary>
     /// 加载Log
     /// </summary>
     void load() {
@@ -134,6 +106,7 @@ namespace logn {
         {
             PLOGD << "error loading config";
             log_value = parse_value(std::vector<std::string>{"[]"});
+            logs = value_to< std::vector<log>>(log_value);
         }
     }
 
@@ -153,29 +126,36 @@ namespace logn {
     /// <param name="log"></param>
     void addlog(logn::log log) {
         logs.push_back(log);
-        update();
+        //update();
         save();
     };
 
+    std::string get_date() {
+        namespace pt = boost::posix_time;
+        auto time = pt::second_clock::local_time();
+        using pt::time_facet;
+        time_facet* facet(new time_facet("%Y-%m-%d %H:%M:%S%F"));
+        std::stringstream ss;
+        ss.imbue(std::locale(std::cout.getloc(), facet));
+        ss << time;
+        return ss.str();
+    }
+
 
     void system_exit() {
-        namespace pt = boost::posix_time;
-        auto time = pt::to_iso_string(pt::second_clock::local_time());
         logn::log log;
         log.message = "system exit";
         log.level = 1;
-        log.time = time;
+        log.time = get_date();
         logn::addlog(log);
         logn::save();
     }
 
     void system_start() {
-        namespace pt = boost::posix_time;
-        auto time = pt::to_iso_string(pt::second_clock::local_time());
         logn::log log;
         log.message = "system startup";
         log.level = 1;
-        log.time = time;
+        log.time = get_date();
         logn::addlog(log);
         logn::save();
     }

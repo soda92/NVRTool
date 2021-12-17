@@ -6,6 +6,7 @@
 #include "Logdlg.h"
 #include "resource.h"
 #include "log.h"
+#include "LogView.h"
 
 
 // LogDlg 对话框
@@ -93,8 +94,8 @@ BOOL LogDlg::OnInitDialog()
     this->log_list.SetFontHW(size, static_cast<int>(size * 0.5));
     this->log_list.SetHeaderFontHW(size, static_cast<int>(size * 0.5));
 
-    this->log_list.InsertColumn(0, "事件", LVCFMT_CENTER, 400);
-    this->log_list.InsertColumn(1, "时间", LVCFMT_CENTER, 162 - 7);
+    this->log_list.InsertColumn(0, "事件", LVCFMT_CENTER, 278);
+    this->log_list.InsertColumn(1, "时间", LVCFMT_CENTER, 277);
 
 #ifdef DEBUG
   /*  logn::load();
@@ -104,7 +105,9 @@ BOOL LogDlg::OnInitDialog()
 #endif // DEBUG
 
     // 初始化日志记录
-    logn::update();
+    //logn::update();
+    logn::load();
+    LogView::Update(static_cast<void*>(this));
 
     return TRUE;  // return TRUE unless you set the focus to a control
                   // 异常: OCX 属性页应返回 FALSE
