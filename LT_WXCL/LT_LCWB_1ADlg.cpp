@@ -18,6 +18,7 @@
 #pragma comment(lib, "sapi.lib")
 
 #include "log.h"
+#include "LogView.h"
 
 
 #ifdef _DEBUG
@@ -242,13 +243,15 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 				{
 					memcpy(&dlg->TaxData, &RecBuf[4], sizeof(dlg->TaxData));
 
-					if (dlg->TaxData.TAXTime.Year != 0 && dlg->TaxData.TAXTime.Month != 0 && dlg->TaxData.TAXTime.Day != 0)
+					if (dlg->TaxData.TAXTime.Year != 0 && dlg->TaxData.TAXTime.Month != 0
+                        && dlg->TaxData.TAXTime.Day != 0)
 					{
 						CTime curTime = CTime::GetCurrentTime();
-						CTime TaxTime(dlg->TaxData.TAXTime.Year, dlg->TaxData.TAXTime.Month, dlg->TaxData.TAXTime.Day, dlg->TaxData.TAXTime.Hour, dlg->TaxData.TAXTime.Minute, dlg->TaxData.TAXTime.Second);
+						CTime TaxTime(dlg->TaxData.TAXTime.Year, dlg->TaxData.TAXTime.Month,
+                            dlg->TaxData.TAXTime.Day, dlg->TaxData.TAXTime.Hour,
+                            dlg->TaxData.TAXTime.Minute, dlg->TaxData.TAXTime.Second);
 						CTimeSpan span = curTime - TaxTime;
 
-						//if (time.wYear != MainDlg->TaxData.TAXTime.Year || time.wMonth != MainDlg->TaxData.TAXTime.Month || time.wDay != MainDlg->TaxData.TAXTime.Day || time.wHour != MainDlg->TaxData.TAXTime.Hour || time.wMinute != MainDlg->TaxData.TAXTime.Minute)
 						if (span.GetTotalSeconds() > 60 || span.GetTotalSeconds() < -60)
 						{
 							//MainDlg->SetFireText("set time");
@@ -407,6 +410,7 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 
     // 系统启动
     logn::system_start();
+    LogView::Update((void*)&this->m_logDlg);
 	return TRUE; // 除非将焦点设置到控件，否则返回 TRUE
 }
 
