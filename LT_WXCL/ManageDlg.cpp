@@ -519,7 +519,7 @@ int CManageDlg::SetList()
     //IPC LIST
     for (int i = 0; i < 6; i++)
     {
-        char a[20];
+        char a[20] = {'\0'};
         _itoa_s(i + 1, a, 10);
         m_IPCStateList.InsertItem(i, a);
         sprintf_s(a, "IPC");

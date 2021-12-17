@@ -53,7 +53,10 @@
     <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnabled>false</VcpkgEnabled>
+    <VcpkgEnabled>true</VcpkgEnabled>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -62,6 +65,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;TEST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -126,6 +130,8 @@
     <ClInclude Include="HeaderCtrlCl.h" />
     <ClInclude Include="include\VideoPlay.h" />
     <ClInclude Include="ListCtrlCl.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="LogDlg.h" />
     <ClInclude Include="MyButton.h" />
     <ClInclude Include="MyTabCtrl.h" />
     <ClInclude Include="FireMsgDlg.h" />
@@ -145,6 +151,8 @@
     <ClCompile Include="FireData.cpp" />
     <ClCompile Include="HeaderCtrlCl.cpp" />
     <ClCompile Include="ListCtrlCl.cpp" />
+    <ClCompile Include="log.cpp" />
+    <ClCompile Include="LogDlg.cpp" />
     <ClCompile Include="MyButton.cpp" />
     <ClCompile Include="MyTabCtrl.cpp" />
     <ClCompile Include="FireMsgDlg.cpp" />

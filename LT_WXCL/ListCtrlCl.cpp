@@ -341,15 +341,6 @@ bool CListCtrlCl::FindItemTextColor(int col, int row, COLORREF& color)
 	}
 	return false;
 }
-// void CListCtrlCl::SetItemTextColor(int col,int row,COLORREF color)
-// {
-//     stColor *pColor = new stColor;
-//     pColor->nCol = col;
-//     pColor->nRow = row;
-//     pColor->rgb = color;
-//     m_ItemTextColor.AddTail(pColor);
-// }
-
 
 void CListCtrlCl::SetItemTextColor(int col, int row, COLORREF color)
 {
@@ -363,8 +354,6 @@ void CListCtrlCl::SetItemTextColor(int col, int row, COLORREF color)
 
 
 // CListCtrlCl 消息处理程序
-
-
 
 
 int CListCtrlCl::OnCreate(LPCREATESTRUCT lpCreateStruct)
