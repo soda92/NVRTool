@@ -91,14 +91,12 @@ void CFireMsgDlg::OnSize(UINT nType, int cx, int cy)
     {
         CRect rc;
         this->GetClientRect(&rc);
-        int x0 = rc.right * 0,
-            y0 = static_cast<int>(rc.bottom * 0.08),
-            width = static_cast<int>(rc.right * 0.5),
-            height = static_cast<int>(rc.bottom * 1.1), space = 20, widthSpace = 20;
+        int x0 = rc.right * 0 + 100,
+            y0 = static_cast<int>(rc.bottom * 0.08) + 20,
+            width = static_cast<int>(rc.right * 0.5 * 1.4),
+            height = static_cast<int>(rc.bottom * 1.1 * 0.71 - 18);
 
-        m_FireListB.MoveWindow(x0 + 100, y0 + widthSpace,
-            static_cast<int>(width * 1.4),
-            static_cast<int>(height * 0.71 - 18));
+        m_FireListB.MoveWindow(x0, y0, width, height);
 
     }
 }
@@ -122,7 +120,7 @@ int CFireMsgDlg::InitList()
     m_FireListB.InsertColumn(0, "  设备名称", LVCFMT_LEFT, 200);
     m_FireListB.InsertColumn(1, "  类型", LVCFMT_LEFT, 120);
     m_FireListB.InsertColumn(2, "  状态", LVCFMT_LEFT, 120);
-    m_FireListB.InsertColumn(3, "供应商", LVCFMT_LEFT, 115);
+    m_FireListB.InsertColumn(3, "供应商", LVCFMT_LEFT, 127 - 10 );
 
     for (int i = 0; i < 8; i++)
     {
@@ -315,8 +313,7 @@ int CFireMsgDlg::SendFireMsg()
 int CFireMsgDlg::FireDataAnalyse(unsigned char* buf, int len, int Train, BOOL SendFlag /*= FALSE*/)
 {
     //Train=0 本车A，1 本车B，2 他车A， 3 他车B
-    //CListCtrl m_FireListB;
-    //CListCtrl m_FireListT;
+
     CListCtrlCl* m_FireList;
     int startnum = 0;			//A、B节标志
 
@@ -543,7 +540,7 @@ HBRUSH CFireMsgDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
     // TODO:  在此更改 DC 的任何特性
 
     if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色  
-        return m_brush;       //返加刷子
+        return m_brush;
 
     if (nCtlColor == CTLCOLOR_STATIC)
     {

@@ -6,11 +6,13 @@
 #include "afxcmn.h"
 #include "VideoDlg.h"
 #include "ManageDlg.h"
-#include "TaxData.h"
 #include "FireMsgDlg.h"
 
 #include "MyButton.h"
 #include "MyTabCtrl.h"
+#include "LogDlg.h"
+
+#include "TaxData.h"
 
 
 
@@ -24,6 +26,8 @@ public:
 	CVideoDlg m_VideoDlg;
 	CManageDlg m_ManageDlg;
 	CFireMsgDlg m_FireMsgDlg;
+    LogDlg m_logDlg;
+
 
 	unsigned char OsdIndex;
 
@@ -74,6 +78,7 @@ public:
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 
-    CFont newFont1;
     afx_msg void OnBnClickedStopWarn();
+    virtual void OnCancel();
+    virtual void OnOK();
 };

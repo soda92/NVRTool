@@ -17,9 +17,13 @@
 #include "sphelper.h"
 #pragma comment(lib, "sapi.lib")
 
+#include "log.h"
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
+
 
 // CLT_WXCLDlg 对话框
 
@@ -283,7 +287,11 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+    // 初始化PLOG
 	plog::init(plog::debug, "log.txt"); // Step2: initialize the logger
+
+    // 故障记录列表
+    logn::load();
 
 	// 设置此对话框的图标。当应用程序主窗口不是对话框时，框架将自动
 	//  执行此操作
@@ -302,11 +310,13 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 
 	//******************************
 
+    // 停止报警 按钮
     stop_warn.SetBkColor(RGB(0, 0, 0));
     stop_warn.SetForeColor(RGB(255, 255, 255));
 
-    newFont1.CreatePointFont(140, "黑体");
-    stop_warn.SetFont(&newFont1);
+    CFont font;
+    font.CreatePointFont(150, "黑体");
+    stop_warn.SetFont(&font);
 
 #if !defined(_DEBUG)
 	CWaitDlg dlg;
@@ -336,6 +346,8 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	m_ManageDlg.Create(IDD_DIALOG_MANAGE, GetDlgItem(IDC_TAB1));
 	m_TabCtrl.InsertItem(2, _T("火警信息"));
 	m_FireMsgDlg.Create(IDD_DIALOG_FIRE, GetDlgItem(IDC_TAB1));
+    m_TabCtrl.InsertItem(3, _T("事件记录"));
+    m_logDlg.Create(IDD_DIALOG_LOG, GetDlgItem(IDC_TAB1));
 
 	CRect rc; //标签页里的窗口大小
 	m_TabCtrl.GetClientRect(&rc);
@@ -346,7 +358,8 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 
 	m_VideoDlg.MoveWindow(&rc);
 	m_ManageDlg.MoveWindow(&rc);
-	m_FireMsgDlg.MoveWindow(&rc);
+    m_FireMsgDlg.MoveWindow(&rc);
+    m_logDlg.MoveWindow(&rc);
 
 	m_VideoDlg.ShowWindow(TRUE);
 
@@ -391,6 +404,9 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Voice, this, 0, NULL);
 
+
+    // 系统启动
+    logn::system_start();
 	return TRUE; // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -439,7 +455,8 @@ void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
 
 	m_VideoDlg.ShowWindow(false);
 	m_ManageDlg.ShowWindow(false);
-	m_FireMsgDlg.ShowWindow(false);
+    m_FireMsgDlg.ShowWindow(false);
+    m_logDlg.ShowWindow(false);
 
 	switch (CurSel)
 	{
@@ -449,9 +466,12 @@ void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
 	case 1:
 		m_ManageDlg.ShowWindow(true);
 		break;
-	case 2:
-		m_FireMsgDlg.ShowWindow(true);
-		break;
+    case 2:
+        m_FireMsgDlg.ShowWindow(true);
+        break;
+    case 3:
+        m_logDlg.ShowWindow(true);
+        break;
 	default:
 		break;
 	}
@@ -725,8 +745,7 @@ HBRUSH CLT_LCWB_1ADlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 	// TODO:  在此更改 DC 的任何特性
 	if (nCtlColor == CTLCOLOR_DLG) //对话框颜色
-
-		return m_brush; //返加刷子
+		return m_brush;
 
 	if (nCtlColor == CTLCOLOR_STATIC)
 	{
@@ -896,4 +915,24 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 
 	CoUninitialize();
 	return 0;
+}
+
+
+void CLT_LCWB_1ADlg::OnCancel()
+{
+    // TODO: 在此添加专用代码和/或调用基类
+
+    // 保存事件记录
+    logn::system_exit();
+    CDialogEx::OnCancel();
+}
+
+
+void CLT_LCWB_1ADlg::OnOK()
+{
+    // TODO: 在此添加专用代码和/或调用基类
+    // 
+    // 保存事件记录
+    logn::system_exit();
+    CDialogEx::OnOK();
 }
