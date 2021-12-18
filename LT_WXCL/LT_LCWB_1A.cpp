@@ -78,6 +78,8 @@ BOOL CLT_LCWB_1AApp::InitInstance()
 	// 例如修改为公司或组织名
 	SetRegistryKey(_T("应用程序向导生成的本地应用程序"));
 
+
+    // 创建主对话框
 	CLT_LCWB_1ADlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();

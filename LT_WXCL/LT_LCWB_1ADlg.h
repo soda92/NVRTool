@@ -81,4 +81,7 @@ public:
     afx_msg void OnBnClickedStopWarn();
     virtual void OnCancel();
     virtual void OnOK();
+
+    // 判断FireMsgDlg是否已经退出
+    bool firemsgdlg_exited = false;
 };

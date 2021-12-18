@@ -52,6 +52,7 @@ public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	CPtrList m_ptrListItem; //保存Item颜色表
 	CPtrList m_ItemTextColor; //保存单元格字体颜色
+    afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };
 
 

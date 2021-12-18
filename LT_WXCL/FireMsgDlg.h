@@ -3,6 +3,7 @@
 #include "MyButton.h"
 #include "afxwin.h"
 #include "ListCtrlCl.h"
+#include "resource.h"
 
 // CFireMsgDlg ¶Ô»°¿ò
 

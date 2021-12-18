@@ -1,7 +1,9 @@
 #pragma once
+
+#include "stdafx.h"
 #include "VideoPlayWnd.h"
 #include "MyButton.h"
-#include "afxwin.h"
+#include "resource.h"
 
 
 // CVideoDlg 对话框
@@ -38,7 +40,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual BOOL OnInitDialog();
+    // 本机A
 	afx_msg void OnBnClickedButtonBa();
+    // 本机B
 	afx_msg void OnBnClickedButtonBb();
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
@@ -47,5 +51,6 @@ public:
 	CMyButton m_button[4];
 public:
 	CMyButton m_BTurn;
+    // 翻页按钮
 	afx_msg void OnBnClickedButtonTurn();
 };

@@ -130,6 +130,16 @@ namespace logn {
         save();
     };
 
+    void addlog(int level, std::string message) {
+        log l;
+        l.time = get_date();
+        l.level = level;
+        l.message = message;
+        logs.push_back(l);
+        //update();
+        save();
+    };
+
     std::string get_date() {
         namespace pt = boost::posix_time;
         auto time = pt::second_clock::local_time();
