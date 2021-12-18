@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CListCtrlCl, CListCtrl)
 	ON_WM_MEASUREITEM_REFLECT()
 	ON_WM_CREATE()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 // CListCtrlCl 消息处理程序
 void CListCtrlCl::PreSubclassWindow()
@@ -367,3 +368,46 @@ int CListCtrlCl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+
+
+HBRUSH CListCtrlCl::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CListCtrl::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  在此更改 DC 的任何特性
+    
+    HBRUSH hBrush = NULL;
+    CBrush brush;
+    brush.CreateSolidBrush(RGB(0, 0, 0));
+    switch (nCtlColor)
+    {
+    case CTLCOLOR_DLG:
+        // just return a not NULL brush handle
+        return hbr;
+        break;
+
+    case CTLCOLOR_SCROLLBAR:
+    {
+        pDC->SetBkColor(RGB(255,255,255));
+        HBRUSH b = CreateSolidBrush(RGB(0,0,0));
+        return b;
+    }
+    case CTLCOLOR_STATIC:
+    {
+        // set text color, transparent back node then 
+        pDC->SetTextColor(RGB(255, 255, 255));
+        pDC->SetBkMode(TRANSPARENT);
+        // return a not NULL brush handle
+        hBrush = (HBRUSH)brush;
+    }
+    break;
+    default:
+        // do the default processing
+        return hbr;
+        break;
+    }
+    return hBrush;
+
+	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+	return hbr;
+}

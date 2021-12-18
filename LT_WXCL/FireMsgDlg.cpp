@@ -4,9 +4,10 @@
 #include "stdafx.h"
 #include "LT_LCWB_1A.h"
 #include "FireMsgDlg.h"
-#include "afxdialogex.h"
 #include "LT_LCWB_1ADlg.h"
+
 #include "FireData.h"
+#include "FireMsgView.h"
 
 
 // CFireMsgDlg 对话框
@@ -24,6 +25,7 @@ CFireMsgDlg::CFireMsgDlg(CWnd* pParent /*=NULL*/)
 
 CFireMsgDlg::~CFireMsgDlg()
 {
+    FireMsgView::DialogExited();
 }
 
 void CFireMsgDlg::DoDataExchange(CDataExchange* pDX)
@@ -47,6 +49,8 @@ END_MESSAGE_MAP()
 BOOL CFireMsgDlg::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
+
+    FireMsgView::DialogCreated();
 
     // TODO:  在此添加额外的初始化
     m_brush.CreateSolidBrush(RGB(0, 0, 0));

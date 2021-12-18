@@ -2,6 +2,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 #include "ListCtrlCl.h"
+#include "resource.h"
 
 // CManageDlg ¶Ô»°¿ò
 

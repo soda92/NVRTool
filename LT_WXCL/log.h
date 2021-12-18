@@ -13,6 +13,7 @@ namespace logn {
 
     //void update();
     void addlog(log log);
+    void addlog(int level, std::string message);
     void load();
     void save();
     void system_exit();

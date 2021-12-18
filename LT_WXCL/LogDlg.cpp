@@ -49,6 +49,13 @@ HBRUSH LogDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
         // just return a not NULL brush handle
         hBrush = (HBRUSH)m_brush;
         break;
+
+    case CTLCOLOR_SCROLLBAR:
+    {
+        pDC->SetBkColor(RGB(0, 0, 0));
+        HBRUSH b = CreateSolidBrush(RGB(233, 233, 220));
+        return b;
+    }
     case CTLCOLOR_STATIC:
     {
         // set text color, transparent back node then 
@@ -107,7 +114,7 @@ BOOL LogDlg::OnInitDialog()
     // 初始化日志记录
     //logn::update();
     logn::load();
-    LogView::Update(static_cast<void*>(this));
+    LogView::Update();
 
     return TRUE;  // return TRUE unless you set the focus to a control
                   // 异常: OCX 属性页应返回 FALSE
