@@ -59,7 +59,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 			{
 				Num = 0;
 
-				if (MainDlg->TaxData.TrainNum != 0 && MainDlg->TaxData.EngineNo != 0 )
+				if (MainDlg->TaxData.TrainNum != 0 && MainDlg->TaxData.EngineNo != 0 && MainDlg->TaxData.Speed != 0)
 				{
 					SendBuf[0] = 0xFF;
 					SendBuf[1] = 0x03;
