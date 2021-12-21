@@ -347,6 +347,8 @@ int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
 	//设备信息, 输出参数
 	NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = { 0 };
 
+    PLOGD << "window handle: " << (long)pHandle;
+
 	*pUid = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
 	if (*pUid < 0)
 	{

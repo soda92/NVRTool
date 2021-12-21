@@ -6,6 +6,7 @@
 #include "LT_LCWB_1A.h"
 #include "LT_LCWB_1ADlg.h"
 #include "HCNetSDK.h"
+#include "util.h"
 
 CString texportNo;
 
@@ -36,7 +37,13 @@ UINT Thread_TaxData(LPVOID lParam) {
 	while (1)
 	{
 		memset(&DataBuf, 0x00, sizeof(DataBuf));
-        ReadFile(tPort, &DataBuf, 256, &dwRet, NULL);
+        auto _ = ReadFile(tPort, &DataBuf, 256, &dwRet, NULL);
+
+        std::string str;
+        for (int i = 0; i < 256; i++) {
+            str += HexToString(DataBuf[i]).substr(2, 2);
+        }
+        PLOGD << "Tax Data: " << str;
 
 		memset(&TaxBuf, 0, sizeof(TaxBuf));
 
@@ -52,7 +59,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 			{
 				Num = 0;
 
-				if (MainDlg->TaxData.TrainNum != 0 && MainDlg->TaxData.EngineNo != 0 && MainDlg->TaxData.Speed != 0)
+				if (MainDlg->TaxData.TrainNum != 0 && MainDlg->TaxData.EngineNo != 0 )
 				{
 					SendBuf[0] = 0xFF;
 					SendBuf[1] = 0x03;

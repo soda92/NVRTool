@@ -145,6 +145,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TaxData.h" />
+    <ClInclude Include="util.h" />
     <ClInclude Include="VideoDlg.h" />
     <ClInclude Include="VideoPlayWnd.h" />
     <ClInclude Include="WaitDlg.h" />

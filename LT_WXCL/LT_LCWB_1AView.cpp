@@ -228,6 +228,7 @@ int WINAPI Thread_Play(LPVOID lpPara)
 
             int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
                 dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
+
             if (res < 0)
             {
                 //TRACE("ipc %s error\n",ip);
