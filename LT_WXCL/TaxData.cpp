@@ -111,6 +111,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 				}
 			}
 		}
+        Sleep(100);
 	}
 	return 0;
 }

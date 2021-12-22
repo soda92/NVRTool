@@ -208,39 +208,39 @@ int WINAPI Thread_Play(LPVOID lpPara)
         Sleep(50);
     }
 
-    /*while (1)
-    {*/
-    for (int i = 0; i < 32; i++)
+    while (1)
     {
-
-        if (dlg->lUserID[i] == -1)
+        for (int i = 0; i < 32; i++)
         {
 
-            if (i <= 5 && i >= 0)
-                sprintf_s(ip, "192.168.10%d.7%d", atoi(&theApp.Local[0]), i);
-            else if (i <= 13 && i >= 8)
-                sprintf_s(ip, "192.168.10%d.8%d", atoi(&theApp.Local[0]), i - 8);
-            else
-                continue;
-
-            TRACE("ipc ip = %s\n", ip);
-            strcpy_s(dlg->ip[i], ip);
-
-            int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
-                dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
-
-            if (res < 0)
+            if (dlg->lUserID[i] == -1)
             {
-                //TRACE("ipc %s error\n",ip);
-                dlg->lUserID[i] = -1;
-                dlg->lRealPlayHandle[i] = -1;
-            }
-        }
-        Sleep(50);
-    }
 
-    Sleep(5 * 1000);
-    //}
+                if (i <= 5 && i >= 0)
+                    sprintf_s(ip, "192.168.10%d.7%d", atoi(&theApp.Local[0]), i);
+                else if (i <= 13 && i >= 8)
+                    sprintf_s(ip, "192.168.10%d.8%d", atoi(&theApp.Local[0]), i - 8);
+                else
+                    continue;
+
+                TRACE("ipc ip = %s\n", ip);
+                strcpy_s(dlg->ip[i], ip);
+
+                int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
+                    dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
+
+                if (res < 0)
+                {
+                    //TRACE("ipc %s error\n",ip);
+                    dlg->lUserID[i] = -1;
+                    dlg->lRealPlayHandle[i] = -1;
+                }
+            }
+            Sleep(50);
+        }
+
+        Sleep(5 * 1000);
+    }
 
     return 0;
 }
@@ -261,7 +261,7 @@ int WINAPI Thread_SetIpcTime(LPVOID lpPara)
 //
 //作用：接收UDP广播，识别报头，区分数据来源，然后将数据交给对应的处理函数
 //
-//数据分类：防火数据，采集盒数据，报警中断数据，空转数据
+//数据分类：防火数据，TAX校时，报警中断数据
 //
 int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 {
@@ -282,29 +282,14 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
                 Remote[0] = RecBuf[2];
                 Remote[1] = RecBuf[3];
 
-                if (Remote[0] == theApp.Local[0] && Remote[1] == 'A') //本车A
+                if (Remote[0] == theApp.Local[0] && Remote[1] == 'A') //A节
                 {
                     dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 0);
                 }
-                if (Remote[0] == theApp.Local[0] && Remote[1] == 'B') //本车B
+                if (Remote[0] == theApp.Local[0] && Remote[1] == 'B') //B节
                 {
                     dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 1);
                 }
-                if (Remote[0] != theApp.Local[0] && Remote[1] == 'A') //他车A
-                {
-                    dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 2);
-                }
-                if (Remote[0] != theApp.Local[0] && Remote[1] == 'B') //他车B
-                {
-                    dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 3);
-                }
-            }
-            else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x02) //采集盒
-            {
-                char Remote[10] = "";
-                Remote[0] = RecBuf[2];
-                Remote[1] = RecBuf[3];
-
             }
             else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x03) //校时
             {
@@ -346,12 +331,6 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
             else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x04) //报警中断
             {
                 dlg->m_FireMsgDlg.StopWarFun();
-            }
-            else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x05) //空转
-            {
-                char Remote[10] = "";
-                Remote[0] = RecBuf[2];
-                Remote[1] = RecBuf[3];
             }
         }
         memset(RecBuf, 0, sizeof(RecBuf));
