@@ -38,7 +38,7 @@ public:
 	CBrush m_brush;
 	CFont newFont;
 
-	int VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd);
+
 
 	int VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* CheCi,
         char* CheHao, char pos, char* SiJiHao);

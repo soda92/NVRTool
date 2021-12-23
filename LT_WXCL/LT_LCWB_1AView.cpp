@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "preview.h"
+
 #include <sapi.h> // 导入语音头文件
 #include "sphelper.h"
 #pragma comment(lib, "sapi.lib")
@@ -226,8 +228,13 @@ int WINAPI Thread_Play(LPVOID lpPara)
                 TRACE("ipc ip = %s\n", ip);
                 strcpy_s(dlg->ip[i], ip);
 
-                int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
-                    dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
+              /*  int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
+                    dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());*/
+                int res = 0;
+                preview(ip,
+                    reinterpret_cast<long long>(
+                    dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd()
+                        ));
 
                 if (res < 0)
                 {

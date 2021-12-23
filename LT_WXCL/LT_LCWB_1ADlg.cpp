@@ -296,7 +296,7 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* Ch
 	struShowString.struStringInfo[0].wShowString = 1;
 	struShowString.struStringInfo[0].wStringSize = static_cast<WORD>(strlen(OSDOne));
 	strcpy_s(struShowString.struStringInfo[0].sString, OSDOne);
-	struShowString.struStringInfo[0].wShowStringTopLeftX = 400;
+	struShowString.struStringInfo[0].wShowStringTopLeftX = 500;
 	struShowString.struStringInfo[0].wShowStringTopLeftY = 32;
 
 	struShowString.struStringInfo[1].wShowString = 1;
@@ -330,49 +330,6 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* Ch
 	{
 		return -1;
 	}
-	return 0;
-}
-
-int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
-{
-	//登录参数，包括设备地址、登录用户、密码等
-	NET_DVR_USER_LOGIN_INFO struLoginInfo = { 0 };
-	struLoginInfo.bUseAsynLogin = 0;			 //同步登录方式
-	strcpy_s(struLoginInfo.sDeviceAddress, ip);	 //设备IP地址
-	struLoginInfo.wPort = 8000;					 //设备服务端口
-	strcpy_s(struLoginInfo.sUserName, "admin");	 //设备登录用户名
-	strcpy_s(struLoginInfo.sPassword, "hk123456"); //设备登录密码
-	//strcpy(struLoginInfo.sPassword, "123456"); //设备登录密码
-
-	//设备信息, 输出参数
-	NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = { 0 };
-
-    PLOGD << "window handle: " << (long)pHandle;
-
-	*pUid = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
-	if (*pUid < 0)
-	{
-		TRACE("Login failed, error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
-		return -1;
-	}
-
-	//---------------------------------------
-	//启动预览并设置回调数据流
-	NET_DVR_PREVIEWINFO struPlayInfo = { 0 };
-	struPlayInfo.hPlayWnd = hWnd;  //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-	struPlayInfo.lChannel = 1;	   //预览通道号
-
-	struPlayInfo.dwStreamType = 0; //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
-	struPlayInfo.dwLinkMode = 0;   //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
-
-	*pHandle = NET_DVR_RealPlay_V40(*pUid, &struPlayInfo, NULL, NULL);
-	if (*pHandle < 0)
-	{
-		TRACE("NET_DVR_RealPlay_V40 error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
-		NET_DVR_Logout(*pUid);
-		return -1;
-	}
-	//VideoOSDSet(pUid,"100","200","t23","12378",3,"12445");
 	return 0;
 }
 
