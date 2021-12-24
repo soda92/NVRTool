@@ -439,7 +439,7 @@ int WINAPI Thread_Index(LPVOID lpPara)
     CString File;
 
     char hddPath[20] = "";
-    GetPrivateProfileString("NewFireProof", "HDD", "D://", hddPath, 20, ".//NewFireProof.ini");
+    GetPrivateProfileString("LT_WXCLCFG", "HDD", "D://", hddPath, 20, ".//LT_WXCLCFG.ini");
 
     if (!dlg->m_ManageDlg.IsHDD(hddPath))
     {
@@ -466,9 +466,9 @@ int WINAPI Thread_Index(LPVOID lpPara)
     }
 
     char TrainNum[50] = "";
-    GetPrivateProfileString("NewFireProof", "TrainNum", "No0000", TrainNum, 50, ".//NewFireProof.ini");
-    //Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",hddPath,TrainNum);	
-    Path.Format("%s/6A-VIDEO-%s-北京蓝天多维/", hddPath, TrainNum);
+    GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No0000", TrainNum, 50, ".//LT_WXCLCFG.ini");
+    Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",hddPath,TrainNum);	
+    //Path.Format("%s/6A-VIDEO-%s-北京蓝天多维/", hddPath, TrainNum);
     CreateDirectory(Path, NULL);
 
     SYSTEMTIME Time, TimeBuf;

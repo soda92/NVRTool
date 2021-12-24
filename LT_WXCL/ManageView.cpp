@@ -15,7 +15,6 @@ char UPath[20] = { 0 }; // u盘转存路径
 char TrainNum[50] = { 0 }; // 车型车号
 char RecordFlag[20] = { 0 }; //录像保存标志
 char IPCName[12][50] = { 0 }; //保存通道名称
-char IPCToCh[12] = { 0 }; //保存IPC与通道的对应关系
 
 namespace ManageView {
     void init() {
@@ -28,9 +27,6 @@ namespace ManageView {
             sprintf_s(temp, "IPC%d", i + 1);
             GetPrivateProfileString("LT_WXCLCFG", temp, "IPC", ipc, 60, ".//LT_WXCLCFG.ini");
 
-            IPCToCh[i] = GetPrivateProfileInt("CHSet", temp, 0, ".//LT_WXCLCFG.ini");
-
-            //IPCName.Add(ipc);
             strcpy_s(IPCName[i], ipc);
         }
     }
