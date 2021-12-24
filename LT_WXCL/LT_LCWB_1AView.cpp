@@ -50,10 +50,10 @@ namespace Interactive {
         dlg->m_logDlg.ShowWindow(SW_HIDE);
 
 #ifdef DEBUG
-        PLOGD << "fWarVoice.GetLength()" << warVoice.GetLength();
-        PLOGD << "fWarVoice" << warVoice;
-        PLOGD << "fWarVoice.GetAt(0)" << warVoice.GetAt(0);
-        PLOGD << "fWarVoice.GetAt(7)" << warVoice.GetAt(7);
+        //PLOGD << "fWarVoice.GetLength()" << warVoice.GetLength();
+        //PLOGD << "fWarVoice" << warVoice;
+        //PLOGD << "fWarVoice.GetAt(0)" << warVoice.GetAt(0);
+        //PLOGD << "fWarVoice.GetAt(7)" << warVoice.GetAt(7);
 #endif // DEBUG
 
         if (warVoice.GetAt(0) == 'A')

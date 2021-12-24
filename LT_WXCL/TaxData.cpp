@@ -6,7 +6,16 @@
 #include "LT_LCWB_1A.h"
 #include "LT_LCWB_1ADlg.h"
 #include "HCNetSDK.h"
-#include "util.h"
+
+
+template <typename T>
+std::string HexToString(T uval)
+{
+    std::stringstream ss;
+    ss << "0x" << std::setw(sizeof(uval) * 2) << std::setfill('0') << std::hex << +uval;
+    return ss.str();
+}
+
 
 CString texportNo;
 
@@ -43,7 +52,7 @@ UINT Thread_TaxData(LPVOID lParam) {
         for (int i = 0; i < 256; i++) {
             str += HexToString(DataBuf[i]).substr(2, 2);
         }
-        PLOGD << "Tax Data: " << str;
+        // PLOGD << "Tax Data: " << str;
 
 		memset(&TaxBuf, 0, sizeof(TaxBuf));
 

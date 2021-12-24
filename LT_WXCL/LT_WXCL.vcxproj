@@ -58,6 +58,9 @@
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -84,7 +87,8 @@
     </ResourceCompile>
     <PostBuildEvent>
       <Command>copy LT_WXCLCFG.ini $(OutputPath)</Command>
-      <Command>type nul &gt; $(OutputPath)/log.txt</Command>
+      <Command>pwsh $(MSBuildProjectDirectory)/afterbuild.ps1 $(OutputPath)
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,6 +126,8 @@
   <ItemGroup>
     <None Include="..\README.md" />
     <None Include=".editorconfig" />
+    <None Include="afterbuild.ps1" />
+    <None Include="CHANGELOG.md" />
     <None Include="res\LT_WXCL.rc2" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +179,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TaxData.cpp" />
+    <ClCompile Include="util.cpp" />
     <ClCompile Include="VideoDlg.cpp" />
     <ClCompile Include="VideoPlayWnd.cpp" />
     <ClCompile Include="WaitDlg.cpp" />

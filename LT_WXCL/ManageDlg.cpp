@@ -186,6 +186,7 @@ int CManageDlg::FindAndDeleteRecord(CString Path)
     {
         CString filePath;
         filePath.Format("%s/%s", Path, FileName);
+        PLOGD << "Deleting..." << filePath;
         DeleteFile(filePath);
     }
 

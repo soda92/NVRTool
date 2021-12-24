@@ -113,7 +113,7 @@ UINT Thread_WXCL_FireData(LPVOID lParam)
 			result += HexToString<unsigned char>(RecBuf[i]).substr(2, 2);
 		}
 
-		PLOGD << "RecBuf: " << result;
+		//PLOGD << "RecBuf: " << result;
 #endif
 		memcpy(&SendBuf[4], RecBuf, dwRet);
 

@@ -1,13 +1,15 @@
 #include "stdafx.h"
 
+
+#include "LT_LCWB_1A.h"
+#include "LT_LCWB_1ADlg.h"
+
 #include "VideoPlay.h"
 #include "ManageDlg.h"
 
 #include "ManageView.h"
 
-#include "LT_LCWB_1A.h"
-#include "LT_LCWB_1ADlg.h"
-#include <array>
+#include "util.h"
 
 char UPath[20] = { 0 }; // u盘转存路径
 char TrainNum[50] = { 0 }; // 车型车号
@@ -60,7 +62,7 @@ int WINAPI Thread_URecord(LPVOID lpPara)
         }
     }
 
-    Path.Format("%s/6A-VIDEO-%s-北京蓝天多维/", UPath, TrainNum);
+    Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/", UPath, TrainNum);
     CreateDirectory(Path, NULL);
 
     while (dlg->URecordFlag)
@@ -79,10 +81,10 @@ int WINAPI Thread_URecord(LPVOID lpPara)
                     //Path.Format("%s%d/",UPath,i+1);
                     //rtsp://admin:hk123456@192.168.101.77:554/mpeg4/ch1/sub
                     if (theApp.Local[1] == 'A') {
-                        File.Format("rtsp://admin:hk123456@192.168.101.7%d:554/mpeg4/ch1/sub", i);
+                        File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i);
                     }
                     else {
-                        File.Format("rtsp://admin:hk123456@192.168.101.8%d:554/mpeg4/ch1/sub", i);
+                        File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i);
                     }
 
                     if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
@@ -115,107 +117,6 @@ int WINAPI Thread_URecord(LPVOID lpPara)
     return 0;
 }
 
-int URecordConfigAnalyse(char* path, std::array<bool, 6>& cflag)
-{
-    FILE* fd = NULL;
-    fopen_s(&fd, path, "rb");
-    if (!fd)
-        return -1;
-    char buf[2 * 1024] = "";
-    char* FindTemp = nullptr;
-    fread(buf, 1, sizeof(buf), fd);
-    char usr[20] = "";
-    char psw[20] = "";
-
-    //////////////////////////////////////////////////////////////////////////
-    //用户密码验证
-    FindTemp = strstr(buf, "Username");
-    if (FindTemp)
-    {
-        FindTemp = strchr(FindTemp, '[');
-        if (FindTemp)
-        {
-            int len = strchr(FindTemp, ']') - FindTemp - 1;
-            memcpy(usr, FindTemp + 1, len);
-        }
-    }
-    FindTemp = strstr(buf, "Password");
-    if (FindTemp)
-    {
-        FindTemp = strchr(FindTemp, '[');
-        if (FindTemp)
-        {
-            int len = strchr(FindTemp, ']') - FindTemp - 1;
-            memcpy(psw, FindTemp + 1, len);
-        }
-    }
-    if (strcmp(usr, "6A") || strcmp(psw, "A6"))
-    {
-        fclose(fd);
-        return -1;
-    }
-    //////////////////////////////////////////////////////////////////////////
-    //通道解析
-    char Channel[60] = "";
-    FindTemp = strstr(buf, "Channel");
-    if (FindTemp)
-    {
-        FindTemp = strchr(FindTemp, '[');
-        if (FindTemp)
-        {
-            int len = strchr(FindTemp, ']') - FindTemp - 1;
-            memcpy(Channel, FindTemp + 1, len);
-        }
-    }
-    if (!strcmp(Channel, ""))
-    {
-        fclose(fd);
-        return -1;
-    }
-    //解析要下载的通道
-    if (strcmp(Channel, "00"))
-    {
-        char* temp = Channel;
-        int pos = 0;
-        for (int i = 0; i < 8; i++)
-        {
-            pos = atoi(temp);
-            //找到IPC和通道的对应
-            for (int j = 0; j < 8; j++)
-            {
-                if (IPCToCh[j] == pos)
-                {
-                    *cflag |= 1 << j;
-                }
-            }
-
-            temp = strchr(temp, ',');
-            if (temp == nullptr)
-            {
-                break;
-            }
-            temp++;
-        }
-
-    }
-    else {
-        for (auto& i : cflag) {
-            i = true;
-        }
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    FindTemp = strstr(buf, "TimeFrom");
-    if (FindTemp)
-    {
-        fclose(fd);
-        return -1;
-    }
-    //////////////////////////////////////////////////////////////////////////
-    fclose(fd);
-    return 0;
-}
-
 
 int CManageDlg::StartURecord(char* uPath)
 {
@@ -235,7 +136,7 @@ int CManageDlg::StartURecord(char* uPath)
     strcpy_s(FilePath, uPath);
     strcat_s(FilePath, "/license.txt");
 
-    if (URecordConfigAnalyse(FilePath, UCFlag) == -1)
+    if (util::URecordConfigAnalyse(FilePath, UCFlag) == -1)
     {
         URecordFlag = FALSE;
         return -1;
@@ -407,7 +308,7 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
     }
 
     //log
-    PLOGD <<  "U盘下载";
+    PLOGD << "U盘下载";
 
     sprintf_s(TimeBe, "%s%s%s_%s%s", year, month, day, hour, minute);
     /*char Dhour = 0;
@@ -427,7 +328,7 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
     strcat_s(dlg->m_ManageDlg.szRootPathName, "\\LT_视频下载\\");
     CreateDirectory(dlg->m_ManageDlg.szRootPathName, NULL);
     char trainNum[50] = "";
-    GetPrivateProfileString("NewFireProof", "TrainNum", "No0000", trainNum, 50, ".//NewFireProof.ini");
+    GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No0000", trainNum, 50, ".//LT_WXCLCFG.ini");
     strcat_s(dlg->m_ManageDlg.szRootPathName, trainNum);
     CreateDirectory(dlg->m_ManageDlg.szRootPathName, NULL);
     sprintf_s(dlg->m_ManageDlg.szRootPathName, "%s\\%s-%s\\", dlg->m_ManageDlg.szRootPathName, TimeBe, TimeEn);
@@ -447,7 +348,7 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
     CString FileEn;
 
     char RePath[20] = "";
-    GetPrivateProfileString("NewFireProof", "HDD", "D://", RePath, 20, ".//NewFireProof.ini");
+    GetPrivateProfileString("LT_WXCLCFG", "HDD", "D://", RePath, 20, ".//LT_WXCLCFG.ini");
 
     //////////////////////////////////////////////////////////////////////////
     if (!dlg->m_ManageDlg.IsHDD(RePath))
@@ -463,7 +364,7 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
     }
     //////////////////////////////////////////////////////////////////////////
     //SourPath.Format("%s/LT-VIDEO-%s-北京蓝天多维/%s-%s-%s/",RePath,trainNum,year,month,day);
-    SourPath.Format("%s/6A-VIDEO-%s-北京蓝天多维/%s-%s-%s/", RePath, trainNum, year, month, day);
+    SourPath.Format("%s/LT-VIDEO-%s-北京蓝天多维/%s-%s-%s/", RePath, trainNum, year, month, day);
     /*if (atoi(day) != time.GetDay())
     {
         SourPath2.Format("%s/LT-VIDEO-%s-北京蓝天多维/%02d-%02d-%02d/",RePath,trainNum,time.GetYear(),time.GetMonth(),time.GetDay());
