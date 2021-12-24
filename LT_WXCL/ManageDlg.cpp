@@ -525,7 +525,7 @@ BOOL CManageDlg::OnInitDialog()
     // 位置
     CRect rc;
     this->GetClientRect(&rc);
-    program_version.MoveWindow(rc.left + 10, rc.bottom - 50, 200, 50);
+    program_version.MoveWindow(20, 530, 100, 50);
 
     return TRUE;  // return TRUE unless you set the focus to a control
     // 异常: OCX 属性页应返回 FALSE

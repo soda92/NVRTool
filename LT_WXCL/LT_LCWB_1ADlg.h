@@ -37,6 +37,7 @@ public:
 
 	CBrush m_brush;
 	CFont newFont;
+    CFont font_150;
 
 	int VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd);
 

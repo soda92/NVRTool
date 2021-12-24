@@ -152,9 +152,8 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
     stop_warn.SetBkColor(RGB(0, 0, 0));
     stop_warn.SetForeColor(RGB(255, 255, 255));
 
-    CFont font;
-    font.CreatePointFont(150, "黑体");
-    stop_warn.SetFont(&font);
+    font_150.CreatePointFont(150, "黑体");
+    stop_warn.SetFont(&font_150);
 
 #if !defined(_DEBUG)
 	CWaitDlg dlg;
