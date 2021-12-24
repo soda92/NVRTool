@@ -135,6 +135,7 @@
     <ClInclude Include="LogDlg.h" />
     <ClInclude Include="LogView.h" />
     <ClInclude Include="LT_LCWB_1AView.h" />
+    <ClInclude Include="ManageView.h" />
     <ClInclude Include="MyButton.h" />
     <ClInclude Include="MyTabCtrl.h" />
     <ClInclude Include="FireMsgDlg.h" />
@@ -160,6 +161,7 @@
     <ClCompile Include="LogDlg.cpp" />
     <ClCompile Include="LogView.cpp" />
     <ClCompile Include="LT_LCWB_1AView.cpp" />
+    <ClCompile Include="ManageView.cpp" />
     <ClCompile Include="MyButton.cpp" />
     <ClCompile Include="MyTabCtrl.cpp" />
     <ClCompile Include="FireMsgDlg.cpp" />

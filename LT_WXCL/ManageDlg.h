@@ -3,6 +3,7 @@
 #include "afxwin.h"
 #include "ListCtrlCl.h"
 #include "resource.h"
+#include <vector>
 
 // CManageDlg 对话框
 
@@ -21,6 +22,8 @@ public:
 
 	int SetIPCState();
 	int SetHDDState();
+
+    char OnlineDev[6] = {0}; // 在线设备
 	int FindAndDeleteRecord(CString Path);
 	CString FindDir(char* HddPath);
 	BOOL IsHDD(char* Path);
@@ -49,4 +52,10 @@ public:
 	CStatic m_static_hard;
 
 	char RecordFlag[20];//录像保存标志
+
+    int StartURecord(char* uPath);
+    BOOL URecordFlag; // U盘转存标记
+    bool URecordStatus[6] = { false }; // 通道U盘保存状态
+
+    TCHAR szRootPathName[MAX_PATH] = ""; // U盘目录
 };

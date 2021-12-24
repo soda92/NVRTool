@@ -337,3 +337,273 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
     }
     return 0;
 }
+
+
+int WINAPI Thread_UDrive(LPVOID lpPara)
+{
+    CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
+
+    //////////////////////////////////////////////////////////////////////////
+    Sleep(1000);//等待1S后开始执行
+    //////////////////////////////////////////////////////////////////////////
+    char szLogicalDriveStrings[BUFSIZ] = "";
+    GetLogicalDriveStrings(BUFSIZ - 1, szLogicalDriveStrings);
+    char* pDrive = szLogicalDriveStrings;
+    UINT uDriveType;
+    while (1)
+    {
+        uDriveType = GetDriveType(pDrive);
+        TRACE("driver = %s,type = %d\n", pDrive, uDriveType);
+        //DRIVE_UNKNOWN
+        if (uDriveType == DRIVE_REMOVABLE)
+        {
+
+            if (dlg->m_ManageDlg.IsHDD(pDrive))
+            {
+                continue;
+            }
+            if (dlg->m_ManageDlg.StartURecord(pDrive) != -1)
+            {
+                strcpy(dlg->m_ManageDlg.szRootPathName, pDrive);
+            }
+            break;
+        }
+        pDrive += strlen(pDrive) + 1;
+        if (strlen(pDrive) == 0)
+        {
+            break;
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////
+    CString Path;
+    while (1)//usb检测
+    {
+        Sleep(5 * 1000);
+        if (!strcmp(dlg->m_ManageDlg.szRootPathName, ""))
+        {
+            dlg->m_ManageDlg.URecordFlag = FALSE;
+            //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(FALSE);
+            TRACE("no usb\n");
+        }
+        else
+        {
+
+            Path.Format("%slost+found", dlg->m_ManageDlg.szRootPathName);
+            int res = 0;
+            if (CreateDirectory(Path, NULL) == 0)
+            {
+                res = GetLastError();
+                if (res == 3)
+                {
+                    TRACE("usb path error\n");
+                    memset(dlg->m_ManageDlg.szRootPathName, 0, sizeof(dlg->m_ManageDlg.szRootPathName));
+                    dlg->m_ManageDlg.URecordFlag = FALSE;
+
+                    //IOCtrl(LED_DOWNLOAD, FALSE);
+                    //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(FALSE);
+                    //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(FALSE);
+                    continue;
+                }
+            }
+            TRACE("usb on\n");
+            //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(TRUE);
+        }
+
+        if (dlg->m_ManageDlg.URecordFlag)
+        {
+            //dlg->SetDlgItemText(IDC_BUTTON_URE, "外挂");
+            //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(TRUE);
+            //IOCtrl(LED_DOWNLOAD, TRUE);
+        }
+        else
+        {
+            char buf[10] = "";
+            //dlg->GetDlgItemText(IDC_BUTTON_URE, buf, 10);
+            if (strstr(buf, "下载") == NULL)
+            {
+                //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(FALSE);
+                //IOCtrl(LED_DOWNLOAD, FALSE);
+            }
+
+        }
+    }
+    return 0;
+}
+
+
+int WINAPI Thread_Index(LPVOID lpPara)
+{
+    CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
+    //创建文件夹
+    CString Path;
+    CString File;
+
+    char hddPath[20] = "";
+    GetPrivateProfileString("NewFireProof", "HDD", "D://", hddPath, 20, ".//NewFireProof.ini");
+
+    if (!dlg->m_ManageDlg.IsHDD(hddPath))
+    {
+        if (dlg->m_ManageDlg.IsHDD("e://"))
+        {
+            strcpy(hddPath, "e://");
+        }
+        else if (dlg->m_ManageDlg.IsHDD("f://"))
+        {
+            strcpy(hddPath, "f://");
+        }
+    }
+
+    Path.Format("%slost+found", hddPath);
+    int res = 0;
+    if (CreateDirectory(Path, NULL) == 0)
+    {
+        res = GetLastError();
+        if (res == 3)
+        {
+            //AfxMessageBox("录像存储路径不正确，请修改配置文件中的路径。");
+            return -1;
+        }
+    }
+
+    char TrainNum[50] = "";
+    GetPrivateProfileString("NewFireProof", "TrainNum", "No0000", TrainNum, 50, ".//NewFireProof.ini");
+    //Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",hddPath,TrainNum);	
+    Path.Format("%s/6A-VIDEO-%s-北京蓝天多维/", hddPath, TrainNum);
+    CreateDirectory(Path, NULL);
+
+    SYSTEMTIME Time, TimeBuf;
+    GetLocalTime(&TimeBuf);
+    char FilePath[200] = "";
+
+    sprintf_s(FilePath, "%s/%d-%02d-%02d/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
+    CreateDirectory(FilePath, NULL);
+    GetLocalTime(&Time);
+    char FileName[200] = "";
+
+    TAXDATA TaxData = dlg->TaxData;
+
+    while (1)
+    {
+        Sleep(1000);
+        GetLocalTime(&Time);
+        if (Time.wYear != TimeBuf.wYear || Time.wMonth != TimeBuf.wMonth || Time.wDay != TimeBuf.wDay)
+        {
+            memset(FilePath, 0, sizeof(FilePath));
+
+            GetLocalTime(&TimeBuf);
+            sprintf_s(FilePath, "%s/%d-%02d-%02d/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
+            CreateDirectory(FilePath, NULL);
+        }
+
+        sprintf_s(FileName, "%s/%s_北京蓝天多维_%d%02d%02d.idx", FilePath, TrainNum, Time.wYear, Time.wMonth, Time.wDay);
+
+        if (TaxData.EngineNo != 0)
+        {
+
+            //////////////////////////////////////////////////////////////////////////
+            unsigned char IdxBuf[100] = "";
+
+            IdxBuf[0] = 0xAA;
+            IdxBuf[1] = 0xAA;
+            IdxBuf[2] = 0x60;
+
+            IdxBuf[4] = 0x07;
+
+            IdxBuf[5] = Time.wYear - 2000;
+            IdxBuf[6] = Time.wMonth;
+            IdxBuf[7] = Time.wDay;
+            IdxBuf[8] = Time.wHour;
+            IdxBuf[9] = Time.wMinute;
+            IdxBuf[10] = Time.wSecond;
+
+            strcpy((char*)&IdxBuf[11], TrainNum);
+
+            /*for (int i=0;i<16;i++)
+            {
+            IdxBuf[11+i] = TrainNum[i];
+            }*/
+
+            // TODO
+           /* IdxBuf[32] = TaxData.TrainType;
+            IdxBuf[33] = TaxData.TrainType >> 8;
+            IdxBuf[34] = TaxData.TrainType >> 16;
+            IdxBuf[35] = TaxData.TrainType >> 24;*/
+
+            IdxBuf[32] = {0};
+            IdxBuf[33] = {0};
+            IdxBuf[34] = {0};
+            IdxBuf[35] = {0};
+
+            IdxBuf[36] = TaxData.TrainNum;
+            IdxBuf[37] = TaxData.TrainNum >> 8;
+            IdxBuf[38] = TaxData.TrainNum >> 16;
+
+            IdxBuf[39] = TaxData.StationNo;
+
+            IdxBuf[41] = TaxData.DriverNo;
+            IdxBuf[42] = TaxData.DriverNo >> 8;
+
+            IdxBuf[44] = TaxData.CopilotNo;
+            IdxBuf[45] = TaxData.CopilotNo >> 8;
+
+            IdxBuf[51] = TaxData.FactRoute;
+
+            IdxBuf[52] = TaxData.TrainFlag;
+
+            IdxBuf[53] = TaxData.Speed;
+
+            IdxBuf[56] = TaxData.TrainSign;
+            IdxBuf[57] = TaxData.TrainState;
+
+            IdxBuf[58] = TaxData.SignNo;
+            IdxBuf[59] = TaxData.SignNo >> 8;
+            IdxBuf[60] = TaxData.SignType;
+
+            IdxBuf[61] = TaxData.Signpost;
+            IdxBuf[62] = TaxData.Signpost >> 8;
+            IdxBuf[63] = TaxData.Signpost >> 16;
+
+            IdxBuf[64] = TaxData.CarWeight;
+            IdxBuf[65] = TaxData.CarWeight >> 8;
+
+            IdxBuf[66] = TaxData.CarLong;
+            IdxBuf[67] = TaxData.CarLong >> 8;
+
+            IdxBuf[68] = TaxData.CarCount;
+
+            IdxBuf[69] = TaxData.PipePressure;
+            IdxBuf[70] = TaxData.PipePressure >> 8;
+
+            for (int i = 0; i < 95; i++)
+            {
+                IdxBuf[95] += IdxBuf[i];
+            }
+            //////////////////////////////////////////////////////////////////////////
+
+            FILE* fd = fopen(FileName, "ab+");
+            if (fd)
+            {
+                fwrite(IdxBuf, 1, 96, fd);
+                fclose(fd);
+                fd = nullptr;
+            }
+
+            if (dlg->m_ManageDlg.URecordFlag)
+            {
+                FileName[0] = dlg->m_ManageDlg.szRootPathName[0];
+
+                fd = fopen(FileName, "ab+");
+                if (fd)
+                {
+                    fwrite(IdxBuf, 1, 96, fd);
+                    fclose(fd);
+                    fd = nullptr;
+                }
+
+            }
+        }
+    }
+
+
+    return 0;
+}

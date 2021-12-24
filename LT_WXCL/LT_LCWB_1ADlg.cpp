@@ -17,6 +17,8 @@
 #include "LogView.h"
 #include "LT_LCWB_1AView.h"
 
+#include "ManageView.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -54,6 +56,7 @@ void CLT_LCWB_1ADlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CLT_LCWB_1ADlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+    ON_WM_DEVICECHANGE()
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CLT_LCWB_1ADlg::OnTcnSelchangeTab1)
 	ON_WM_TIMER()
     ON_BN_CLICKED(IDC_BUTTON_STOPWARN, &CLT_LCWB_1ADlg::OnBnClickedStopWarn)
@@ -86,6 +89,37 @@ int __stdcall VideoStateCB(LONG nPort, char type, char* error)
 BOOL CLT_LCWB_1ADlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+    constexpr static GUID GUID_DEVINTERFACE_LIST[] =
+    {
+        // GUID_DEVINTERFACE_USB_DEVICE
+        { 0xA5DCBF10, 0x6530, 0x11D2, { 0x90, 0x1F, 0x00, 0xC0, 0x4F, 0xB9, 0x51, 0xED } },
+
+        // GUID_DEVINTERFACE_DISK
+        { 0x53f56307, 0xb6bf, 0x11d0, { 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b } },
+
+        // GUID_DEVINTERFACE_HID, 
+        { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } },
+
+        // GUID_NDIS_LAN_CLASS
+        { 0xad498944, 0x762f, 0x11d0, { 0x8d, 0xcb, 0x00, 0xc0, 0x4f, 0xc3, 0x35, 0x8c } }
+
+    };
+    // Register DEVICE message
+    HDEVNOTIFY hDevNotify;
+    DEV_BROADCAST_DEVICEINTERFACE NotificationFilter;
+    ZeroMemory(&NotificationFilter, sizeof(NotificationFilter));
+    NotificationFilter.dbcc_size = sizeof(DEV_BROADCAST_DEVICEINTERFACE);
+    NotificationFilter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+    for (int i = 0; i < sizeof(GUID_DEVINTERFACE_LIST) / sizeof(GUID); i++)
+    {
+        NotificationFilter.dbcc_classguid = GUID_DEVINTERFACE_LIST[i];
+        hDevNotify = RegisterDeviceNotification(this->GetSafeHwnd(), &NotificationFilter, DEVICE_NOTIFY_WINDOW_HANDLE);
+        if (!hDevNotify)
+        {
+            return FALSE;
+        }
+    }
 
     // 初始化PLOG
 	plog::init(plog::debug, "log.txt"); // Step2: initialize the logger
@@ -202,8 +236,9 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_UDPBroadcastRecv, this, 0, NULL);
 	}
 
-	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Voice, this, 0, NULL);
-
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Voice, this, 0, NULL);
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_UDrive, this, 0, NULL); // 开启u盘检测线程
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Index, this, 0, NULL); // 开启公共信息记录线程
 
     // 系统启动
     logn::system_start();
@@ -474,70 +509,46 @@ char FirstDriveFromMask(ULONG unitmask)
 	return (i + 'A');
 }
 
+LONG JudgeDeviceLetter(LONG nFlags)
+{
+    int i;
+    for (i = 0; i < 26; i++)
+    {
+        if (nFlags & 1)
+            break;
+        nFlags = nFlags >> 1;
+    }
+    return i + 'A';
+}
+
 BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 {
 	//MessageBox("收到消息");
-	CString detectMsg;
-	PDEV_BROADCAST_HDR lpdb = (PDEV_BROADCAST_HDR)dwData;
 
-	switch (nEventType)
-	{
-	case DBT_DEVICEREMOVECOMPLETE: //U盘拔出
-	{
-		if (lpdb->dbch_devicetype == DBT_DEVTYP_VOLUME) //逻辑卷
-		{
-			PDEV_BROADCAST_VOLUME lpdbv = (PDEV_BROADCAST_VOLUME)lpdb;
-			switch (lpdbv->dbcv_flags)
-			{
-			case 0: //U盘
-			{
-				// 						CString decDriver;
-				// 						decDriver = FirstDriveFromMask(lpdbv ->dbcv_unitmask);
-				// 						detectMsg.Format(_T("检测到U盘:[%s]拔出!"), decDriver.GetBuffer(0));
-				// 						MessageBox(detectMsg,0);
-			}
-			break;
-			case DBTF_MEDIA: //光盘
+    DEV_BROADCAST_VOLUME* pDevVolume = (DEV_BROADCAST_VOLUME*)dwData;
+    if (nEventType != DBT_DEVICEARRIVAL)
+        return TRUE;
 
-				break;
-			}
-		}
-	}
-	break;
-	case DBT_DEVICEARRIVAL: //U盘插入
-	{
-		if (lpdb->dbch_devicetype == DBT_DEVTYP_VOLUME) //逻辑卷
-		{
-			PDEV_BROADCAST_VOLUME lpdbv = (PDEV_BROADCAST_VOLUME)lpdb;
-			switch (lpdbv->dbcv_flags)
-			{
-			case 0: //U盘
-			{
-				CString decDriver, fileName;
-				decDriver = FirstDriveFromMask(lpdbv->dbcv_unitmask);
-				detectMsg.Format(_T("检测到U盘[%s：]插入!\n是否拷贝空转数据到 [%s：]盘？"), decDriver.GetBuffer(0), decDriver.GetBuffer(0));
+    if (pDevVolume->dbcv_devicetype != DBT_DEVTYP_VOLUME)
+        return TRUE;
 
-				fileName.Format("%s:/license.txt", decDriver.GetBuffer(0));
-				CFile file1;
-				if (file1.Open(fileName, CFile::modeRead))
-				{
-					if (MessageBox(detectMsg, "U盘插入提示", MB_SYSTEMMODAL | MB_YESNO) == 6)
-					{
-						//拷贝文件
-						/*m_RacingDlg.set_Upath(decDriver.GetBuffer(0));
-						m_RacingDlg.copyToU();*/
-					}
-				}
-				file1.Close();
-			}
-			break;
-			case DBTF_MEDIA: //光盘
-				break;
-			}
-		}
-	}
-	break;
-	}
+    int nDisk = JudgeDeviceLetter(pDevVolume->dbcv_unitmask);
+
+    TCHAR uPath[100] = "";
+    _sntprintf_s(uPath, MAX_PATH, _T("%c:\\"), nDisk);
+
+    if (m_ManageDlg.IsHDD(uPath))
+    {
+        return FALSE;
+    }
+
+    memcpy(m_ManageDlg.szRootPathName, uPath, sizeof(uPath));
+
+    //strcat(szRootPathName,"Record");
+    //MessageBox(szRootPathName);   //获取到u盘的根目录
+
+
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_DownLoad, this, 0, NULL);//开启下载线程
 
 	return TRUE;
 }

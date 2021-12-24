@@ -59,7 +59,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 			{
 				Num = 0;
 
-				if (MainDlg->TaxData.TrainNum != 0 && MainDlg->TaxData.EngineNo != 0 && MainDlg->TaxData.Speed != 0)
+				if (MainDlg->TaxData.TrainNum != 0 && MainDlg->TaxData.EngineNo != 0 && MainDlg->TaxData.PipePressure != 0)
 				{
 					SendBuf[0] = 0xFF;
 					SendBuf[1] = 0x03;
@@ -90,7 +90,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 						time.wSecond = MainDlg->TaxData.TAXTime.Second;
 
 						SetLocalTime(&time);
-						NET_DVR_TIME NvrTime;
+						NET_DVR_TIME NvrTime = {0};
 
 						NvrTime.dwYear = time.wYear;
 						NvrTime.dwMonth = time.wMonth;

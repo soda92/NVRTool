@@ -44,7 +44,7 @@ public:
         char* CheHao, char pos, char* SiJiHao);
 	int TimeCFG();
 
-	TAXDATA TaxData;
+	TAXDATA TaxData; // TAX数据
 	BOOL TaxStat;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -84,4 +84,5 @@ public:
 
     // 判断FireMsgDlg是否已经退出
     bool firemsgdlg_exited = false;
+
 };

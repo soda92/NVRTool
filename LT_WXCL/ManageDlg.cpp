@@ -7,13 +7,9 @@
 #include "afxdialogex.h"
 
 #include "VideoPlay.h"
+#include "ManageView.h"
 
 // CManageDlg 对话框
-
-//char RecordFlag[20] = "";//录像保存标志
-char TrainNum[50] = "";//车型车号
-char IPCName[12][50] = { 0 };//保存通道名称
-
 
 IMPLEMENT_DYNAMIC(CManageDlg, CDialogEx)
 
@@ -54,13 +50,16 @@ int CManageDlg::SetIPCState()
         if (RecordFlag[i] == 1)
         {
             m_IPCStateList.SetItemText(i, 4, _T("录像"));
-
             m_IPCStateList.SetItemTextColor(4, i, RGB(0, 255, 0));
+
+            OnlineDev[i] = 1;
         }
         else
         {
             m_IPCStateList.SetItemText(i, 4, _T("未录像"));
             m_IPCStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
+
+            OnlineDev[i] = 0;
         }
         Sleep(100);
     }
@@ -438,6 +437,36 @@ int CManageDlg::SetHDDState()
         //((CLDFM4EVideoDlg*)theApp.pMainDlg)->SetFireText("硬盘故障！！！");
     }
 
+    //U
+    if (URecordFlag && strcmp(UPath, ""))
+    {
+        //////////////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////////////
+        ULARGE_INTEGER uFreeAv, uTotalBytes, uFreeBytes;
+        if (GetDiskFreeSpaceEx(UPath, &uFreeAv, &uTotalBytes, &uFreeBytes))
+        {
+            //////////////////////////////////////////////////////////////////////////
+            TRACE("u = %d\n", uFreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
+
+
+            //////////////////////////////////////////////////////////////////////////
+            //小于2G时删除
+            if (uFreeAv.QuadPart / (ULONGLONG)(1024 * 1024 * 1024) <= 1 && (uTotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024)) > 0)
+            {
+
+                CString uPath;
+                uPath.Format("%s/%s/", UPath, FindDir(UPath));
+                //uPath.Format("%s/LT-VIDEO-%s-北京蓝天多维/",UPath,TrainNum);
+                //uPath.Format("%s/6A-VIDEO-%s-北京蓝天多维/",UPath,TrainNum);
+
+                FindAndDeleteRecord(uPath);
+
+            }
+        }
+    }
+
+
 
     return 0;
 }
@@ -445,6 +474,8 @@ int CManageDlg::SetHDDState()
 BOOL CManageDlg::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
+
+    ManageView::init();
 
     //背景画刷
     m_brush.CreateSolidBrush(RGB(0, 0, 0));
@@ -475,9 +506,7 @@ BOOL CManageDlg::OnInitDialog()
     m_HDDStateList.SetTextColor(RGB(255, 255, 255));
 
 
-    // TODO:  在此添加额外的初始化
     GetPrivateProfileString(_T("LT_WXCLCFG"), _T("HDD"), _T("D://"), theApp.HDDPath, 20, _T(".//LT_WXCLCFG.ini"));
-    GetPrivateProfileString(_T("LT_WXCLCFG"), _T("TrainNum"), _T("No00000"), TrainNum, 50, _T(".//LT_WXCLCFG.ini"));
 
     InitList();
     SetList();
