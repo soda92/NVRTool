@@ -87,8 +87,7 @@
     </ResourceCompile>
     <PostBuildEvent>
       <Command>copy LT_WXCLCFG.ini $(OutputPath)</Command>
-      <Command>pwsh $(MSBuildProjectDirectory)/afterbuild.ps1 $(OutputPath)
-</Command>
+      <Command>pwsh $(MSBuildProjectDirectory)/afterbuild.ps1 $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,7 +119,7 @@
     </ResourceCompile>
     <PostBuildEvent>
       <Command>copy LT_WXCLCFG.ini $(OutputPath)</Command>
-      <Command>type nul &gt; $(OutputPath)/log.txt</Command>
+      <Command>pwsh $(MSBuildProjectDirectory)/afterbuild.ps1 $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

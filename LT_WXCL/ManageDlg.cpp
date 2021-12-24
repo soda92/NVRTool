@@ -31,6 +31,7 @@ void CManageDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_LIST_HDD, m_HDDStateList);
     DDX_Control(pDX, IDC_STATIC1, m_static_device);
     DDX_Control(pDX, IDC_STATIC2, m_static_hard);
+    DDX_Control(pDX, IDC_PROGRAM_VERSION, program_version);
 }
 
 
@@ -514,6 +515,17 @@ BOOL CManageDlg::OnInitDialog()
 
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_State, this, 0, NULL);//开启状态查询线程
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Record, this, 0, NULL);//开启录像线程
+
+    // 软件版本显示
+    std::string version = ManageView::get_version();
+    CString version_cstr{ version.c_str() };
+    program_version.SetWindowText(version_cstr);
+    //字体
+    program_version.SetFont(&newFont1);
+    // 位置
+    CRect rc;
+    this->GetClientRect(&rc);
+    program_version.MoveWindow(rc.left + 10, rc.bottom - 50, 200, 50);
 
     return TRUE;  // return TRUE unless you set the focus to a control
     // 异常: OCX 属性页应返回 FALSE

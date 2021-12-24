@@ -10,6 +10,11 @@
 #include "ManageView.h"
 
 #include "util.h"
+#include "resource.h"
+
+#include <string>
+#include <boost/filesystem.hpp>
+#include <fstream>
 
 char UPath[20] = { 0 }; // u盘转存路径
 char TrainNum[50] = { 0 }; // 车型车号
@@ -29,6 +34,23 @@ namespace ManageView {
 
             strcpy_s(IPCName[i], ipc);
         }
+    }
+
+    std::string get_version() {
+        boost::filesystem::path full_path(boost::filesystem::current_path());
+        
+        std::vector<std::string> lines;
+        std::ifstream in{ "CHANGELOG.md" };
+        std::string line;
+        while (std::getline(in, line)) {
+            if (line.find('v') != std::string::npos) {
+                lines.push_back(line);
+            }
+        }
+        std::string version_str = lines[lines.size() - 1];
+        std::string version = version_str.substr(version_str.find('v'),
+            version_str.length() - version_str.find('v'));
+        return version;
     }
 }
 

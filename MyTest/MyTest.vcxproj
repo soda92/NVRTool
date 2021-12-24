@@ -43,6 +43,7 @@
     <ClCompile Include="..\LT_WXCL\util.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="test.cpp" />
+    <ClCompile Include="test_version.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LT_WXCL\LT_WXCL.vcxproj">
@@ -67,6 +68,8 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>../LT_WXCL;../LT_WXCL/include;$(MSBuildThisFileDirectory)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

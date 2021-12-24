@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 extern char UPath[20]; // u盘转存路径
 extern char TrainNum[50]; // 车型车号
@@ -11,4 +12,5 @@ int WINAPI Thread_DownLoad(LPVOID lpPara);
 
 namespace ManageView {
     void init();
+    std::string get_version();
 }

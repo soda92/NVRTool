@@ -50,6 +50,7 @@ private:
 public:
 	CStatic m_static_device;
 	CStatic m_static_hard;
+    CStatic program_version;
 
 	char RecordFlag[20];//Â¼Ïñ±£´æ±êÖ¾
 
