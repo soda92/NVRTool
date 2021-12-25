@@ -349,18 +349,34 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* Ch
 	struShowString.struStringInfo[2].wShowStringTopLeftX = 360; //320
 	struShowString.struStringInfo[2].wShowStringTopLeftY = 540;
 
-	if (m_ManageDlg.RecordFlag[pos])
-	{
-		struShowString.struStringInfo[3].wShowString = 1;
-		struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen("REC"));
-		strcpy_s(struShowString.struStringInfo[3].sString, "REC");
-		struShowString.struStringInfo[3].wShowStringTopLeftX = 5;
-		struShowString.struStringInfo[3].wShowStringTopLeftY = 80;
-	}
-	else
-	{
-		struShowString.struStringInfo[3].wShowString = 0;
-	}
+    if (m_ManageDlg.URecordStatus[pos] && m_ManageDlg.RecordFlag[pos]) {
+        struShowString.struStringInfo[3].wShowString = 1;
+        struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen("REC USB"));
+        strcpy_s(struShowString.struStringInfo[3].sString, "REC USB");
+        struShowString.struStringInfo[3].wShowStringTopLeftX = 30;
+        struShowString.struStringInfo[3].wShowStringTopLeftY = 100;
+    }
+    else {
+        if (m_ManageDlg.RecordFlag[pos])
+        {
+            struShowString.struStringInfo[3].wShowString = 1;
+            struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen("REC"));
+            strcpy_s(struShowString.struStringInfo[3].sString, "REC");
+            struShowString.struStringInfo[3].wShowStringTopLeftX = 30;
+            struShowString.struStringInfo[3].wShowStringTopLeftY = 100;
+        }
+        else if (m_ManageDlg.URecordStatus[pos]) {
+            struShowString.struStringInfo[3].wShowString = 1;
+            struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen("USB"));
+            strcpy_s(struShowString.struStringInfo[3].sString, "USB");
+            struShowString.struStringInfo[3].wShowStringTopLeftX = 30;
+            struShowString.struStringInfo[3].wShowStringTopLeftY = 100;
+        }
+        else
+        {
+            struShowString.struStringInfo[3].wShowString = 0;
+        }
+    }
 
 	struShowString.dwSize = sizeof(struShowString);
 

@@ -323,8 +323,13 @@ int WINAPI Thread_Record(LPVOID lpPara)
         {
             if (dlg->RecordFlag[i] == 0)
             {
-                File.Format("rtsp://admin:hk123456@192.168.10%d.%d%d:554/",
-                    atoi(&theApp.Local[0]), (theApp.Local[1] == 'A' ? 7 : 8), i);
+                if (theApp.Local[1] == 'A') {
+                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i);
+                }
+                else {
+                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i);
+                }
+
                 if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
                     Path.GetBuffer(Path.GetLength()),
                     TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i + 6)],
@@ -350,8 +355,13 @@ int WINAPI Thread_Record(LPVOID lpPara)
         {
             if (dlg->RecordFlag[i] == 0)
             {
-                File.Format("rtsp://admin:hk123456@192.168.10%d.%d%d:554/",
-                    atoi(&theApp.Local[0]), (theApp.Local[1] == 'A' ? 8 : 7), i - 6);
+                if (theApp.Local[1] == 'A') {
+                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i - 6);
+                }
+                else {
+                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i - 6);
+                }
+
                 if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
                     Path.GetBuffer(Path.GetLength()),
                     TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i - 6)],

@@ -108,8 +108,9 @@ int WINAPI Thread_URecord(LPVOID lpPara)
                     if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
                         Path.GetBuffer(Path.GetLength()),
                         TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i + 6)],
-                        // ID，用于停止录像
-                        (theApp.Local[1] == 'A' ? i : i + 6) + 1) == -1)
+                        // 通道号
+                        (theApp.Local[1] == 'A' ? i : i + 6) + 1)
+                        == -1)
                     {
                         dlg->URecordStatus[i] = false;
                         PLOGD << IPCName[(theApp.Local[1] == 'A' ? i : i + 6)] << " 通道录像连接错误！";
@@ -129,7 +130,7 @@ int WINAPI Thread_URecord(LPVOID lpPara)
     }
     for (int i = 0; i < 6; i++)
     {
-        Video_StopRecord(i + 10 + 1);
+        Video_StopRecord(i + 12 + 1);
         dlg->URecordStatus[i] = false;
     }
     return 0;
@@ -144,7 +145,7 @@ int CManageDlg::StartURecord(char* uPath)
         Sleep(12 * 1000);//wait 12s
         for (int i = 0; i < 6; i++)
         {
-            Video_StopRecord(i + 10 + 1);
+            Video_StopRecord(i + 12 + 1);
             URecordStatus[i] = false;
         }
         Sleep(1000);
