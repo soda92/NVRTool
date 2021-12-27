@@ -6,6 +6,7 @@
 
 #include "VideoPlay.h"
 #include "ManageDlg.h"
+#include "DownloadDialog.h"
 
 #include "ManageView.h"
 
@@ -15,6 +16,10 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include <fstream>
+#include <filesystem>
+#include <array>
+#include <vector>
+
 
 char UPath[20] = { 0 }; // u盘转存路径
 char TrainNum[50] = { 0 }; // 车型车号
@@ -34,6 +39,11 @@ namespace ManageView {
 
             strcpy_s(IPCName[i], ipc);
         }
+
+
+      /*  DownloadDialog download_dialog;
+        download_dialog.DoModal();*/
+
     }
 
     std::string get_version() {
@@ -395,6 +405,9 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
 
     FPath.Format("%s/*.mp4", SourPath);
     BOOL res = ff.FindFile(FPath);
+
+    std::vector<std::array<std::string, 2>> paths;
+
     while (res)
     {
         res = ff.FindNextFile();
@@ -431,7 +444,10 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
                         SourFile = SourPath + FileName;
                         DestFile = dlg->m_ManageDlg.szRootPathName + FileName;
                         TRACE("sourFile = %s,desFile = %s\n", SourFile, DestFile);
-                        CopyFile(SourFile, DestFile, FALSE);
+                        std::string source{ SourFile.GetString() };
+                        std::string destination{ DestFile.GetString() };
+                        paths.push_back(std::array{ source, destination });
+                        //CopyFile(SourFile, DestFile, FALSE);
                     }
 
                 }
@@ -443,8 +459,8 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
     //////////////////////////////////////////////////////////////////////////
     if (atoi(day) != time.GetDay())
     {
-        //SourPath2.Format("%s/LT-VIDEO-%s-北京蓝天多维/%02d-%02d-%02d/",RePath,trainNum,time.GetYear(),time.GetMonth(),time.GetDay());
-        SourPath2.Format("%s/6A-VIDEO-%s-北京蓝天多维/%02d-%02d-%02d/", RePath, trainNum, time.GetYear(), time.GetMonth(), time.GetDay());
+        SourPath2.Format("%s/LT-VIDEO-%s-北京蓝天多维/%02d-%02d-%02d/",RePath,trainNum,time.GetYear(),time.GetMonth(),time.GetDay());
+        //SourPath2.Format("%s/6A-VIDEO-%s-北京蓝天多维/%02d-%02d-%02d/", RePath, trainNum, time.GetYear(), time.GetMonth(), time.GetDay());
         FPath.Format("%s/*.mp4", SourPath2);
         res = ff.FindFile(FPath);
         while (res)
@@ -483,7 +499,10 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
                             SourFile = SourPath2 + FileName;
                             DestFile = dlg->m_ManageDlg.szRootPathName + FileName;
                             TRACE("sourFile = %s,desFile = %s\n", SourFile, DestFile);
-                            CopyFile(SourFile, DestFile, FALSE);
+                            std::string source{ SourFile.GetString() };
+                            std::string destination{ DestFile.GetString() };
+                            paths.push_back(std::array{ source, destination });
+                            //CopyFile(SourFile, DestFile, FALSE);
                         }
 
                     }
@@ -502,7 +521,11 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
     //dlg->m_ManagerDlg.StartURecord(UPath);
 
 
-    //////////////////////////////////////////////////////////////////////////	
+    //////////////////////////////////////////////////////////////////////////
+
+    DownloadDialog download_dialog;
+    download_dialog.paths = paths;
+    download_dialog.DoModal();
 
     return 0;
 }
