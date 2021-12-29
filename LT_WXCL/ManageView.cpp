@@ -15,6 +15,11 @@
 #include <string>
 #include <boost/filesystem.hpp>
 #include <fstream>
+#include <boost/process.hpp>
+#include <boost/process/start_dir.hpp>
+
+#include "config.h"
+
 
 char UPath[20] = { 0 }; // u盘转存路径
 char TrainNum[50] = { 0 }; // 车型车号
@@ -326,183 +331,20 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
         return -1;
     }
 
+    
     //log
     PLOGD << "U盘下载";
 
-    sprintf_s(TimeBe, "%s%s%s_%s%s", year, month, day, hour, minute);
-    /*char Dhour = 0;
-    Dhour = strtod(hour,nullptr)+strtod(span,nullptr);
-    sprintf_s(TimeEn,"%s%s%s_%d%s",year,month,day,Dhour,minute);*/
-    char Dhour = 0;
-    CTime time(atoi(year), atoi(month), atoi(day), atoi(hour), atoi(minute), 0);
-    CTimeSpan TimeSpan(0, atoi(span), 0, 0);
-    time += TimeSpan;
-    sprintf_s(TimeEn, "%d%02d%02d_%02d%02d", time.GetYear(), time.GetMonth(), time.GetDay(), time.GetHour(), time.GetMinute());
+    namespace bp = boost::process;
+    auto curr = boost::filesystem::current_path();
+#if defined(DEBUG)
+    bp::system("../../py-TaiYuan/dist/copy_file.exe", bp::start_dir(config::start_dir));
+#else
+    bp::system("../../py-TaiYuan/dist/copy_file.exe", "--release", "True", bp::start_dir(config::start_dir));
+#endif
 
-    //IOCtrl(LED_DOWNLOAD, TRUE);
-    //dlg->SetDlgItemText(IDC_BUTTON_URE, "下载");
-    //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(TRUE);
-    //////////////////////////////////////////////////////////////////////////
-    //创建路径
-    strcat_s(dlg->m_ManageDlg.szRootPathName, "\\LT_视频下载\\");
-    CreateDirectory(dlg->m_ManageDlg.szRootPathName, NULL);
-    char trainNum[50] = "";
-    GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No0000", trainNum, 50, ".//LT_WXCLCFG.ini");
-    strcat_s(dlg->m_ManageDlg.szRootPathName, trainNum);
-    CreateDirectory(dlg->m_ManageDlg.szRootPathName, NULL);
-    sprintf_s(dlg->m_ManageDlg.szRootPathName, "%s\\%s-%s\\", dlg->m_ManageDlg.szRootPathName, TimeBe, TimeEn);
-    CreateDirectory(dlg->m_ManageDlg.szRootPathName, NULL);
-
-
-    //////////////////////////////////////////////////////////////////////////
-
-
-    //////////////////////////////////////////////////////////////////////////
-
-    CString SourPath;
-    CString SourPath2;
-    //CString DestPath;
-
-    CString FileBe;
-    CString FileEn;
-
-    char RePath[20] = "";
-    GetPrivateProfileString("LT_WXCLCFG", "HDD", "D://", RePath, 20, ".//LT_WXCLCFG.ini");
-
-    //////////////////////////////////////////////////////////////////////////
-    if (!dlg->m_ManageDlg.IsHDD(RePath))
-    {
-        if (dlg->m_ManageDlg.IsHDD("e://"))
-        {
-            strcpy_s(RePath, "e://");
-        }
-        else if (dlg->m_ManageDlg.IsHDD("f://"))
-        {
-            strcpy_s(RePath, "f://");
-        }
-    }
-    //////////////////////////////////////////////////////////////////////////
-    //SourPath.Format("%s/LT-VIDEO-%s-北京蓝天多维/%s-%s-%s/",RePath,trainNum,year,month,day);
-    SourPath.Format("%s/LT-VIDEO-%s-北京蓝天多维/%s-%s-%s/", RePath, trainNum, year, month, day);
-    /*if (atoi(day) != time.GetDay())
-    {
-        SourPath2.Format("%s/LT-VIDEO-%s-北京蓝天多维/%02d-%02d-%02d/",RePath,trainNum,time.GetYear(),time.GetMonth(),time.GetDay());
-    }*/
-
-    CFileFind ff;
-    CString FPath;
-    CString FileName;
-
-    FPath.Format("%s/*.mp4", SourPath);
-    BOOL res = ff.FindFile(FPath);
-    while (res)
-    {
-        res = ff.FindNextFile();
-        if (res >= 0)
-        {
-            FileName = ff.GetFileName();
-            if (!ff.IsDirectory() && !ff.IsDots())
-            {
-                int pos = FileName.Find("蓝天多维");
-                if (pos <= 0)
-                {
-                    continue;
-                }
-                CString temp = FileName;
-                temp.Delete(0, pos + 9);
-                // TODO
-                int ch = strtod(temp, NULL);
-
-                if (CFlag & 1 << (ch - 1))
-                {
-                    temp.Delete(0, 3);
-                    pos = temp.Find("_");
-                    if (pos <= 0)
-                    {
-                        continue;
-                    }
-                    temp.Delete(0, pos + 1);
-                    temp.Delete(13, 4);
-                    if (strcmp(temp.GetBuffer(), TimeBe) >= 0 && strcmp(temp.GetBuffer(), TimeEn) <= 0)
-                    {
-
-                        CString SourFile;
-                        CString DestFile;
-                        SourFile = SourPath + FileName;
-                        DestFile = dlg->m_ManageDlg.szRootPathName + FileName;
-                        TRACE("sourFile = %s,desFile = %s\n", SourFile, DestFile);
-                        CopyFile(SourFile, DestFile, FALSE);
-                    }
-
-                }
-
-            }
-        }
-    }
-    ff.Close();
-    //////////////////////////////////////////////////////////////////////////
-    if (atoi(day) != time.GetDay())
-    {
-        //SourPath2.Format("%s/LT-VIDEO-%s-北京蓝天多维/%02d-%02d-%02d/",RePath,trainNum,time.GetYear(),time.GetMonth(),time.GetDay());
-        SourPath2.Format("%s/6A-VIDEO-%s-北京蓝天多维/%02d-%02d-%02d/", RePath, trainNum, time.GetYear(), time.GetMonth(), time.GetDay());
-        FPath.Format("%s/*.mp4", SourPath2);
-        res = ff.FindFile(FPath);
-        while (res)
-        {
-            res = ff.FindNextFile();
-            if (res >= 0)
-            {
-                FileName = ff.GetFileName();
-                if (!ff.IsDirectory() && !ff.IsDots())
-                {
-                    int pos = FileName.Find("蓝天多维");
-                    if (pos <= 0)
-                    {
-                        continue;
-                    }
-                    CString temp = FileName;
-                    temp.Delete(0, pos + 9);
-                    // TODO
-                    int ch = strtod(temp, NULL);
-
-                    if (CFlag & 1 << (ch - 1))
-                    {
-                        temp.Delete(0, 3);
-                        pos = temp.Find("_");
-                        if (pos <= 0)
-                        {
-                            continue;
-                        }
-                        temp.Delete(0, pos + 1);
-                        temp.Delete(13, 4);
-                        if (strcmp(temp.GetBuffer(), TimeBe) >= 0 && strcmp(temp.GetBuffer(), TimeEn) <= 0)
-                        {
-
-                            CString SourFile;
-                            CString DestFile;
-                            SourFile = SourPath2 + FileName;
-                            DestFile = dlg->m_ManageDlg.szRootPathName + FileName;
-                            TRACE("sourFile = %s,desFile = %s\n", SourFile, DestFile);
-                            CopyFile(SourFile, DestFile, FALSE);
-                        }
-
-                    }
-
-                }
-            }
-        }
-        ff.Close();
-    }
-
-    //IOCtrl(LED_DOWNLOAD, FALSE);
-    //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(FALSE);
-
-    //U盘插入时优先下载录像，然后在检测是否转存	
-
-    //dlg->m_ManagerDlg.StartURecord(UPath);
-
-
-    //////////////////////////////////////////////////////////////////////////	
+ /*   int result = bp::system(config::python_interpreter,
+        "copy_file.py", "--release", "True", bp::start_dir(config::start_dir));*/
 
     return 0;
 }

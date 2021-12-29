@@ -486,6 +486,7 @@ int CManageDlg::SetHDDState()
 BOOL CManageDlg::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
+    SetWindowText("manage_dialog");
 
     ManageView::init();
 

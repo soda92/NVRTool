@@ -20,6 +20,7 @@
 #include "ManageView.h"
 
 #include <boost/filesystem.hpp>
+#include "progress_bar.h"
 
 
 #ifdef _DEBUG
@@ -91,6 +92,7 @@ int __stdcall VideoStateCB(LONG nPort, char type, char* error)
 BOOL CLT_LCWB_1ADlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+    SetWindowText("太原机车视频监控");
 
     constexpr static GUID GUID_DEVINTERFACE_LIST[] =
     {
@@ -301,15 +303,19 @@ void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
 	{
 	case 0:
 		m_VideoDlg.ShowWindow(true);
+        progress_bar::show();
 		break;
 	case 1:
 		m_ManageDlg.ShowWindow(true);
+        progress_bar::hide();
 		break;
     case 2:
         m_FireMsgDlg.ShowWindow(true);
+        progress_bar::hide();
         break;
     case 3:
         m_logDlg.ShowWindow(true);
+        progress_bar::hide();
         break;
 	default:
 		break;
@@ -558,6 +564,7 @@ BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 
     if (m_ManageDlg.IsHDD(uPath))
     {
+        this->usb_flag = false;
         return FALSE;
     }
 
@@ -565,7 +572,7 @@ BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 
     //strcat(szRootPathName,"Record");
     //MessageBox(szRootPathName);   //获取到u盘的根目录
-
+    this->usb_flag = true;
 
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_DownLoad, this, 0, NULL);//开启下载线程
 

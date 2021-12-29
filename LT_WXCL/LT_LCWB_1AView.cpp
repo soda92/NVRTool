@@ -12,6 +12,7 @@
 #include "LogView.h"
 #include <string>
 #include <sstream>
+#include "progress_bar.h"
 
 namespace Interactive {
     void log(CString warnStr) {
@@ -48,6 +49,7 @@ namespace Interactive {
         dlg->m_ManageDlg.ShowWindow(SW_HIDE);
         dlg->m_FireMsgDlg.ShowWindow(SW_HIDE);
         dlg->m_logDlg.ShowWindow(SW_HIDE);
+        progress_bar::show();
 
 #ifdef DEBUG
         //PLOGD << "fWarVoice.GetLength()" << warVoice.GetLength();

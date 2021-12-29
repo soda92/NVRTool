@@ -106,6 +106,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>lib/HCNetSDK.lib;lib/PlayCtrl.lib;lib/VideoPlay.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -130,6 +131,7 @@
     <None Include="res\LT_WXCL.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="FireData.h" />
     <ClInclude Include="FireMsgView.h" />
@@ -147,6 +149,7 @@
     <ClInclude Include="LT_LCWB_1A.h" />
     <ClInclude Include="LT_LCWB_1ADlg.h" />
     <ClInclude Include="ManageDlg.h" />
+    <ClInclude Include="progress_bar.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -173,6 +176,7 @@
     <ClCompile Include="LT_LCWB_1A.cpp" />
     <ClCompile Include="LT_LCWB_1ADlg.cpp" />
     <ClCompile Include="ManageDlg.cpp" />
+    <ClCompile Include="progress_bar.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

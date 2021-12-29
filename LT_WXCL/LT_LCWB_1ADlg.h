@@ -86,4 +86,6 @@ public:
     // 判断FireMsgDlg是否已经退出
     bool firemsgdlg_exited = false;
 
+    bool usb_flag = false;
+
 };
