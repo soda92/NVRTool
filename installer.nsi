@@ -22,11 +22,14 @@ SetOutPath $INSTDIR
 File /r "TaiYuan-Release-v1.2.2"
 
 Delete "$SMPROGRAMS\Startup\LT_*.lnk"
+SetOutPath "$INSTDIR\TaiYuan-Release-v1.2.2"
 CreateShortCut "$SMPROGRAMS\Startup\太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-v1.2.2\launcher.exe"
+SetOutPath "$INSTDIR\TaiYuan-Release-v1.2.2"
 CreateShortCut "$SMPROGRAMS\太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-v1.2.2\launcher.exe"
 
 # define uninstaller name
 WriteUninstaller "$INSTDIR\TaiYuan-Release-v1.2.2\uninstaller.exe"
+SetOutPath "$INSTDIR\TaiYuan-Release-v1.2.2"
 CreateShortCut "$SMPROGRAMS\卸载 太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-v1.2.2\uninstaller.exe"
 
 sectionend
