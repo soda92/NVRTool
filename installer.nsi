@@ -1,12 +1,13 @@
 ﻿Unicode True
 !include LogicLib.nsh
+!include StrContains.nsh
 
 # define the name of the installer
 Outfile "太原机车防火视频-v1.2.2.exe"
  
 # define the directory to install to, the desktop in this case as specified  
 # by the predefined $DESKTOP variable
-InstallDir "D:\TaiYuan-v1.2.2"
+InstallDir "D:"
  
 # default section
 Section
@@ -18,7 +19,13 @@ SetOutPath $INSTDIR
 File /r "TaiYuan-Release-v1.2.2"
 
 Delete "$SMPROGRAMS\Startup\LT_*.lnk"
-CreateShortCut "$SMPROGRAMS\Startup\TaiYuan-FireVideo.lnk" "$INSTDIR\launcher.exe"
+CreateShortCut "$SMPROGRAMS\Startup\太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-v1.2.2\launcher.exe"
+CreateShortCut "$SMPROGRAMS\太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-v1.2.2\launcher.exe"
+
+# define uninstaller name
+WriteUninstaller "$INSTDIR\TaiYuan-Release-v1.2.2\uninstaller.exe"
+CreateShortCut "$SMPROGRAMS\卸载 太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-v1.2.2\uninstaller.exe"
+
 sectionend
 
 section
@@ -30,12 +37,34 @@ Pop $1 ; command output
 detailprint $0
 detailprint $1
 
-${If} $1 != "KB3126587"
-    ExecWait "wusa.exe $INSTDIR\Windows6.1-KB3126587-x64.msu /quiet /norestart"
+Push $1
+Push "KB3126587"
+Call StrContains
+Pop $0
+StrCmp $0 "" notfound
+  MessageBox MB_OK 'Found string $0'
+  Goto done
+notfound:
+    ExecWait "wusa.exe $INSTDIR\TaiYuan-Release-v1.2.2\Windows6.1-KB3126587-x64.msu /quiet /norestart"
 
     MessageBox MB_YESNO|MB_ICONQUESTION "安装成功，需要重启计算机。" IDNO +2
     Reboot
-
-${EndIf}
+done:
 
 sectionend
+
+
+# create a section to define what the uninstaller does.
+# the section will always be named "Uninstall"
+Section "Uninstall"
+ 
+# Always delete uninstaller first
+Delete "$INSTDIR\TaiYuan-Release-v1.2.2\uninstaller.exe"
+
+Delete "$SMPROGRAMS\太原机车防火视频程序.lnk"
+Delete "$SMPROGRAMS\卸载 太原机车防火视频程序.lnk"
+Delete "$SMPROGRAMS\Startup\TaiYuan-FireVideo.lnk"
+# Delete the directory
+RMDir /r "$INSTDIR\TaiYuan-Release-v1.2.2\"
+
+SectionEnd

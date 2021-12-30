@@ -39,6 +39,8 @@ if __name__ == '__main__':
                 shutil.copytree(file, out_path)
             else:
                 shutil.copy(file, dirname)
+    for file in glob.glob('*.msu'):
+        shutil.copy(file, dirname)
 
     # zipf = zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED)
     # zipdir(dirname, zipf)
