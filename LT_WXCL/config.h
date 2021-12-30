@@ -2,7 +2,7 @@
 #include "stdafx.h"
 
 namespace config {
-    constexpr auto start_dir = "../../py-TaiYuan/";
+    constexpr auto start_dir = ".";
     constexpr auto py = "../../py-TaiYuan/core/python.exe";
     constexpr auto pyw = "../../py-TaiYuan/core/pythonw.exe";
 #if defined(DEBUG)

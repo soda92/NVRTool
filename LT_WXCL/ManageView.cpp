@@ -340,7 +340,7 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
 #if defined(DEBUG)
     bp::system("copy_file.exe", bp::start_dir(config::start_dir));
 #else
-    bp::system("../../py-TaiYuan/dist/copy_file.exe", "--release", "True", bp::start_dir(config::start_dir));
+    bp::system("copy_file.exe", "--release", "True", bp::start_dir(config::start_dir));
 #endif
 
     return 0;

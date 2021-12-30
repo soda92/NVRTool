@@ -5,7 +5,7 @@ import glob
 from build_release import get_version
 
 @task
-def build(c):
+def release(c):
     c.run("py build_release.py")
     c.run("makensis installer.nsi")
     if os.path.exists('F:'):
