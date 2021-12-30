@@ -12,11 +12,11 @@ namespace progress_bar {
     namespace bp = boost::process;
 
     void show_impl() {
-        bp::system(config::pyw, "client.py", "show", bp::start_dir(config::start_dir));
+        bp::system("client.exe", "show", bp::start_dir(config::start_dir));
     }
 
     void hide_impl() {
-        bp::system(config::pyw, "client.py", "hide", bp::start_dir(config::start_dir));
+        bp::system("client.exe", "hide", bp::start_dir(config::start_dir));
     }
 
     void show() {

@@ -338,13 +338,10 @@ int WINAPI Thread_DownLoad(LPVOID lpPara)
     namespace bp = boost::process;
     auto curr = boost::filesystem::current_path();
 #if defined(DEBUG)
-    bp::system("../../py-TaiYuan/dist/copy_file.exe", bp::start_dir(config::start_dir));
+    bp::system("copy_file.exe", bp::start_dir(config::start_dir));
 #else
     bp::system("../../py-TaiYuan/dist/copy_file.exe", "--release", "True", bp::start_dir(config::start_dir));
 #endif
-
- /*   int result = bp::system(config::python_interpreter,
-        "copy_file.py", "--release", "True", bp::start_dir(config::start_dir));*/
 
     return 0;
 }
