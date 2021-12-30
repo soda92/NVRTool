@@ -1,4 +1,5 @@
 ﻿Unicode True
+!include LogicLib.nsh
 
 # define the name of the installer
 Outfile "太原机车防火视频-v1.2.2.exe"
@@ -17,11 +18,24 @@ SetOutPath $INSTDIR
 File /r "TaiYuan-Release-v1.2.2"
 
 Delete "$SMPROGRAMS\Startup\LT_*.lnk"
-CreateShortCut "$SMPROGRAMS\Startup\TaiYuan-FireVideo.lnk" "$INSTDIR\LT_LCWB-1A.exe"
+CreateShortCut "$SMPROGRAMS\Startup\TaiYuan-FireVideo.lnk" "$INSTDIR\launcher.exe"
+sectionend
 
-ExecWait "wusa.exe $INSTDIR\Windows6.1-KB3126587-x64.msu /quiet /norestart"
+section
 
-MessageBox MB_YESNO|MB_ICONQUESTION "安装成功，需要重启计算机。" IDNO +2
-Reboot
+clearerrors
+nsExec::ExecToStack 'cmd /Q /C "wmic.exe qfe get hotfixid | findstr.exe "^KB3126587""'
+Pop $0 ; return value (it always 0 even if an error occured)
+Pop $1 ; command output
+detailprint $0
+detailprint $1
 
-SectionEnd
+${If} $1 != "KB3126587"
+    ExecWait "wusa.exe $INSTDIR\Windows6.1-KB3126587-x64.msu /quiet /norestart"
+
+    MessageBox MB_YESNO|MB_ICONQUESTION "安装成功，需要重启计算机。" IDNO +2
+    Reboot
+
+${EndIf}
+
+sectionend
