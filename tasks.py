@@ -7,6 +7,7 @@ from get_version import get_version
 @task
 def build(c):
     print('current dir: ', os.getcwd())
+    print('copying file...')
     dirname = f"TaiYuan-Release-{get_version()}"
     if os.path.exists(dirname):
         shutil.rmtree(dirname)
@@ -24,7 +25,9 @@ def build(c):
     # platform info
     shutil.copy('platform_info.py', dirname)
 
+    print('generating script...')
     c.run('py gen_installer_script.py')
+    print('building...')
     c.run("makensis installer.out.nsi")
     if os.path.exists('F:'):
         for file in glob.glob(f"./太原*-{get_version()}.exe"):
