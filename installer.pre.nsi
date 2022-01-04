@@ -39,7 +39,7 @@ clearerrors
 nsExec::ExecToStack 'cmd /Q /C "python "$INSTDIR\TaiYuan-Release-{version}\platform_info.py"'
 Pop $0 ; return value (it always 0 even if an error occured)
 Pop $1 ; command output
-DetailPrint "$1"
+; DetailPrint "$1"
 
 Push $1
 Push "Python 3"
