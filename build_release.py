@@ -20,7 +20,7 @@ def get_version():
         lines = f.readlines()
         lines = list(filter(lambda line: 'v' in line, lines))
         line = lines[-1]
-    version = re.findall(r"v[0-9.]+", line)[0]
+    version = re.findall(r"v[0-9\.]+[0-9]", line)[0]
     return version
 
 
@@ -39,9 +39,7 @@ if __name__ == '__main__':
                 shutil.copytree(file, out_path)
             else:
                 shutil.copy(file, dirname)
-    for file in glob.glob('*.msu'):
-        shutil.copy(file, dirname)
 
-    # zipf = zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED)
-    # zipdir(dirname, zipf)
-    # zipf.close()
+    # no msu required to install currently
+    # for file in glob.glob('*.msu'):
+    #     shutil.copy(file, dirname)
