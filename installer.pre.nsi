@@ -48,7 +48,7 @@ Pop $0
 StrCmp $0 "" notfound
   Goto done
 notfound:
-  ExecWait "$INSTDIR\TaiYuan-Release-{version}\python-3.8.10-amd64.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=1"
+  ExecWait "$INSTDIR\TaiYuan-Release-{version}\python-3.8.10-amd64.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=1 Shortcuts=0"
 
 done:
 
