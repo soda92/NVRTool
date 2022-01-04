@@ -74,7 +74,9 @@ Delete "$INSTDIR\TaiYuan-Release-v1.2.2\uninstaller.exe"
 Delete "$SMPROGRAMS\太原机车防火视频程序.lnk"
 Delete "$SMPROGRAMS\卸载 太原机车防火视频程序.lnk"
 Delete "$SMPROGRAMS\Startup\太原机车防火视频程序.lnk"
+
 # Delete the directory
-RMDir /r /REBOOTOK "$INSTDIR\TaiYuan-Release-v1.2.2\"
+SetOutPath $INSTDIR
+RMDir /r "$INSTDIR\TaiYuan-Release-v1.2.2\"
 
 SectionEnd

@@ -68,16 +68,12 @@ UINT Thread_TaxData(LPVOID lParam) {
 			{
 				Num = 0;
 
-				if (MainDlg->TaxData.TrainNum != 0 && MainDlg->TaxData.EngineNo != 0 && MainDlg->TaxData.PipePressure != 0)
-				{
-					SendBuf[0] = 0xFF;
-					SendBuf[1] = 0x03;
-					SendBuf[2] = theApp.Local[0];
-					SendBuf[3] = theApp.Local[1];
-					memcpy(&SendBuf[4], &TaxBuf, sizeof(MainDlg->TaxData));
-					sendto(theApp.BSoc, (char*)SendBuf, sizeof(MainDlg->TaxData) + 6, 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
-
-				}
+                SendBuf[0] = 0xFF;
+                SendBuf[1] = 0x03;
+                SendBuf[2] = theApp.Local[0];
+                SendBuf[3] = theApp.Local[1];
+                memcpy(&SendBuf[4], &TaxBuf, sizeof(MainDlg->TaxData));
+                sendto(theApp.BSoc, (char*)SendBuf, sizeof(MainDlg->TaxData) + 6, 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
 
 				//Уʱ
 				if (MainDlg->TaxData.TAXTime.Year != 0 && MainDlg->TaxData.TAXTime.Month != 0 && MainDlg->TaxData.TAXTime.Day != 0)
