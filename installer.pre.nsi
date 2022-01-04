@@ -39,10 +39,10 @@ clearerrors
 nsExec::ExecToStack 'cmd /Q /C "python "$INSTDIR\TaiYuan-Release-{version}\platform_info.py"'
 Pop $0 ; return value (it always 0 even if an error occured)
 Pop $1 ; command output
-
+DetailPrint "$1"
 
 Push $1
-Push "Python"
+Push "Python 3"
 Call StrContains
 Pop $0
 StrCmp $0 "" notfound
@@ -51,7 +51,6 @@ notfound:
   ExecWait "$INSTDIR\TaiYuan-Release-{version}\python-3.8.10-amd64.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=1"
 
 done:
-  DetailPrint "Found $1"
 
 SectionEnd
 
@@ -73,9 +72,5 @@ Delete "$INSTDIR\TaiYuan-Release-{version}\uninstaller.exe"
 Delete "$SMPROGRAMS\太原机车防火视频程序.lnk"
 Delete "$SMPROGRAMS\卸载 太原机车防火视频程序.lnk"
 Delete "$SMPROGRAMS\Startup\太原机车防火视频程序.lnk"
-
-# Delete the directory
-SetOutPath $INSTDIR
-RMDir /r "$INSTDIR\TaiYuan-Release-{version}\"
 
 SectionEnd
