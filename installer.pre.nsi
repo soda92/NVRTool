@@ -1,15 +1,13 @@
 ﻿Unicode True
-!include LogicLib.nsh
 !include StrContains.nsh
 
-; The name of the installer
+# 名称
 Name "太原机车防火视频"
 
-# define the name of the installer
+# 文件名称
 Outfile "太原机车防火视频-{version}.exe"
  
-# define the directory to install to, the desktop in this case as specified  
-# by the predefined $DESKTOP variable
+# 安装目录
 InstallDir "D:"
 
 # default section
@@ -18,43 +16,44 @@ Section
 # define the output path for this file
 SetOutPath $INSTDIR
  
-# define what to install and place it in the output path
+# 安装文件
 File /r "TaiYuan-Release-{version}"
 
-Delete "$SMPROGRAMS\Startup\LT_*.lnk"
+# 程序启动
 SetOutPath "$INSTDIR\TaiYuan-Release-{version}"
 CreateShortCut "$SMPROGRAMS\Startup\太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-{version}\launcher.exe"
 SetOutPath "$INSTDIR\TaiYuan-Release-{version}"
 CreateShortCut "$SMPROGRAMS\太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-{version}\launcher.exe"
 
-# define uninstaller name
+# 卸载
 WriteUninstaller "$INSTDIR\TaiYuan-Release-{version}\uninstaller.exe"
 SetOutPath "$INSTDIR\TaiYuan-Release-{version}"
 CreateShortCut "$SMPROGRAMS\卸载 太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-{version}\uninstaller.exe"
 
 sectionend
 
-section
+
+Section "python安装" SEC2
 
 clearerrors
-nsExec::ExecToStack 'cmd /Q /C "wmic.exe qfe get hotfixid | findstr.exe "^KB3126587""'
+nsExec::ExecToStack 'cmd /Q /C "python "$INSTDIR\TaiYuan-Release-{version}\platform_info.py"'
 Pop $0 ; return value (it always 0 even if an error occured)
 Pop $1 ; command output
-detailprint $0
-detailprint $1
+
 
 Push $1
-Push "KB3126587"
+Push "Python"
 Call StrContains
 Pop $0
 StrCmp $0 "" notfound
   Goto done
 notfound:
-    ExecWait "wusa.exe $INSTDIR\TaiYuan-Release-{version}\Windows6.1-KB3126587-x64.msu /quiet /norestart"
+  ExecWait "$INSTDIR\TaiYuan-Release-{version}\python-3.8.10-amd64.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=1"
 
 done:
+  DetailPrint "Found $1"
 
-sectionend
+SectionEnd
 
 section
 

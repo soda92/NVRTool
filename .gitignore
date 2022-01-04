@@ -54,7 +54,7 @@ LT_WXCL/log.txt
 !LT_WXCL_Dll/*.lib
 !LT_WXCL_Dll/HCNetSDKCom/*.lib
 !LT_WXCL/**/*.lib
-!python-3.8.10.exe
+!python-3.8.10-amd64.exe
 
 
 # OLD

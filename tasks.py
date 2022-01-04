@@ -18,9 +18,11 @@ def build(c):
                 shutil.copytree(file, out_path)
             else:
                 shutil.copy(file, dirname)
-    breakpoint()
+
     # add python
-    shutil.copy('python-3.8.10.exe', dirname)
+    shutil.copy('python-3.8.10-amd64.exe', dirname)
+    # platform info
+    shutil.copy('platform_info.py', dirname)
 
     c.run('py gen_installer_script.py')
     c.run("makensis installer.out.nsi")
