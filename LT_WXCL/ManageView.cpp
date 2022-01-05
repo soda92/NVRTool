@@ -135,7 +135,7 @@ int WINAPI Thread_URecord(LPVOID lpPara)
     }
     for (int i = 0; i < 6; i++)
     {
-        Video_StopRecord(i + 12 + 1);
+        Video_StopRecord((theApp.Local[1] == 'A' ? i : i + 6) + 1);
         dlg->URecordStatus[i] = false;
     }
     return 0;
@@ -150,7 +150,7 @@ int CManageDlg::StartURecord(char* uPath)
         Sleep(12 * 1000);//wait 12s
         for (int i = 0; i < 6; i++)
         {
-            Video_StopRecord(i + 12 + 1);
+            Video_StopRecord((theApp.Local[1] == 'A' ? i : i + 6) + 1);
             URecordStatus[i] = false;
         }
         Sleep(1000);
