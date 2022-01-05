@@ -5,7 +5,7 @@
 Name "太原机车防火视频"
 
 # 文件名称
-Outfile "太原机车防火视频-{version}.exe"
+Outfile "nsis-build\太原机车防火视频-{version}.exe"
  
 # 安装目录
 InstallDir "D:"
@@ -17,7 +17,10 @@ Section
 SetOutPath $INSTDIR
  
 # 安装文件
-File /r "TaiYuan-Release-{version}"
+File /r "nsis-build\TaiYuan-Release-{version}"
+
+# 重复安装时
+Delete "$INSTDIR\TaiYuan-Release-{version}\not-first-launch.txt"
 
 # 程序启动
 SetOutPath "$INSTDIR\TaiYuan-Release-{version}"
