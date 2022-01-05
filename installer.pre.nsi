@@ -32,6 +32,28 @@ CreateShortCut "$SMPROGRAMS\卸载 太原机车防火视频程序.lnk" "$INSTDIR
 
 sectionend
 
+Section "Windows更新" SEC1
+  
+clearerrors
+nsExec::ExecToStack 'cmd /Q /C "wmic.exe qfe get hotfixid | findstr.exe "^KB3126587""'
+Pop $0 ; return value (it always 0 even if an error occured)
+Pop $1 ; command output
+detailprint $0
+detailprint $1
+
+Push $1
+Push "KB3126587"
+Call StrContains
+Pop $0
+StrCmp $0 "" notfound
+  Goto done
+notfound:
+    ExecWait "wusa.exe $INSTDIR\TaiYuan-Release-{version}\Windows6.1-KB3126587-x64.msu /quiet /norestart"
+
+done:
+
+SectionEnd
+
 
 Section "python安装" SEC2
 
@@ -39,6 +61,7 @@ clearerrors
 nsExec::ExecToStack 'cmd /Q /C "python "$INSTDIR\TaiYuan-Release-{version}\platform_info.py"'
 Pop $0 ; return value (it always 0 even if an error occured)
 Pop $1 ; command output
+; 显示命令输出
 ; DetailPrint "$1"
 
 Push $1

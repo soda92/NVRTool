@@ -21,6 +21,8 @@ def build(c):
             else:
                 shutil.copy(file, dirname)
 
+    # add windows updatae
+    shutil.copy("Windows6.1-KB3126587-x64.msu", dirname)
     # add python
     shutil.copy("python-3.8.10-amd64.exe", dirname)
     # platform info

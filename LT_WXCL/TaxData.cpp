@@ -214,7 +214,12 @@ int AnalyseTax(UCHAR* szBuf, TAXDATA* TaxData)
 				TaxData->DieselSpeedAndOriginalCurrent = DataBuf[i + 20] * 256 + DataBuf[i + 19];
 				//车次 
 				TaxData->TrainNum = DataBuf[30 + i] * 65536 + DataBuf[29 + i] * 256 + DataBuf[28 + i];
-				//运行的时间
+
+                // 车次种类标识符
+                memcpy_s(TaxData->TrainTypeId, 4,
+                    &DataBuf[i + 6], 4);
+
+               	//运行的时间
 				TaxData->TAXTime.Second = DataBuf[35 + i] & 0x3f;
 				TaxData->TAXTime.Minute = (DataBuf[36 + i] & 0x0f) * 4 + ((DataBuf[35 + i] & 0xc0) >> 6);
 				TaxData->TAXTime.Hour = (DataBuf[37 + i] & 0x01) * 16 + ((DataBuf[36 + i] & 0xf0) >> 4);

@@ -37,6 +37,9 @@ typedef struct _TAXDATA {
 	unsigned short PipePressure;//管压
 	unsigned char TAXDataBuf[72];//TAX数组
 
+    // 车次种类标识符
+    unsigned char TrainTypeId[4];
+
 }TAXDATA, * pTAXDATA;
 
 int TaxCOMInit(char* COM, char Parity);

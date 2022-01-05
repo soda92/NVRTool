@@ -441,7 +441,7 @@ int WINAPI Thread_Index(LPVOID lpPara)
     CString File;
 
     char hddPath[20] = "";
-    GetPrivateProfileString("LT_WXCLCFG", "HDD", "D://", hddPath, 20, ".//LT_WXCLCFG.ini");
+    GetPrivateProfileString("LT_WXCLCFG", "HDD", "E://", hddPath, 20, ".//LT_WXCLCFG.ini");
 
     if (!dlg->m_ManageDlg.IsHDD(hddPath))
     {
@@ -482,11 +482,12 @@ int WINAPI Thread_Index(LPVOID lpPara)
     GetLocalTime(&Time);
     char FileName[200] = "";
 
-    TAXDATA TaxData = dlg->TaxData;
+    TAXDATA TaxData{};
 
     while (1)
     {
         Sleep(1000);
+        TaxData = dlg->TaxData;
         GetLocalTime(&Time);
         if (Time.wYear != TimeBuf.wYear || Time.wMonth != TimeBuf.wMonth || Time.wDay != TimeBuf.wDay)
         {
@@ -504,13 +505,19 @@ int WINAPI Thread_Index(LPVOID lpPara)
 
             //////////////////////////////////////////////////////////////////////////
             unsigned char IdxBuf[100] = "";
+            // 参考文档： 6A系统视频深化统型方案 V1.2 （2014年4月）
+            // 2.2	公共信息报文2（统型后使用）
 
             IdxBuf[0] = 0xAA;
             IdxBuf[1] = 0xAA;
+            // 报文长度：0x60
             IdxBuf[2] = 0x60;
-
+            // 报文类型：0x07
             IdxBuf[4] = 0x07;
-
+            /*
+            中央处理平台时间
+            （由低到高依次为：年、月、日、时、分、秒，2000年计为0，余类推）
+            */
             IdxBuf[5] = Time.wYear - 2000;
             IdxBuf[6] = Time.wMonth;
             IdxBuf[7] = Time.wDay;
@@ -518,64 +525,214 @@ int WINAPI Thread_Index(LPVOID lpPara)
             IdxBuf[9] = Time.wMinute;
             IdxBuf[10] = Time.wSecond;
 
-            strcpy((char*)&IdxBuf[11], TrainNum);
+            /*
+            中央处理平台车号
+            （共16个字符，由低到高依次存放，不足时补充空格）
+            （例如：HXD3C0001[空格][空格][空格][空格][空格][空格][空格]）
+            */
+            char CheHao[16+1]{};
+            // https://stackoverflow.com/a/276869/12291425
+            sprintf_s(CheHao, "%-16s", TrainNum);
 
-            /*for (int i=0;i<16;i++)
-            {
-            IdxBuf[11+i] = TrainNum[i];
-            }*/
+            memcpy_s(&IdxBuf[11], 16, CheHao, 16);
+            // TAX报文有效
+            IdxBuf[27] = 1;
+            /*
+            预留字节
+            (TAX_TIME)
+            */
+            memset(&IdxBuf[28], 0, 4 * sizeof(IdxBuf[0]));
+            /*
+            车次字母部分
+            （例如：LY501次的字母存放顺序为[空格][空格][L][Y]）
+            */
+            memcpy_s(&IdxBuf[32], 4 * sizeof(IdxBuf[0]),
+                &TaxData.TrainTypeId[0], 4*sizeof(TaxData.TrainTypeId[0]));
 
-            // TODO
-           /* IdxBuf[32] = TaxData.TrainType;
-            IdxBuf[33] = TaxData.TrainType >> 8;
-            IdxBuf[34] = TaxData.TrainType >> 16;
-            IdxBuf[35] = TaxData.TrainType >> 24;*/
-
-            IdxBuf[32] = {0};
-            IdxBuf[33] = {0};
-            IdxBuf[34] = {0};
-            IdxBuf[35] = {0};
-
+            /*
+            车次数字部分(按数值型)巩付伟标注
+            （共3个字节，低位在前，高位在后）
+            */
             IdxBuf[36] = TaxData.TrainNum;
             IdxBuf[37] = TaxData.TrainNum >> 8;
             IdxBuf[38] = TaxData.TrainNum >> 16;
 
+            /*
+            车站号
+            */
             IdxBuf[39] = TaxData.StationNo;
-
+            /*
+            车站号扩充字节
+            */
+            IdxBuf[40] = 0;
+            /*
+            司机号
+            */
             IdxBuf[41] = TaxData.DriverNo;
             IdxBuf[42] = TaxData.DriverNo >> 8;
-
+            /*
+            司机号扩充字节
+            */
+            IdxBuf[43] = 0;
+            /*
+            副司机号
+            */
             IdxBuf[44] = TaxData.CopilotNo;
             IdxBuf[45] = TaxData.CopilotNo >> 8;
+            /*
+            副司机号扩充字节
+            */
+            IdxBuf[46] = 0;
+            /*
+            预留字节
+            (CAR_NO)
+            */
+            memset(&IdxBuf[47], 0, 2);
 
+            /*
+            预留字节
+            (CAR_TYPE)
+            */
+            IdxBuf[49] = 0;
+            /*
+            预留字节
+            (CAR_TYPE_EX)
+            */
+            IdxBuf[50] = 0;
+            /*实际交路号*/
             IdxBuf[51] = TaxData.FactRoute;
-
+            /*
+            客/货、本/补
+            （b0：0/1=货/客，b1：0/1=本务/补机）
+            */
             IdxBuf[52] = TaxData.TrainFlag;
-
+            /*速度*/
             IdxBuf[53] = TaxData.Speed;
-
+            /*
+            预留字节
+            (SPEED)
+            */
+            memset(&IdxBuf[54], 0, 2);
+            /*
+            机车信号
+            （b3～b0: 00-无灯,01-绿,02-黄,03-双黄,04-红黄,05-红,06-白,07-绿黄,08-黄2；
+            b4：0/1=单灯/多灯）
+            */
             IdxBuf[56] = TaxData.TrainSign;
+            /*
+            机车工况
+            （b0：零位,b1：向后[即二端向前],b2：向前[即一端向前],b3：制动,b4：牵引）
+            */
             IdxBuf[57] = TaxData.TrainState;
-
+            /*信号机编号*/
             IdxBuf[58] = TaxData.SignNo;
             IdxBuf[59] = TaxData.SignNo >> 8;
+            /*
+            信号机种类
+            （b2～b0: 02-出站,03-进站,04-通过,05-预告,06-容许）
+            */
             IdxBuf[60] = TaxData.SignType;
-
+            /*
+            公里标
+            （单位：米）
+            */
             IdxBuf[61] = TaxData.Signpost;
             IdxBuf[62] = TaxData.Signpost >> 8;
             IdxBuf[63] = TaxData.Signpost >> 16;
-
+            /*总重
+            （单位：吨）
+            */
             IdxBuf[64] = TaxData.CarWeight;
             IdxBuf[65] = TaxData.CarWeight >> 8;
-
+            /*
+            计长
+            （单位：0.1米）
+            */
             IdxBuf[66] = TaxData.CarLong;
             IdxBuf[67] = TaxData.CarLong >> 8;
-
+            /*辆数*/
             IdxBuf[68] = TaxData.CarCount;
-
+            /*列车管压力
+            （b9～b0:管压[kPa],b15～b10:预留）
+            */
             IdxBuf[69] = TaxData.PipePressure;
             IdxBuf[70] = TaxData.PipePressure >> 8;
 
+            /*装置状态
+            （b0:1/0-降级/监控，b2:1/0-调车/非调车）
+            */
+            IdxBuf[71] = 0;
+            /*TCMS报文有效*/
+            IdxBuf[72] = 0;
+            /*司机室状态
+            （0-没占用，1-一端占用，2-二端占用，0xff-无效)
+            */
+            IdxBuf[73] = 0;
+            /*预留字节
+            （JCGK）
+            */
+            IdxBuf[74] = 0;
+            /*
+            受电弓状态
+            （b1～b0:一端受电弓，b3～b2:二端受电弓，0-无效，1-升弓，2-降弓，3-隔离）
+            */
+            IdxBuf[75] = 0;
+            /*主断状态
+            （1-断开，2-闭合，0xFF-无效）
+            */
+            IdxBuf[76] = 0;
+            /*
+            手柄级位
+            （×0.1级,0xFFFF无效）
+            */
+            IdxBuf[77] = 0;
+            IdxBuf[78] = 0;
+            /*重联信息
+            （1-重联，2-不重联，0xFF-无效）
+            */
+            IdxBuf[79] = 0;
+            /*大闸指令
+            （b0-运转位，b1-初制动，b2-常用制动区，b3-全制动，b4-抑制位，b5-重联位，b6-紧急制动位，0xFF-无效）
+            */
+            IdxBuf[80] = 0;
+            /*小闸指令
+            （b0-运转位，b1-制动区，b2-全制动，0xFF-无效）
+            */
+            IdxBuf[81] = 0;
+            /*其他指令
+            （b0-LKJ制动，b1-紧急制动，b2-惩罚制动，b3-电制动，b4-停放制动施加，b5-停放制动缓解，b6-停放制动切除，0xFF-无效）
+            */
+            IdxBuf[82] = 0;
+            /*其他指令屏蔽字节
+            （位定义：1表示有效，0表示无效）
+            */
+            IdxBuf[83] = 0;
+            /*预留字节（ZDJ）*/
+            IdxBuf[84] = 0;
+            IdxBuf[85] = 0;
+            /*预留字节（ZDG）*/
+            IdxBuf[86] = 0;
+            IdxBuf[87] = 0;
+            /*预留字节 (ZFG)*/
+            IdxBuf[88] = 0;
+            IdxBuf[89] = 0;
+            /*
+            特殊区域	过分相点	进入调车	人为紧急
+            侧线运行  监控动作	停车事件	开车事件
+            */
+            IdxBuf[90] = 0;
+            /*
+                            减压制动	黄灯信号
+            继乘交接	监控解锁	总风低压	红黄信号
+            */
+            IdxBuf[91] = 0;
+            /*未定义*/
+            IdxBuf[92] = 0;
+            IdxBuf[93] = 0;
+            IdxBuf[94] = 0;
+            /*未定义 End*/
+
+            /* SC */
             for (int i = 0; i < 95; i++)
             {
                 IdxBuf[95] += IdxBuf[i];
