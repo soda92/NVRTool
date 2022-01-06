@@ -7,6 +7,16 @@
 #include "LT_LCWB_1ADlg.h"
 #include "HCNetSDK.h"
 
+
+template <typename T>
+std::string HexToString(T uval)
+{
+    std::stringstream ss;
+    ss << "0x" << std::setw(sizeof(uval) * 2) << std::setfill('0') << std::hex << +uval;
+    return ss.str();
+}
+
+
 CString texportNo;
 
 HANDLE tPort, pPort;
@@ -36,7 +46,13 @@ UINT Thread_TaxData(LPVOID lParam) {
 	while (1)
 	{
 		memset(&DataBuf, 0x00, sizeof(DataBuf));
-        ReadFile(tPort, &DataBuf, 256, &dwRet, NULL);
+        auto _ = ReadFile(tPort, &DataBuf, 256, &dwRet, NULL);
+
+        std::string str;
+        for (int i = 0; i < 256; i++) {
+            str += HexToString(DataBuf[i]).substr(2, 2);
+        }
+        // PLOGD << "Tax Data: " << str;
 
 		memset(&TaxBuf, 0, sizeof(TaxBuf));
 
@@ -52,16 +68,12 @@ UINT Thread_TaxData(LPVOID lParam) {
 			{
 				Num = 0;
 
-				if (MainDlg->TaxData.TrainNum != 0 && MainDlg->TaxData.EngineNo != 0 && MainDlg->TaxData.Speed != 0)
-				{
-					SendBuf[0] = 0xFF;
-					SendBuf[1] = 0x03;
-					SendBuf[2] = theApp.Local[0];
-					SendBuf[3] = theApp.Local[1];
-					memcpy(&SendBuf[4], &TaxBuf, sizeof(MainDlg->TaxData));
-					sendto(theApp.BSoc, (char*)SendBuf, sizeof(MainDlg->TaxData) + 6, 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
-
-				}
+                SendBuf[0] = 0xFF;
+                SendBuf[1] = 0x03;
+                SendBuf[2] = theApp.Local[0];
+                SendBuf[3] = theApp.Local[1];
+                memcpy(&SendBuf[4], &TaxBuf, sizeof(MainDlg->TaxData));
+                sendto(theApp.BSoc, (char*)SendBuf, sizeof(MainDlg->TaxData) + 6, 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
 
 				//校时
 				if (MainDlg->TaxData.TAXTime.Year != 0 && MainDlg->TaxData.TAXTime.Month != 0 && MainDlg->TaxData.TAXTime.Day != 0)
@@ -83,7 +95,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 						time.wSecond = MainDlg->TaxData.TAXTime.Second;
 
 						SetLocalTime(&time);
-						NET_DVR_TIME NvrTime;
+						NET_DVR_TIME NvrTime = {0};
 
 						NvrTime.dwYear = time.wYear;
 						NvrTime.dwMonth = time.wMonth;
@@ -104,6 +116,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 				}
 			}
 		}
+        Sleep(100);
 	}
 	return 0;
 }
@@ -201,7 +214,12 @@ int AnalyseTax(UCHAR* szBuf, TAXDATA* TaxData)
 				TaxData->DieselSpeedAndOriginalCurrent = DataBuf[i + 20] * 256 + DataBuf[i + 19];
 				//车次 
 				TaxData->TrainNum = DataBuf[30 + i] * 65536 + DataBuf[29 + i] * 256 + DataBuf[28 + i];
-				//运行的时间
+
+                // 车次种类标识符
+                memcpy_s(TaxData->TrainTypeId, 4,
+                    &DataBuf[i + 6], 4);
+
+               	//运行的时间
 				TaxData->TAXTime.Second = DataBuf[35 + i] & 0x3f;
 				TaxData->TAXTime.Minute = (DataBuf[36 + i] & 0x0f) * 4 + ((DataBuf[35 + i] & 0xc0) >> 6);
 				TaxData->TAXTime.Hour = (DataBuf[37 + i] & 0x01) * 16 + ((DataBuf[36 + i] & 0xf0) >> 4);

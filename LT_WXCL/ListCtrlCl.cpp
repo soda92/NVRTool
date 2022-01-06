@@ -82,8 +82,8 @@ void CListCtrlCl::PreSubclassWindow()
 void CListCtrlCl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 {
 	// TODO:  添加您的代码以绘制指定项
-	TCHAR lpBuffer[256];
-	LV_ITEM lvi;
+	TCHAR lpBuffer[256] = {0};
+	LV_ITEM lvi = {0};
 	lvi.mask = LVIF_TEXT | LVIF_PARAM;
 	lvi.iItem = lpDrawItemStruct->itemID;
 	lvi.iSubItem = 0;
@@ -272,7 +272,7 @@ void CListCtrlCl::SetRowHeight(int nHeight) // 设置行高
 	m_nRowHeight = nHeight;
 	CRect rcWin;
 	GetWindowRect(&rcWin);
-	WINDOWPOS wp;
+	WINDOWPOS wp = {0};
 	wp.hwnd = m_hWnd;
 	wp.cx = rcWin.Width();
 	wp.cy = rcWin.Height();

@@ -31,6 +31,8 @@ public:
 	char m_FireCH[10];//报警的通道
 	char m_FireWarFlag;//报警标记 0-无 1-报警 2-报警取消
 
+    int IPCNum = 12;
+
 // 重写
 public:
 	virtual BOOL InitInstance();
@@ -38,6 +40,8 @@ public:
 	// 实现
 
 	DECLARE_MESSAGE_MAP()
+
+    
 };
 
 extern CLT_LCWB_1AApp theApp;

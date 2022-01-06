@@ -74,5 +74,6 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "*.inc": "cpp"
-    }
+    },
+    "python.formatting.provider": "black"
 }

@@ -12,6 +12,7 @@
 #include "LogView.h"
 #include <string>
 #include <sstream>
+#include "progress_bar.h"
 
 namespace Interactive {
     void log(CString warnStr) {
@@ -48,12 +49,13 @@ namespace Interactive {
         dlg->m_ManageDlg.ShowWindow(SW_HIDE);
         dlg->m_FireMsgDlg.ShowWindow(SW_HIDE);
         dlg->m_logDlg.ShowWindow(SW_HIDE);
+        progress_bar::show();
 
 #ifdef DEBUG
-        PLOGD << "fWarVoice.GetLength()" << warVoice.GetLength();
-        PLOGD << "fWarVoice" << warVoice;
-        PLOGD << "fWarVoice.GetAt(0)" << warVoice.GetAt(0);
-        PLOGD << "fWarVoice.GetAt(7)" << warVoice.GetAt(7);
+        //PLOGD << "fWarVoice.GetLength()" << warVoice.GetLength();
+        //PLOGD << "fWarVoice" << warVoice;
+        //PLOGD << "fWarVoice.GetAt(0)" << warVoice.GetAt(0);
+        //PLOGD << "fWarVoice.GetAt(7)" << warVoice.GetAt(7);
 #endif // DEBUG
 
         if (warVoice.GetAt(0) == 'A')
@@ -208,38 +210,39 @@ int WINAPI Thread_Play(LPVOID lpPara)
         Sleep(50);
     }
 
-    /*while (1)
-    {*/
-    for (int i = 0; i < 32; i++)
+    while (1)
     {
-
-        if (dlg->lUserID[i] == -1)
+        for (int i = 0; i < 32; i++)
         {
 
-            if (i <= 5 && i >= 0)
-                sprintf_s(ip, "192.168.10%d.7%d", atoi(&theApp.Local[0]), i);
-            else if (i <= 13 && i >= 8)
-                sprintf_s(ip, "192.168.10%d.8%d", atoi(&theApp.Local[0]), i - 8);
-            else
-                continue;
-
-            TRACE("ipc ip = %s\n", ip);
-            strcpy_s(dlg->ip[i], ip);
-
-            int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
-                dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
-            if (res < 0)
+            if (dlg->lUserID[i] == -1)
             {
-                //TRACE("ipc %s error\n",ip);
-                dlg->lUserID[i] = -1;
-                dlg->lRealPlayHandle[i] = -1;
-            }
-        }
-        Sleep(50);
-    }
 
-    Sleep(5 * 1000);
-    //}
+                if (i <= 5 && i >= 0)
+                    sprintf_s(ip, "192.168.10%d.7%d", atoi(&theApp.Local[0]), i);
+                else if (i <= 13 && i >= 8)
+                    sprintf_s(ip, "192.168.10%d.8%d", atoi(&theApp.Local[0]), i - 8);
+                else
+                    continue;
+
+                TRACE("ipc ip = %s\n", ip);
+                strcpy_s(dlg->ip[i], ip);
+
+                int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
+                    dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
+
+                if (res < 0)
+                {
+                    //TRACE("ipc %s error\n",ip);
+                    dlg->lUserID[i] = -1;
+                    dlg->lRealPlayHandle[i] = -1;
+                }
+            }
+            Sleep(50);
+        }
+
+        Sleep(5 * 1000);
+    }
 
     return 0;
 }
@@ -260,7 +263,7 @@ int WINAPI Thread_SetIpcTime(LPVOID lpPara)
 //
 //作用：接收UDP广播，识别报头，区分数据来源，然后将数据交给对应的处理函数
 //
-//数据分类：防火数据，采集盒数据，报警中断数据，空转数据
+//数据分类：防火数据，TAX校时，报警中断数据
 //
 int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 {
@@ -281,29 +284,14 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
                 Remote[0] = RecBuf[2];
                 Remote[1] = RecBuf[3];
 
-                if (Remote[0] == theApp.Local[0] && Remote[1] == 'A') //本车A
+                if (Remote[0] == theApp.Local[0] && Remote[1] == 'A') //A节
                 {
                     dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 0);
                 }
-                if (Remote[0] == theApp.Local[0] && Remote[1] == 'B') //本车B
+                if (Remote[0] == theApp.Local[0] && Remote[1] == 'B') //B节
                 {
                     dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 1);
                 }
-                if (Remote[0] != theApp.Local[0] && Remote[1] == 'A') //他车A
-                {
-                    dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 2);
-                }
-                if (Remote[0] != theApp.Local[0] && Remote[1] == 'B') //他车B
-                {
-                    dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 3);
-                }
-            }
-            else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x02) //采集盒
-            {
-                char Remote[10] = "";
-                Remote[0] = RecBuf[2];
-                Remote[1] = RecBuf[3];
-
             }
             else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x03) //校时
             {
@@ -346,14 +334,435 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
             {
                 dlg->m_FireMsgDlg.StopWarFun();
             }
-            else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x05) //空转
-            {
-                char Remote[10] = "";
-                Remote[0] = RecBuf[2];
-                Remote[1] = RecBuf[3];
-            }
         }
         memset(RecBuf, 0, sizeof(RecBuf));
     }
+    return 0;
+}
+
+
+int WINAPI Thread_UDrive(LPVOID lpPara)
+{
+    CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
+
+    //////////////////////////////////////////////////////////////////////////
+    Sleep(1000);//等待1S后开始执行
+    //////////////////////////////////////////////////////////////////////////
+    char szLogicalDriveStrings[BUFSIZ] = "";
+    GetLogicalDriveStrings(BUFSIZ - 1, szLogicalDriveStrings);
+    char* pDrive = szLogicalDriveStrings;
+    UINT uDriveType;
+    while (1)
+    {
+        uDriveType = GetDriveType(pDrive);
+        TRACE("driver = %s,type = %d\n", pDrive, uDriveType);
+        //DRIVE_UNKNOWN
+        if (uDriveType == DRIVE_REMOVABLE)
+        {
+
+            if (dlg->m_ManageDlg.IsHDD(pDrive))
+            {
+                continue;
+            }
+            if (dlg->m_ManageDlg.StartURecord(pDrive) != -1)
+            {
+                strcpy(dlg->m_ManageDlg.szRootPathName, pDrive);
+            }
+            break;
+        }
+        pDrive += strlen(pDrive) + 1;
+        if (strlen(pDrive) == 0)
+        {
+            break;
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////
+    CString Path;
+    while (1)//usb检测
+    {
+        Sleep(5 * 1000);
+        if (!strcmp(dlg->m_ManageDlg.szRootPathName, ""))
+        {
+            dlg->m_ManageDlg.URecordFlag = FALSE;
+            //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(FALSE);
+            TRACE("no usb\n");
+        }
+        else
+        {
+
+            Path.Format("%slost+found", dlg->m_ManageDlg.szRootPathName);
+            int res = 0;
+            if (CreateDirectory(Path, NULL) == 0)
+            {
+                res = GetLastError();
+                if (res == 3)
+                {
+                    TRACE("usb path error\n");
+                    memset(dlg->m_ManageDlg.szRootPathName, 0, sizeof(dlg->m_ManageDlg.szRootPathName));
+                    dlg->m_ManageDlg.URecordFlag = FALSE;
+
+                    //IOCtrl(LED_DOWNLOAD, FALSE);
+                    //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(FALSE);
+                    //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(FALSE);
+                    continue;
+                }
+            }
+            TRACE("usb on\n");
+            //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(TRUE);
+        }
+
+        if (dlg->m_ManageDlg.URecordFlag)
+        {
+            //dlg->SetDlgItemText(IDC_BUTTON_URE, "外挂");
+            //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(TRUE);
+            //IOCtrl(LED_DOWNLOAD, TRUE);
+        }
+        else
+        {
+            char buf[10] = "";
+            //dlg->GetDlgItemText(IDC_BUTTON_URE, buf, 10);
+            if (strstr(buf, "下载") == NULL)
+            {
+                //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(FALSE);
+                //IOCtrl(LED_DOWNLOAD, FALSE);
+            }
+
+        }
+    }
+    return 0;
+}
+
+
+int WINAPI Thread_Index(LPVOID lpPara)
+{
+    CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
+    //创建文件夹
+    CString Path;
+    CString File;
+
+    char hddPath[20] = "";
+    GetPrivateProfileString("LT_WXCLCFG", "HDD", "E://", hddPath, 20, ".//LT_WXCLCFG.ini");
+
+    if (!dlg->m_ManageDlg.IsHDD(hddPath))
+    {
+        if (dlg->m_ManageDlg.IsHDD("e://"))
+        {
+            strcpy(hddPath, "e://");
+        }
+        else if (dlg->m_ManageDlg.IsHDD("f://"))
+        {
+            strcpy(hddPath, "f://");
+        }
+    }
+
+    Path.Format("%slost+found", hddPath);
+    int res = 0;
+    if (CreateDirectory(Path, NULL) == 0)
+    {
+        res = GetLastError();
+        if (res == 3)
+        {
+            //AfxMessageBox("录像存储路径不正确，请修改配置文件中的路径。");
+            return -1;
+        }
+    }
+
+    char TrainNum[50] = "";
+    GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No0000", TrainNum, 50, ".//LT_WXCLCFG.ini");
+    Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",hddPath,TrainNum);	
+    //Path.Format("%s/6A-VIDEO-%s-北京蓝天多维/", hddPath, TrainNum);
+    CreateDirectory(Path, NULL);
+
+    SYSTEMTIME Time, TimeBuf;
+    GetLocalTime(&TimeBuf);
+    char FilePath[200] = "";
+
+    sprintf_s(FilePath, "%s/%d-%02d-%02d/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
+    CreateDirectory(FilePath, NULL);
+    GetLocalTime(&Time);
+    char FileName[200] = "";
+
+    TAXDATA TaxData{};
+
+    while (1)
+    {
+        Sleep(1000);
+        TaxData = dlg->TaxData;
+        GetLocalTime(&Time);
+        if (Time.wYear != TimeBuf.wYear || Time.wMonth != TimeBuf.wMonth || Time.wDay != TimeBuf.wDay)
+        {
+            memset(FilePath, 0, sizeof(FilePath));
+
+            GetLocalTime(&TimeBuf);
+            sprintf_s(FilePath, "%s/%d-%02d-%02d/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
+            CreateDirectory(FilePath, NULL);
+        }
+
+        sprintf_s(FileName, "%s/%s_北京蓝天多维_%d%02d%02d.idx", FilePath, TrainNum, Time.wYear, Time.wMonth, Time.wDay);
+
+        if (TaxData.EngineNo != 0)
+        {
+
+            //////////////////////////////////////////////////////////////////////////
+            unsigned char IdxBuf[100] = "";
+            // 参考文档： 6A系统视频深化统型方案 V1.2 （2014年4月）
+            // 2.2	公共信息报文2（统型后使用）
+
+            IdxBuf[0] = 0xAA;
+            IdxBuf[1] = 0xAA;
+            // 报文长度：0x60
+            IdxBuf[2] = 0x60;
+            // 报文类型：0x07
+            IdxBuf[4] = 0x07;
+            /*
+            中央处理平台时间
+            （由低到高依次为：年、月、日、时、分、秒，2000年计为0，余类推）
+            */
+            IdxBuf[5] = Time.wYear - 2000;
+            IdxBuf[6] = Time.wMonth;
+            IdxBuf[7] = Time.wDay;
+            IdxBuf[8] = Time.wHour;
+            IdxBuf[9] = Time.wMinute;
+            IdxBuf[10] = Time.wSecond;
+
+            /*
+            中央处理平台车号
+            （共16个字符，由低到高依次存放，不足时补充空格）
+            （例如：HXD3C0001[空格][空格][空格][空格][空格][空格][空格]）
+            */
+            char CheHao[16+1]{};
+            // https://stackoverflow.com/a/276869/12291425
+            sprintf_s(CheHao, "%-16s", TrainNum);
+
+            memcpy_s(&IdxBuf[11], 16, CheHao, 16);
+            // TAX报文有效
+            IdxBuf[27] = 1;
+            /*
+            预留字节
+            (TAX_TIME)
+            */
+            memset(&IdxBuf[28], 0, 4 * sizeof(IdxBuf[0]));
+            /*
+            车次字母部分
+            （例如：LY501次的字母存放顺序为[空格][空格][L][Y]）
+            */
+            memcpy_s(&IdxBuf[32], 4 * sizeof(IdxBuf[0]),
+                &TaxData.TrainTypeId[0], 4*sizeof(TaxData.TrainTypeId[0]));
+
+            /*
+            车次数字部分(按数值型)巩付伟标注
+            （共3个字节，低位在前，高位在后）
+            */
+            IdxBuf[36] = TaxData.TrainNum;
+            IdxBuf[37] = TaxData.TrainNum >> 8;
+            IdxBuf[38] = TaxData.TrainNum >> 16;
+
+            /*
+            车站号
+            */
+            IdxBuf[39] = TaxData.StationNo;
+            /*
+            车站号扩充字节
+            */
+            IdxBuf[40] = 0;
+            /*
+            司机号
+            */
+            IdxBuf[41] = TaxData.DriverNo;
+            IdxBuf[42] = TaxData.DriverNo >> 8;
+            /*
+            司机号扩充字节
+            */
+            IdxBuf[43] = 0;
+            /*
+            副司机号
+            */
+            IdxBuf[44] = TaxData.CopilotNo;
+            IdxBuf[45] = TaxData.CopilotNo >> 8;
+            /*
+            副司机号扩充字节
+            */
+            IdxBuf[46] = 0;
+            /*
+            预留字节
+            (CAR_NO)
+            */
+            memset(&IdxBuf[47], 0, 2);
+
+            /*
+            预留字节
+            (CAR_TYPE)
+            */
+            IdxBuf[49] = 0;
+            /*
+            预留字节
+            (CAR_TYPE_EX)
+            */
+            IdxBuf[50] = 0;
+            /*实际交路号*/
+            IdxBuf[51] = TaxData.FactRoute;
+            /*
+            客/货、本/补
+            （b0：0/1=货/客，b1：0/1=本务/补机）
+            */
+            IdxBuf[52] = TaxData.TrainFlag;
+            /*速度*/
+            IdxBuf[53] = TaxData.Speed;
+            /*
+            预留字节
+            (SPEED)
+            */
+            memset(&IdxBuf[54], 0, 2);
+            /*
+            机车信号
+            （b3～b0: 00-无灯,01-绿,02-黄,03-双黄,04-红黄,05-红,06-白,07-绿黄,08-黄2；
+            b4：0/1=单灯/多灯）
+            */
+            IdxBuf[56] = TaxData.TrainSign;
+            /*
+            机车工况
+            （b0：零位,b1：向后[即二端向前],b2：向前[即一端向前],b3：制动,b4：牵引）
+            */
+            IdxBuf[57] = TaxData.TrainState;
+            /*信号机编号*/
+            IdxBuf[58] = TaxData.SignNo;
+            IdxBuf[59] = TaxData.SignNo >> 8;
+            /*
+            信号机种类
+            （b2～b0: 02-出站,03-进站,04-通过,05-预告,06-容许）
+            */
+            IdxBuf[60] = TaxData.SignType;
+            /*
+            公里标
+            （单位：米）
+            */
+            IdxBuf[61] = TaxData.Signpost;
+            IdxBuf[62] = TaxData.Signpost >> 8;
+            IdxBuf[63] = TaxData.Signpost >> 16;
+            /*总重
+            （单位：吨）
+            */
+            IdxBuf[64] = TaxData.CarWeight;
+            IdxBuf[65] = TaxData.CarWeight >> 8;
+            /*
+            计长
+            （单位：0.1米）
+            */
+            IdxBuf[66] = TaxData.CarLong;
+            IdxBuf[67] = TaxData.CarLong >> 8;
+            /*辆数*/
+            IdxBuf[68] = TaxData.CarCount;
+            /*列车管压力
+            （b9～b0:管压[kPa],b15～b10:预留）
+            */
+            IdxBuf[69] = TaxData.PipePressure;
+            IdxBuf[70] = TaxData.PipePressure >> 8;
+
+            /*装置状态
+            （b0:1/0-降级/监控，b2:1/0-调车/非调车）
+            */
+            IdxBuf[71] = 0;
+            /*TCMS报文有效*/
+            IdxBuf[72] = 0;
+            /*司机室状态
+            （0-没占用，1-一端占用，2-二端占用，0xff-无效)
+            */
+            IdxBuf[73] = 0;
+            /*预留字节
+            （JCGK）
+            */
+            IdxBuf[74] = 0;
+            /*
+            受电弓状态
+            （b1～b0:一端受电弓，b3～b2:二端受电弓，0-无效，1-升弓，2-降弓，3-隔离）
+            */
+            IdxBuf[75] = 0;
+            /*主断状态
+            （1-断开，2-闭合，0xFF-无效）
+            */
+            IdxBuf[76] = 0;
+            /*
+            手柄级位
+            （×0.1级,0xFFFF无效）
+            */
+            IdxBuf[77] = 0;
+            IdxBuf[78] = 0;
+            /*重联信息
+            （1-重联，2-不重联，0xFF-无效）
+            */
+            IdxBuf[79] = 0;
+            /*大闸指令
+            （b0-运转位，b1-初制动，b2-常用制动区，b3-全制动，b4-抑制位，b5-重联位，b6-紧急制动位，0xFF-无效）
+            */
+            IdxBuf[80] = 0;
+            /*小闸指令
+            （b0-运转位，b1-制动区，b2-全制动，0xFF-无效）
+            */
+            IdxBuf[81] = 0;
+            /*其他指令
+            （b0-LKJ制动，b1-紧急制动，b2-惩罚制动，b3-电制动，b4-停放制动施加，b5-停放制动缓解，b6-停放制动切除，0xFF-无效）
+            */
+            IdxBuf[82] = 0;
+            /*其他指令屏蔽字节
+            （位定义：1表示有效，0表示无效）
+            */
+            IdxBuf[83] = 0;
+            /*预留字节（ZDJ）*/
+            IdxBuf[84] = 0;
+            IdxBuf[85] = 0;
+            /*预留字节（ZDG）*/
+            IdxBuf[86] = 0;
+            IdxBuf[87] = 0;
+            /*预留字节 (ZFG)*/
+            IdxBuf[88] = 0;
+            IdxBuf[89] = 0;
+            /*
+            特殊区域	过分相点	进入调车	人为紧急
+            侧线运行  监控动作	停车事件	开车事件
+            */
+            IdxBuf[90] = 0;
+            /*
+                            减压制动	黄灯信号
+            继乘交接	监控解锁	总风低压	红黄信号
+            */
+            IdxBuf[91] = 0;
+            /*未定义*/
+            IdxBuf[92] = 0;
+            IdxBuf[93] = 0;
+            IdxBuf[94] = 0;
+            /*未定义 End*/
+
+            /* SC */
+            for (int i = 0; i < 95; i++)
+            {
+                IdxBuf[95] += IdxBuf[i];
+            }
+            //////////////////////////////////////////////////////////////////////////
+
+            FILE* fd = fopen(FileName, "ab+");
+            if (fd)
+            {
+                fwrite(IdxBuf, 1, 96, fd);
+                fclose(fd);
+                fd = nullptr;
+            }
+
+            if (dlg->m_ManageDlg.URecordFlag)
+            {
+                FileName[0] = dlg->m_ManageDlg.szRootPathName[0];
+
+                fd = fopen(FileName, "ab+");
+                if (fd)
+                {
+                    fwrite(IdxBuf, 1, 96, fd);
+                    fclose(fd);
+                    fd = nullptr;
+                }
+
+            }
+        }
+    }
+
+
     return 0;
 }

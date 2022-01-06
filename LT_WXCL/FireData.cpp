@@ -113,7 +113,7 @@ UINT Thread_WXCL_FireData(LPVOID lParam)
 			result += HexToString<unsigned char>(RecBuf[i]).substr(2, 2);
 		}
 
-		PLOGD << "RecBuf: " << result;
+		//PLOGD << "RecBuf: " << result;
 #endif
 		memcpy(&SendBuf[4], RecBuf, dwRet);
 
@@ -124,7 +124,7 @@ UINT Thread_WXCL_FireData(LPVOID lParam)
 		if (dwRet > 0)
 		{
 			//dlg->FireDataAnalyse(RecBuf,dwRet,TRUE,0);//本车A节
-			//广播数据(接收在LT_WXCLDlg->OnInitDialog->Thread_FireRec线程)
+			//广播数据(接收在Thread_UDPBroadcastRecv线程)
 			sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
 		}
 		dwRet = 0;

@@ -37,6 +37,7 @@ public:
 
 	CBrush m_brush;
 	CFont newFont;
+    CFont font_150;
 
 	int VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd);
 
@@ -44,7 +45,7 @@ public:
         char* CheHao, char pos, char* SiJiHao);
 	int TimeCFG();
 
-	TAXDATA TaxData;
+	TAXDATA TaxData; // TAX数据
 	BOOL TaxStat;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -84,4 +85,7 @@ public:
 
     // 判断FireMsgDlg是否已经退出
     bool firemsgdlg_exited = false;
+
+    bool usb_flag = false;
+
 };

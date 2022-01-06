@@ -60,6 +60,7 @@ END_MESSAGE_MAP()
 BOOL CVideoDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+    SetWindowText("video_dialog");
 
 	// TODO:  在此添加额外的初始化
 	m_brush.CreateSolidBrush(RGB(0, 0, 0));

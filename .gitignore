@@ -1,3 +1,7 @@
+# 版本历史
+*-Release-*
+*-Debug-*
+
 # 程序生成目录
 Release
 Debug
@@ -10,6 +14,8 @@ Debug
 *.exe
 *.lib
 *.obj
+
+installer.out.nsi
 
 
 # Visual Studio 文件
@@ -48,6 +54,8 @@ LT_WXCL/log.txt
 !LT_WXCL_Dll/*.lib
 !LT_WXCL_Dll/HCNetSDKCom/*.lib
 !LT_WXCL/**/*.lib
+!python-3.8.10-amd64.exe
+
 
 # OLD
 *-OLD
@@ -77,3 +85,6 @@ systemlog.txt
 # format (NuGet v4 and .NET Core).
 project.lock.json
 project.assets.json
+
+
+__pycache__

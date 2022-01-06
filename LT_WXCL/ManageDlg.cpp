@@ -7,13 +7,9 @@
 #include "afxdialogex.h"
 
 #include "VideoPlay.h"
+#include "ManageView.h"
 
 // CManageDlg 对话框
-
-//char RecordFlag[20] = "";//录像保存标志
-char TrainNum[50] = "";//车型车号
-char IPCName[12][50] = { 0 };//保存通道名称
-
 
 IMPLEMENT_DYNAMIC(CManageDlg, CDialogEx)
 
@@ -35,6 +31,7 @@ void CManageDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_LIST_HDD, m_HDDStateList);
     DDX_Control(pDX, IDC_STATIC1, m_static_device);
     DDX_Control(pDX, IDC_STATIC2, m_static_hard);
+    DDX_Control(pDX, IDC_PROGRAM_VERSION, program_version);
 }
 
 
@@ -54,13 +51,16 @@ int CManageDlg::SetIPCState()
         if (RecordFlag[i] == 1)
         {
             m_IPCStateList.SetItemText(i, 4, _T("录像"));
-
             m_IPCStateList.SetItemTextColor(4, i, RGB(0, 255, 0));
+
+            OnlineDev[i] = 1;
         }
         else
         {
             m_IPCStateList.SetItemText(i, 4, _T("未录像"));
             m_IPCStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
+
+            OnlineDev[i] = 0;
         }
         Sleep(100);
     }
@@ -187,6 +187,7 @@ int CManageDlg::FindAndDeleteRecord(CString Path)
     {
         CString filePath;
         filePath.Format("%s/%s", Path, FileName);
+        PLOGD << "Deleting..." << filePath;
         DeleteFile(filePath);
     }
 
@@ -322,8 +323,13 @@ int WINAPI Thread_Record(LPVOID lpPara)
         {
             if (dlg->RecordFlag[i] == 0)
             {
-                File.Format("rtsp://admin:hk123456@192.168.10%d.%d%d:554/",
-                    atoi(&theApp.Local[0]), (theApp.Local[1] == 'A' ? 7 : 8), i);
+                if (theApp.Local[1] == 'A') {
+                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i);
+                }
+                else {
+                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i);
+                }
+
                 if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
                     Path.GetBuffer(Path.GetLength()),
                     TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i + 6)],
@@ -349,8 +355,13 @@ int WINAPI Thread_Record(LPVOID lpPara)
         {
             if (dlg->RecordFlag[i] == 0)
             {
-                File.Format("rtsp://admin:hk123456@192.168.10%d.%d%d:554/",
-                    atoi(&theApp.Local[0]), (theApp.Local[1] == 'A' ? 8 : 7), i - 6);
+                if (theApp.Local[1] == 'A') {
+                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i - 6);
+                }
+                else {
+                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i - 6);
+                }
+
                 if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
                     Path.GetBuffer(Path.GetLength()),
                     TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i - 6)],
@@ -438,6 +449,36 @@ int CManageDlg::SetHDDState()
         //((CLDFM4EVideoDlg*)theApp.pMainDlg)->SetFireText("硬盘故障！！！");
     }
 
+    //U
+    if (URecordFlag && strcmp(UPath, ""))
+    {
+        //////////////////////////////////////////////////////////////////////////
+
+        //////////////////////////////////////////////////////////////////////////
+        ULARGE_INTEGER uFreeAv, uTotalBytes, uFreeBytes;
+        if (GetDiskFreeSpaceEx(UPath, &uFreeAv, &uTotalBytes, &uFreeBytes))
+        {
+            //////////////////////////////////////////////////////////////////////////
+            TRACE("u = %d\n", uFreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
+
+
+            //////////////////////////////////////////////////////////////////////////
+            //小于2G时删除
+            if (uFreeAv.QuadPart / (ULONGLONG)(1024 * 1024 * 1024) <= 1 && (uTotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024)) > 0)
+            {
+
+                CString uPath;
+                uPath.Format("%s/%s/", UPath, FindDir(UPath));
+                //uPath.Format("%s/LT-VIDEO-%s-北京蓝天多维/",UPath,TrainNum);
+                //uPath.Format("%s/6A-VIDEO-%s-北京蓝天多维/",UPath,TrainNum);
+
+                FindAndDeleteRecord(uPath);
+
+            }
+        }
+    }
+
+
 
     return 0;
 }
@@ -445,6 +486,9 @@ int CManageDlg::SetHDDState()
 BOOL CManageDlg::OnInitDialog()
 {
     CDialogEx::OnInitDialog();
+    SetWindowText("manage_dialog");
+
+    ManageView::init();
 
     //背景画刷
     m_brush.CreateSolidBrush(RGB(0, 0, 0));
@@ -475,15 +519,24 @@ BOOL CManageDlg::OnInitDialog()
     m_HDDStateList.SetTextColor(RGB(255, 255, 255));
 
 
-    // TODO:  在此添加额外的初始化
     GetPrivateProfileString(_T("LT_WXCLCFG"), _T("HDD"), _T("D://"), theApp.HDDPath, 20, _T(".//LT_WXCLCFG.ini"));
-    GetPrivateProfileString(_T("LT_WXCLCFG"), _T("TrainNum"), _T("No00000"), TrainNum, 50, _T(".//LT_WXCLCFG.ini"));
 
     InitList();
     SetList();
 
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_State, this, 0, NULL);//开启状态查询线程
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Record, this, 0, NULL);//开启录像线程
+
+    // 软件版本显示
+    std::string version = ManageView::get_version();
+    CString version_cstr{ version.c_str() };
+    program_version.SetWindowText(version_cstr);
+    //字体
+    program_version.SetFont(&newFont1);
+    // 位置
+    CRect rc;
+    this->GetClientRect(&rc);
+    program_version.MoveWindow(20, 530, 100, 50);
 
     return TRUE;  // return TRUE unless you set the focus to a control
     // 异常: OCX 属性页应返回 FALSE
