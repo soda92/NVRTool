@@ -1,3 +1,4 @@
+from re import I
 from invoke import task
 import shutil
 import os
@@ -5,10 +6,26 @@ import glob
 from get_version import get_version
 
 
+def detect_usb():
+    for i in [f"{x}:" for x in list("EFGH")]:
+        if os.path.exists(i):
+            total, _, _ = shutil.disk_usage(i)
+            size_GB = total // (2 ** 30)
+            if size_GB < 200:
+                print(f"found udisk: {i}")
+                return i
+    return None
+
+
 def copy_dist_to_udisk():
-    if os.path.exists("F:"):
-        for file in glob.glob(f"./nsis-build/太原*-{get_version()}.exe"):
-            shutil.copy(file, "F:")
+    udisk = detect_usb()
+    if udisk != None:
+        print(f"copying to {udisk}...")
+        if os.path.exists(udisk):
+            for file in glob.glob(f"./nsis-build/太原*-{get_version()}.exe"):
+                shutil.copy(file, udisk)
+    else:
+        print("cannot find udisk.")
 
 
 @task

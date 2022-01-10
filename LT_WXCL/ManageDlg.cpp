@@ -590,13 +590,16 @@ int CManageDlg::SetList()
         GetPrivateProfileString(_T("LT_WXCLCFG"), temp, _T("无"), ipc, 60, _T(".//LT_WXCLCFG.ini"));
         strcpy_s(IPCName[i], ipc);
     }
+    char local_name[20] = "";
+    GetPrivateProfileString(TEXT("LT_WXCLCFG"), "Local", "4A", local_name, 20, _T(".//LT_WXCLCFG.ini"));
+    int i_start = 0;
+    if (local_name[1] == 'B') {
+        i_start = 6;
+    }
+    for (int i = i_start; i < i_start + 6; i++) {
+        m_IPCStateList.SetItemText(i - i_start, 2, IPCName[i]);
+    }
 
-    m_IPCStateList.SetItemText(0, 2, _T("路况"));
-    m_IPCStateList.SetItemText(1, 2, _T("司机室"));
-    m_IPCStateList.SetItemText(2, 2, _T("高压室1"));
-    m_IPCStateList.SetItemText(3, 2, _T("高压室2"));
-    m_IPCStateList.SetItemText(4, 2, _T("左走廊"));
-    m_IPCStateList.SetItemText(5, 2, _T("右走廊"));
 
     //HDD LIST
     m_HDDStateList.InsertItem(0, _T("1"));
