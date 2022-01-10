@@ -77,5 +77,5 @@ if __name__ == "__main__":
     shutil.move("LT_WXCLCFG.ini", "LT_WXCLCFG.ini.bak")
     write_ini(data_to, "LT_WXCLCFG.ini")
     
-    with open("not-first-launch.txt", mode='w') as f:
-        pass
+    # with open("not-first-launch.txt", mode='w') as f:
+    #     pass
