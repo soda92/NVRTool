@@ -1,4 +1,3 @@
-from re import I
 from invoke import task
 import shutil
 import os
