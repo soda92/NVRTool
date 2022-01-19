@@ -356,10 +356,10 @@ int WINAPI Thread_Record(LPVOID lpPara)
             if (dlg->RecordFlag[i] == 0)
             {
                 if (theApp.Local[1] == 'A') {
-                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i - 6);
+                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i - 6);
                 }
                 else {
-                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i - 6);
+                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i - 6);
                 }
 
                 if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
@@ -547,7 +547,7 @@ int CManageDlg::InitList()
 {
     DWORD dwStyle = m_IPCStateList.GetExtendedStyle();
     dwStyle |= LVS_EX_FULLROWSELECT;//选中某行使整行高亮（只适用与report风格的listctrl）
-    dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）	
+    dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）
     m_IPCStateList.SetExtendedStyle(dwStyle); //设置扩展风格
     m_HDDStateList.SetExtendedStyle(dwStyle);
 
@@ -648,7 +648,7 @@ HBRUSH CManageDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
     HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
-    if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色  
+    if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色
         return m_brush;
 
     if (nCtlColor == CTLCOLOR_STATIC)
