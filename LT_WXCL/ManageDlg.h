@@ -55,7 +55,7 @@ public:
 	char RecordFlag[20];//录像保存标志
 
     int StartURecord(char* uPath);
-    BOOL URecordFlag; // U盘转存标记
+    bool URecordFlag; // U盘转存标记
     bool URecordStatus[6] = { false }; // 通道U盘保存状态
 
     TCHAR szRootPathName[MAX_PATH] = ""; // U盘目录

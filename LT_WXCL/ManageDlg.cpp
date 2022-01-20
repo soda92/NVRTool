@@ -9,6 +9,8 @@
 #include "VideoPlay.h"
 #include "ManageView.h"
 #include "hdd_state.h"
+#include "log.h"
+#include "LogView.h"
 
 // CManageDlg 对话框
 
@@ -339,6 +341,9 @@ int WINAPI Thread_Record(LPVOID lpPara)
                     dlg->RecordFlag[i] = 0;
                     TRACE("%d port failed\n", i);
                     sprintf_s(sysLog, "%d 通道录像连接错误！\n", i);
+                    auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
+                    logn::camera_connect_failed(IPCNum);
+                    LogView::Update();
                 }
                 else
                 {
@@ -371,6 +376,9 @@ int WINAPI Thread_Record(LPVOID lpPara)
                     dlg->RecordFlag[i] = 0;
                     TRACE("%d port failed\n", i);
                     sprintf_s(sysLog, "%d 通道录像连接错误！\n", i);
+                    auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
+                    logn::camera_connect_failed(IPCNum);
+                    LogView::Update();
                 }
                 else
                 {
@@ -435,7 +443,7 @@ int CManageDlg::SetHDDState()
             m_HDDStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
         }
     }
-            
+
 
 
     //U
@@ -605,7 +613,7 @@ int CManageDlg::SetList()
         m_HDDStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
         m_HDDStateList.SetItemText(i, 5, _T("LTDW"));
     }
-    
+
 
     return 0;
 }

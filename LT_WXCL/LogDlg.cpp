@@ -101,8 +101,8 @@ BOOL LogDlg::OnInitDialog()
     this->log_list.SetFontHW(size, static_cast<int>(size * 0.5));
     this->log_list.SetHeaderFontHW(size, static_cast<int>(size * 0.5));
 
-    this->log_list.InsertColumn(0, "事件", LVCFMT_CENTER, 278);
-    this->log_list.InsertColumn(1, "时间", LVCFMT_CENTER, 277);
+    this->log_list.InsertColumn(0, "事件", LVCFMT_CENTER, 308);
+    this->log_list.InsertColumn(1, "时间", LVCFMT_CENTER, 257);
 
 #ifdef DEBUG
   /*  logn::load();
@@ -127,9 +127,9 @@ void LogDlg::OnSize(UINT nType, int cx, int cy)
 
     // TODO: 在此处添加消息处理程序代码
 
-    int x = 100;
+    int x = 90;
     int y = 65;
-    int width = 592;
+    int width = 602;
     int height = 421;
 
     if (num++ > 0) {
