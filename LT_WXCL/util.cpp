@@ -99,7 +99,7 @@ namespace util {
             {
                 pos = atoi(temp);
                 //找到IPC和通道的对应
-                cflag[pos] = true;
+                cflag[pos-1] = true;
 
                 temp = strchr(temp, ',');
                 if (temp == nullptr)

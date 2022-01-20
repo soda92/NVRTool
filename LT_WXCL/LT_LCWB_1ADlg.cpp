@@ -3,6 +3,8 @@
 //
 
 #include "stdafx.h"
+#include "resource.h"
+
 #include "LT_LCWB_1A.h"
 #include "LT_LCWB_1ADlg.h"
 #include "afxdialogex.h"

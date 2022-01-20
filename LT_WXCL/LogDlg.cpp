@@ -129,7 +129,7 @@ void LogDlg::OnSize(UINT nType, int cx, int cy)
 
     int x = 100;
     int y = 65;
-    int width = 562;
+    int width = 592;
     int height = 421;
 
     if (num++ > 0) {

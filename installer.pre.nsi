@@ -82,6 +82,10 @@ SectionEnd
 
 section
 
+# 将配置文件复制到D盘，然后复制到新安装的目录
+ExecWait "$INSTDIR\TaiYuan-Release-{version}\relocate-configs.exe"
+
+
 MessageBox MB_YESNO|MB_ICONQUESTION "安装成功，需要重启计算机。" IDNO +2
 Reboot
 

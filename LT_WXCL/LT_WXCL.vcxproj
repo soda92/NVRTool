@@ -135,6 +135,7 @@
     <ClInclude Include="Date.h" />
     <ClInclude Include="FireData.h" />
     <ClInclude Include="FireMsgView.h" />
+    <ClInclude Include="hdd_state.h" />
     <ClInclude Include="HeaderCtrlCl.h" />
     <ClInclude Include="include\VideoPlay.h" />
     <ClInclude Include="ListCtrlCl.h" />

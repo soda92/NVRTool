@@ -57,15 +57,15 @@ void CMyTabCtrl::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct)
 		CDC* dc = CDC::FromHandle(lpDrawItemStruct->hDC);
 
 		CRect tRect;
-		GetItemRect(lpDrawItemStruct->itemID, &tRect);//得到Item的尺寸
+		GetItemRect(lpDrawItemStruct->itemID, &tRect); // 得到Item的尺寸
 		int R = m_R, G = m_G, B = m_B;
-		CRect nRect(tRect);//拷贝尺寸到新的容器中
-		//画分割线 
+		CRect nRect(tRect); // 拷贝尺寸到新的容器中
+		// 画分割线 
 		CBrush _brush;
 		_brush.CreateSolidBrush(RGB(R - 15, G - 15, B - 15));
 		CRect m_rect(tRect);
 		m_rect.right = nRect.left++;
-		dc->FillRect(&m_rect, &_brush); //填充背景 
+		dc->FillRect(&m_rect, &_brush); // 填充背景 
 		_brush.DeleteObject();
 
 

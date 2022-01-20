@@ -5,18 +5,20 @@
 #include <boost/process/start_dir.hpp>
 #include <string>
 #include "config.h"
+#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 
 
 namespace progress_bar {
 
     namespace bp = boost::process;
+    httplib::Client cli("http://localhost:55555");
 
     void show_impl() {
-        bp::system("client.exe", "show", bp::start_dir(config::start_dir));
+        auto res = cli.Get("/show");
     }
 
     void hide_impl() {
-        bp::system("client.exe", "hide", bp::start_dir(config::start_dir));
+        auto res = cli.Get("/hide");
     }
 
     void show() {

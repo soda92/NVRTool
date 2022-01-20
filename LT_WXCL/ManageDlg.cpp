@@ -8,6 +8,7 @@
 
 #include "VideoPlay.h"
 #include "ManageView.h"
+#include "hdd_state.h"
 
 // CManageDlg 对话框
 
@@ -405,49 +406,37 @@ int WINAPI Thread_State(LPVOID lpPara)
 
 int CManageDlg::SetHDDState()
 {
-    //CString strAllInfo;
-    ULARGE_INTEGER FreeAv, TotalBytes, FreeBytes;
-    if (GetDiskFreeSpaceEx(theApp.HDDPath, &FreeAv, &TotalBytes, &FreeBytes))
-    {
-        //格式化信息，并显示出来
-        CString strTotalBytes, strFreeBytes;
-
-        strTotalBytes.Format("%luG", TotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
-        strFreeBytes.Format("%luG", FreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
-        //strAllInfo.Format("Info:[c] %s %s \nU can use %luG",strTotalBytes,strFreeBytes, FreeAv.QuadPart/(ULONGLONG)(1024*1024*1024));/* 单位为G */
-        //MessageBox(strAllInfo);
-
-        if (TotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024) > 100)
-        {
-            m_HDDStateList.SetItemText(0, 2, strTotalBytes);
-            m_HDDStateList.SetItemText(0, 3, strFreeBytes);
-            m_HDDStateList.SetItemText(0, 4, "正常");
-            m_HDDStateList.m_ItemTextColor.RemoveAll();
-            m_HDDStateList.SetItemTextColor(4, 0, RGB(0, 255, 0));
-
-            //硬盘小于10G时将分别删除8个通道里最早的一个文件
-            TRACE("FreeBytes = %dG\n", FreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
-            if (FreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024) <= 9 && (TotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024)) > 0)
-            {
-                CString Path;
-                Path.Format("%s/%s/", theApp.HDDPath, FindDir(theApp.HDDPath));
-                //Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",theApp.HDDPath,TrainNum);
-                //////////////////////////////////////////////////////////////////////////
-                FindAndDeleteRecord(Path);
-
-            }
+    auto arr = { 0, 1 };
+    for (auto i : arr) {
+        auto ip = fmt::format("192.168.104.20{}", i);
+        if ((theApp.Local[1] == 'A' && i == 0) ||
+            (theApp.Local[1] == 'B' && i == 1)) {
+            ip = "localhost";
         }
+        double total{ 0 };
+        double used{ 0 };
+        double free{ 0 };
+        bool ret{ false };
+        ret = get_hdd_state(ip, total, used, free);
+        auto str_total = fmt::format("{:.1f}G", total);
+        auto str_free = fmt::format("{:.1f}G", free);
+        if (ret) {
+            m_HDDStateList.SetItemText(i, 2, str_total.c_str());
+            m_HDDStateList.SetItemText(i, 3, str_free.c_str());
+            m_HDDStateList.SetItemText(i, 4, TEXT("正常"));
+            m_HDDStateList.m_ItemTextColor.RemoveAll();
+            m_HDDStateList.SetItemTextColor(4, i, RGB(0, 255, 0));
+        }
+        else {
+            m_HDDStateList.SetItemText(i, 2, TEXT("0G"));
+            m_HDDStateList.SetItemText(i, 3, TEXT("0G"));
+            m_HDDStateList.SetItemText(i, 4, TEXT("错误"));
+            m_HDDStateList.m_ItemTextColor.RemoveAll();
+            m_HDDStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
+        }
+    }
+            
 
-    }
-    else
-    {
-        m_HDDStateList.SetItemText(0, 2, "0");
-        m_HDDStateList.SetItemText(0, 3, "0");
-        m_HDDStateList.SetItemText(0, 4, "错误");
-        m_HDDStateList.m_ItemTextColor.RemoveAll();
-        m_HDDStateList.SetItemTextColor(4, 0, RGB(255, 0, 0));
-        //((CLDFM4EVideoDlg*)theApp.pMainDlg)->SetFireText("硬盘故障！！！");
-    }
 
     //U
     if (URecordFlag && strcmp(UPath, ""))
@@ -602,13 +591,21 @@ int CManageDlg::SetList()
 
 
     //HDD LIST
-    m_HDDStateList.InsertItem(0, _T("1"));
-    m_HDDStateList.SetItemText(0, 1, _T("硬盘"));
-    m_HDDStateList.SetItemText(0, 2, _T("0"));
-    m_HDDStateList.SetItemText(0, 3, _T("0"));
-    m_HDDStateList.SetItemText(0, 4, _T("错误"));
-    m_HDDStateList.SetItemTextColor(4, 0, RGB(255, 0, 0));
-    m_HDDStateList.SetItemText(0, 5, _T("LTDW"));
+    for (auto i : { 0,1 }) {
+        if (i == 0) {
+            m_HDDStateList.InsertItem(i, _T("A"));
+        }
+        else {
+            m_HDDStateList.InsertItem(i, _T("B"));
+        }
+        m_HDDStateList.SetItemText(i, 1, _T("硬盘"));
+        m_HDDStateList.SetItemText(i, 2, _T("0G"));
+        m_HDDStateList.SetItemText(i, 3, _T("0G"));
+        m_HDDStateList.SetItemText(i, 4, _T("错误"));
+        m_HDDStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
+        m_HDDStateList.SetItemText(i, 5, _T("LTDW"));
+    }
+    
 
     return 0;
 }
@@ -627,13 +624,13 @@ void CManageDlg::OnSize(UINT nType, int cx, int cy)
             rc.right / 20, rc.bottom / 20, rc.right / 20 * 18, rc.bottom / 15 * 8 + 10);
         m_IPCStateList.MoveWindow(
             rc.right / 20 + 30, rc.bottom / 15 + 30,
-            (rc.right / 20 * 18 - 60), (rc.bottom / 15 * 8 - 50));
+            (rc.right / 20 * 18 - 40), (rc.bottom / 15 * 8 - 30));
 
         GetDlgItem(IDC_STATIC2)->MoveWindow(
             rc.right / 20, rc.bottom / 15 * 10, rc.right / 20 * 18, rc.bottom / 15 * 4 + 10);
         m_HDDStateList.MoveWindow(
-            rc.right / 20 + 30, rc.bottom / 15 * 10 + 40,
-            rc.right / 20 * 18 - 60, rc.bottom / 15 * 4 - 48);
+            rc.right / 20 + 30, rc.bottom / 15 * 10 + 30,
+            rc.right / 20 * 18 - 60, rc.bottom / 15 * 4 - 28);
     }
 }
 
