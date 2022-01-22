@@ -6,7 +6,6 @@
 #include "WaitDlg.h"
 #include "afxdialogex.h"
 
-int Num = 30;
 // CWaitDlg ¶Ô»°¿ò
 
 IMPLEMENT_DYNAMIC(CWaitDlg, CDialogEx)

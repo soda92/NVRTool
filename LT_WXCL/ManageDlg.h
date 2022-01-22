@@ -59,7 +59,7 @@ public:
 
 	char RecordFlag[20]; //录像保存标志
 
-    int StartURecord(char* uPath);
+    int StartURecord(char udisk);
     bool URecordFlag; //U盘转存标记
     bool URecordStatus[6] = { false }; //通道U盘保存状态
 

@@ -22,11 +22,11 @@
 #include <boost/json.hpp>
 #include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 #include "fmt/core.h"
+namespace fs = boost::filesystem;
 
 #include "log.h"
 #include "logView.h"
 
-char Global_UPath[20] = { 0 }; // u盘转存路径
 char Global_TrainNum[50] = { 0 }; // 车型车号
 char Global_IPCName[12][50] = { 0 }; //保存通道名称
 
@@ -72,23 +72,27 @@ int WINAPI Thread_URecord(LPVOID lpPara)
     //log
     PLOGD << "U盘外挂";
 
-    CString Path;
-    Path.Format("%slost+found", Global_UPath);
-    int res = 0;
-    if (CreateDirectory(Path, NULL) == 0)
-    {
-        res = GetLastError();
-        if (res == 3)
-        {
-            AfxMessageBox("录像存储路径不正确，请修改配置文件中的路径。");
-            return -1;
-        }
+    std::string path;
+    path = fmt::format("{}lost+found", dlg->udisk_path);
+    if (fs::exists(path)) {
+        fs::remove_all(path);
     }
+    auto ret = fs::create_directory(path);
+    if (!ret)
+    {
+        AfxMessageBox("录像存储路径不正确，请修改配置文件中的路径。");
+        return -1;
+    }
+
     httplib::Client cli("http://localhost:5000");
     std::string url;
 
-    Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/", Global_UPath, Global_TrainNum);
-    CreateDirectory(Path, NULL);
+    path = fmt::format("{}/LT-VIDEO-{}-北京蓝天多维/",
+        dlg->udisk_path, Global_TrainNum);
+
+    if (!fs::exists(path)) {
+        fs::create_directory(path);
+    }
 
     while (dlg->URecordFlag)
     {
@@ -110,7 +114,7 @@ int WINAPI Thread_URecord(LPVOID lpPara)
                         // 进程任务号
                         12 + i + 1,
                         (char*)cam_addr.c_str(),
-                        Path.GetBuffer(Path.GetLength()),
+                        (char*)path.c_str(),
                         Global_TrainNum, IPCName,
                         // 文件名里的通道号
                         port_number);
@@ -148,7 +152,7 @@ int WINAPI Thread_URecord(LPVOID lpPara)
 }
 
 
-int CManageDlg::StartURecord(char* uPath)
+int CManageDlg::StartURecord(char udisk)
 {
     if (URecordFlag)
     {
@@ -163,21 +167,20 @@ int CManageDlg::StartURecord(char* uPath)
         Sleep(1000);
     }
 
-    char FilePath[60] = "";
-    strcpy_s(FilePath, uPath);
-    strcat_s(FilePath, "/license.txt");
+    std::string url;
+    httplib::Client cli("http://localhost:5000");
+    url = fmt::format("/parse_channels/{}", udisk);
+    auto res = cli.Get(url.c_str());
 
-    if (util::URecordConfigAnalyse(FilePath, Global_UCFlag) == -1)
-    {
-        URecordFlag = false;
-        return -1;
+    if (res && res->status == 200) {
+        printf("%d %s\n", res->status, res->body.c_str());
+        boost::json::value jv = boost::json::parse(res->body);
+        auto arr = jv.at("channels").as_array();
+        for (size_t i = 0; i < 6; i++) {
+            Global_UCFlag[i] = arr[i].as_bool();
+        }
     }
-    else
-        URecordFlag = true;
 
-    strcpy_s(Global_UPath, uPath);
-
-    //////////////////////////////////////////////////////////////////////////
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_URecord, this, 0, NULL);//开启录像线程
     return 0;
 }
@@ -200,7 +203,7 @@ int WINAPI Thread_UDisk_Process(LPVOID lpPara)
 
     if (is_record)
     {
-        dlg->m_ManageDlg.StartURecord(Global_UPath);
+        dlg->m_ManageDlg.StartURecord(dlg->m_ManageDlg.udisk_path[0]);
         return -1;
     }
 

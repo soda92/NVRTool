@@ -14,6 +14,5 @@ namespace util {
     template <typename T>
     std::string tostring(T* valArray, size_t length);
 
-    int URecordConfigAnalyse(char* path, std::array<bool, 6>& cflag);
 }
 

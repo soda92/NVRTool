@@ -251,7 +251,7 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	}
 
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Voice, this, 0, NULL);
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_UDrive, this, 0, NULL); // 开启u盘检测线程
+
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Index, this, 0, NULL); // 开启公共信息记录线程
 
     // 系统启动

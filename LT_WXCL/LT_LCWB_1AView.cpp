@@ -344,62 +344,6 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 }
 
 
-int WINAPI Thread_UDrive(LPVOID lpPara)
-{
-    CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
-
-    //////////////////////////////////////////////////////////////////////////
-    Sleep(1000);//等待1S后开始执行
-    //////////////////////////////////////////////////////////////////////////
-    char szLogicalDriveStrings[BUFSIZ] = "";
-    GetLogicalDriveStrings(BUFSIZ - 1, szLogicalDriveStrings);
-    char* pDrive = szLogicalDriveStrings;
-
-    while (strlen(pDrive) != 0)
-    {
-        if (GetDriveType(pDrive) == DRIVE_REMOVABLE)
-        {
-            auto res = dlg->m_ManageDlg.StartURecord(pDrive);
-            if (res != -1)
-            {
-                dlg->m_ManageDlg.udisk_path = pDrive;
-                break;
-            }
-        }
-        pDrive += strlen(pDrive) + 1;
-    }
-    //////////////////////////////////////////////////////////////////////////
-
-    while (1)//usb检测
-    {
-        Sleep(5 * 1000);
-        if (dlg->m_ManageDlg.udisk_path == "")
-        {
-            dlg->m_ManageDlg.URecordFlag = FALSE;
-            TRACE("no usb\n");
-        }
-        else
-        {
-            CString Path;
-            Path.Format("%slost+found", dlg->m_ManageDlg.szRootPathName);
-            int res = 0;
-            if (CreateDirectory(Path, NULL) == 0)
-            {
-                res = GetLastError();
-                if (res == 3)
-                {
-                    TRACE("usb path error\n");
-                    dlg->m_ManageDlg.udisk_path = "";
-                    dlg->m_ManageDlg.URecordFlag = FALSE;
-                    continue;
-                }
-            }
-        }
-    }
-    return 0;
-}
-
-
 int WINAPI Thread_Index(LPVOID lpPara)
 {
     CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;

@@ -17,5 +17,4 @@ namespace Interactive {
     void ShowFire(CString warVoice);
 }
 
-int WINAPI Thread_UDrive(LPVOID lpPara);
 int WINAPI Thread_Index(LPVOID lpPara);
