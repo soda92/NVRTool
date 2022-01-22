@@ -7,7 +7,7 @@
 
 #pragma once
 
-int WXCL_FireComInit(char* com);
-UINT Thread_WXCL_FireData(LPVOID lParam);
+int FireComInit(char* com);
+UINT Thread_FireData(LPVOID lParam);
 
-int WXCL_SendMsg(unsigned char* buf, int len);
+int SendMsg(unsigned char* buf, int len);

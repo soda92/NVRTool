@@ -40,9 +40,6 @@ extern char Global_IPCName[12][50];
 char FirstDriveFromMask(ULONG unitmask);
 
 
-
-
-
 CLT_LCWB_1ADlg::CLT_LCWB_1ADlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CLT_LCWB_1ADlg::IDD, pParent)
 {
@@ -169,8 +166,13 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 #endif
 
 	theApp.pMainDlg = this;
-	GetPrivateProfileString("LT_WXCLCFG", "Local", "", theApp.Local, 10, ".//LT_WXCLCFG.ini");
-	theApp.Remote = GetPrivateProfileInt("LT_WXCLCFG", "Remote", 0, ".//LT_WXCLCFG.ini");
+    httplib::Client cli("localhost:5000");
+    auto res = cli.Get("/local");
+    std::string ret{ "" };
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+    theApp.Local= ret[0];
 
 	///**************
 
@@ -212,8 +214,17 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	m_VideoDlg.ShowWindow(TRUE);
 
 	char TaxCom[20] = "";
-	GetPrivateProfileString("LT_WXCLCFG", "TaxCom", "COM1", TaxCom, 20, ".//LT_WXCLCFG.ini");
-	char Parity = GetPrivateProfileInt("LT_WXCLCFG", "TaxParity", 0, ".//LT_WXCLCFG.ini");
+    res = cli.Get("/conf/TaxCom");
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+    strcpy_s(TaxCom, ret.c_str());
+
+    res = cli.Get("/conf/TaxParity");
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+	auto Parity = stoi(ret.substr(0,1));
 
 	if (TaxCOMInit(TaxCom, Parity) != -1)
 	{
@@ -223,8 +234,18 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetIpcTime, this, 0, NULL); //校时 10min
 
 	char PweCom[20] = "";
-	GetPrivateProfileString("LT_WXCLCFG", "PweCom", "COM3", PweCom, 20, ".//LT_WXCLCFG.ini");
-	Parity = GetPrivateProfileInt("LT_WXCLCFG", "PweParity", 0, ".//LT_WXCLCFG.ini");
+
+    res = cli.Get("/conf/PweCom");
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+    strcpy_s(PweCom, ret.c_str());
+
+    res = cli.Get("/conf/PweParity");
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+    Parity = stoi(ret.substr(0, 1));
 
 	if (PweCOMInit(PweCom, Parity) != -1)
 	{
@@ -256,7 +277,6 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 
     // 系统启动
     std::string url;
-    httplib::Client cli("http://localhost:5000");
     url = fmt::format("/add/系统启动");
     //cli.Get(url.c_str());
     
@@ -448,7 +468,7 @@ int CLT_LCWB_1ADlg::TimeCFG()
 	NvrTime.dwMinute = Time.wMinute;
 	NvrTime.dwSecond = Time.wSecond;
 
-	int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
+	int tmp = (theApp.Local == 'A' ? 0 : 8);
 
 	for (int i = tmp; i < (8 + tmp); i++)
 	{
@@ -608,8 +628,8 @@ void CLT_LCWB_1ADlg::OnBnClickedStopWarn()
     unsigned char SendBuf[5] = "";
     SendBuf[0] = 0xFF;
     SendBuf[1] = 0x04;
-    SendBuf[2] = theApp.Local[0];
-    SendBuf[3] = theApp.Local[1];
+    SendBuf[2] = '4';
+    SendBuf[3] = theApp.Local;
     for (int i = 0; i < 4; i++)
     {
         SendBuf[4] += SendBuf[i];

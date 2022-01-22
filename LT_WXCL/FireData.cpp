@@ -17,7 +17,7 @@ std::string HexToString(T uval)
 
 HANDLE fPort = 0;
 
-int WXCL_FireComInit(char* com)
+int FireComInit(char* com)
 {
 	DCB Dcb;
 	COMMTIMEOUTS CommTimeouts;
@@ -60,7 +60,7 @@ int WXCL_FireComInit(char* com)
 	return 1;
 }
 
-int WXCL_SendMsg(unsigned char* buf, int len)
+int SendMsg(unsigned char* buf, int len)
 {
 	if (fPort != 0)
 	{
@@ -77,7 +77,7 @@ int WXCL_SendMsg(unsigned char* buf, int len)
 
 
 //向EF板卡发送TAX箱消息，然后接收EF板卡回复，并广播
-UINT Thread_WXCL_FireData(LPVOID lParam)
+UINT Thread_FireData(LPVOID lParam)
 {
 	CFireMsgDlg* dlg = (CFireMsgDlg*)lParam;
 
@@ -104,8 +104,8 @@ UINT Thread_WXCL_FireData(LPVOID lParam)
 		unsigned char SendBuf[100] = "";
 		SendBuf[0] = 0xFF;
 		SendBuf[1] = 0x01;
-		SendBuf[2] = theApp.Local[0];
-		SendBuf[3] = theApp.Local[1];
+		SendBuf[2] = '4';
+		SendBuf[3] = theApp.Local;
 
 #ifdef _DEBUG
 		std::string result;

@@ -32,16 +32,21 @@ char Global_IPCName[12][50] = { 0 }; //保存通道名称
 
 namespace ManageView {
     void init() {
-        GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No0000", Global_TrainNum, 50, ".//LT_WXCLCFG.ini");
+        httplib::Client cli{ "localhost:5000" };
+        auto res = cli.Get("/conf/TrainNum");
+        std::string ret;
+        if (res && res->status == 200) {
+            ret = res->body;
+        }
+        strcpy_s(Global_TrainNum, ret.c_str());
 
         for (int i = 0; i < theApp.IPCNum; i++)
         {
-            char ipc[60] = "";
-            char temp[20] = "";
-            sprintf_s(temp, "IPC%d", i + 1);
-            GetPrivateProfileString("LT_WXCLCFG", temp, "IPC", ipc, 60, ".//LT_WXCLCFG.ini");
-
-            strcpy_s(Global_IPCName[i], ipc);
+            res = cli.Get(fmt::format("/conf/IPC{}", i + 1).c_str());
+            if (res && res->status == 200) {
+                ret = res->body;
+            }
+            strcpy_s(Global_IPCName[i], ret.c_str());
         }
     }
 
@@ -102,12 +107,12 @@ int WINAPI Thread_URecord(LPVOID lpPara)
             {
                 if (dlg->URecordStatus[i] == false)
                 {
-                    auto ip_first = (theApp.Local[1] == 'A') ? 7 : 8;
+                    auto ip_first = (theApp.Local == 'A') ? 7 : 8;
                     auto ip_last = i;
-                    auto port_number = (theApp.Local[1] == 'A') ? i + 1 : i + 6 + 1;
+                    auto port_number = (theApp.Local == 'A') ? i + 1 : i + 6 + 1;
                     auto cam_addr = fmt::format("rtsp://admin:hk123456@192.168.104.{}{}:554/Streaming/Channels/101", ip_first, ip_last);
 
-                    auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
+                    auto IPCNum = (theApp.Local == 'A' ? i : i + 6);
                     auto IPCName = Global_IPCName[IPCNum];
 
                     auto ret = Video_StartRecord(

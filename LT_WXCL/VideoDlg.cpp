@@ -86,7 +86,7 @@ BOOL CVideoDlg::OnInitDialog()
 		}
 	}
 
-	if (theApp.Local[1] == 'A')
+	if (theApp.Local == 'A')
 		OnBnClickedButtonBa();
 	else
 		OnBnClickedButtonBb();

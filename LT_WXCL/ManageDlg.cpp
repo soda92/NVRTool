@@ -166,8 +166,8 @@ int CManageDlg::SetHDDState()
     auto arr = { 0, 1 };
     for (auto i : arr) {
         auto ip = fmt::format("192.168.104.20{}", i);
-        if ((theApp.Local[1] == 'A' && i == 0) ||
-            (theApp.Local[1] == 'B' && i == 1)) {
+        if ((theApp.Local == 'A' && i == 0) ||
+            (theApp.Local == 'B' && i == 1)) {
             ip = "localhost";
         }
         double total{ 0 };
@@ -231,8 +231,13 @@ BOOL CManageDlg::OnInitDialog()
     m_HDDStateList.SetBkColor(RGB(0, 0, 0));
     m_HDDStateList.SetTextColor(RGB(255, 255, 255));
 
-
-    GetPrivateProfileString(_T("LT_WXCLCFG"), _T("HDD"), _T("D://"), theApp.HDDPath, 20, _T(".//LT_WXCLCFG.ini"));
+    httplib::Client cli{ "localhost:5000" };
+    auto res = cli.Get("/conf/HDD");
+    std::string ret;
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+    strcpy_s(theApp.HDDPath, ret.c_str());
 
     InitList();
     SetList();
@@ -299,18 +304,28 @@ int CManageDlg::SetList()
     // 获取IPC名称
     for (int i = 0; i < 12; i++)
     {
-        char ipc[60] = "";
-        char temp[20] = "";
-        sprintf_s(temp, "IPC%d", i + 1);
-        GetPrivateProfileString(_T("LT_WXCLCFG"), temp, _T("无"), ipc, 60, _T(".//LT_WXCLCFG.ini"));
-        strcpy_s(Global_IPCName[i], ipc);
+        httplib::Client cli{ "localhost:5000" };
+        auto res = cli.Get(fmt::format("/conf/IPC{}", i+1).c_str());
+        std::string ret;
+        if (res && res->status == 200) {
+            ret = res->body;
+        }
+        strcpy_s(Global_IPCName[i], ret.c_str());
     }
 
     // 设置设备管理界面-通道名称
     char local_name[20] = "";
-    GetPrivateProfileString(TEXT("LT_WXCLCFG"), "Local", "4A", local_name, 20, _T(".//LT_WXCLCFG.ini"));
+
+    httplib::Client cli{ "localhost:5000" };
+    auto res = cli.Get("/local");
+    std::string ret;
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+    strcpy_s(local_name, ret.c_str());
+
     int i_start = 0;
-    if (local_name[1] == 'B') {
+    if (local_name[0] == 'B') {
         i_start = 6;
     }
     for (int i = i_start; i < i_start + 6; i++) {

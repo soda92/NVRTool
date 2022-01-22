@@ -17,7 +17,7 @@ using namespace std;
 /// <returns>ÊÇ·ñ³É¹¦</returns>
 bool get_hdd_state(std::string ip, double &total, double& used, double& free) {
     // HTTP
-    auto address = fmt::format("http://{}:8080", ip);
+    auto address = fmt::format("http://{}:5000", ip);
     httplib::Client cli(address);
     auto res = cli.Get("/size");
     if (res && res->status == 200) {

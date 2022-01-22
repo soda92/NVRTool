@@ -23,7 +23,7 @@ public:
 	void* pMainDlg;
 	char HDDPath[20];//Â¼Ïñ´æ´¢Â·¾¶
 
-	char Local[10];//
+	char Local; //AB½Ú
 	char Remote;
 
 	SOCKET BSoc;

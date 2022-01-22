@@ -25,7 +25,7 @@ CLT_LCWB_1AApp::CLT_LCWB_1AApp()
 	// 支持重新启动管理器
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 	pMainDlg = NULL;
-	memset(Local, 0, sizeof(Local));
+    Local = '\0';
 	Remote = 0;
 	BSoc = -1;
 	// TODO: 在此处添加构造代码，

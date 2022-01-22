@@ -13,7 +13,7 @@ def get_udisk():
             continue
         if win32file.GetDriveType(i) == win32file.DRIVE_REMOVABLE:
             return i[0] + ":"
-    raise SystemError("Cannot find udisk")
+    return None
 
 
 def copy_dist_to_udisk():
@@ -26,12 +26,17 @@ def copy_dist_to_udisk():
     else:
         print("cannot find udisk.")
 
+@task
+def copyconf(c):
+    shutil.copy("LT_WXCLCFG.ini", "Debug")
+    shutil.copy("LT_WXCLCFG.ini", "Release")
 
 @task
 def build(c):
     """build"""
     print("current dir: ", os.getcwd())
     print("copying file...")
+    copyconf(c)
     dirname = f"nsis-build/TaiYuan-Release-{get_version()}"
     if os.path.exists(dirname):
         shutil.rmtree(dirname)
@@ -43,6 +48,7 @@ def build(c):
                 shutil.copytree(file, out_path)
             else:
                 shutil.copy(file, dirname)
+
 
     # additional files
     for file in glob.glob("ExtraFiles/*"):

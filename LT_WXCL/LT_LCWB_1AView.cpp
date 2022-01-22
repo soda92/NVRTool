@@ -15,6 +15,7 @@
 #include "progress_bar.h"
 #include <fmt/core.h>
 #include <boost/filesystem.hpp>
+#include <D:/src/vcpkg/installed/x86-windows/include/httplib.h>
 namespace fs = boost::filesystem;
 extern char Global_IPCName[12][50];
 
@@ -92,8 +93,16 @@ namespace Interactive {
         PLOGD << "detector num: " << detector_num;
         auto detector = "detector" + std::to_string(detector_num);
         char video_num_cstr[21] = { '\0' };
+
         // 读取对应IPC
-        GetPrivateProfileString("LT_WXCLCFG", detector.c_str(), "0", video_num_cstr, 20, ".//LT_WXCLCFG.ini");
+        httplib::Client cli{ "localhost:5000" };
+        auto res = cli.Get(fmt::format("/conf/{}", detector).c_str());
+        std::string ret;
+        if (res && res->status == 200) {
+            ret = res->body;
+        }
+        strcpy_s(video_num_cstr, ret.c_str());
+
         int video_num = std::stoi(std::string(video_num_cstr));
         PLOGD << "video num: " << video_num;
         // 切换窗口
@@ -171,7 +180,7 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
     {
         for (int i = 0; i < 6; i++) {
             auto user_id_index = 0;
-            if (theApp.Local[1] == 'A') {
+            if (theApp.Local == 'A') {
                 user_id_index = i;
             }
             else {
@@ -198,7 +207,7 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
                 );
 
                 auto record_id_index = 0;
-                if (theApp.Local[1] == 'A') {
+                if (theApp.Local == 'A') {
                     record_id_index = i;
                 }
                 else {
@@ -306,11 +315,11 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
                 Remote[0] = RecBuf[2];
                 Remote[1] = RecBuf[3];
 
-                if (Remote[0] == theApp.Local[0] && Remote[1] == 'A') //A节
+                if (Remote[1] == 'A') //A节
                 {
                     dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 0);
                 }
-                if (Remote[0] == theApp.Local[0] && Remote[1] == 'B') //B节
+                if (Remote[1] == 'B') //B节
                 {
                     dlg->m_FireMsgDlg.FireDataAnalyse(&RecBuf[4], 41, 1);
                 }
@@ -321,36 +330,34 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
                 Remote[0] = RecBuf[2];
                 Remote[1] = RecBuf[3];
 
-                if (strcmp(Remote, theApp.Local) && Remote[0] == theApp.Local[0])
+                memcpy(&dlg->TaxData, &RecBuf[4], sizeof(dlg->TaxData));
+
+                if (dlg->TaxData.TAXTime.Year != 0 && dlg->TaxData.TAXTime.Month != 0
+                    && dlg->TaxData.TAXTime.Day != 0)
                 {
-                    memcpy(&dlg->TaxData, &RecBuf[4], sizeof(dlg->TaxData));
+                    CTime curTime = CTime::GetCurrentTime();
+                    CTime TaxTime(dlg->TaxData.TAXTime.Year, dlg->TaxData.TAXTime.Month,
+                        dlg->TaxData.TAXTime.Day, dlg->TaxData.TAXTime.Hour,
+                        dlg->TaxData.TAXTime.Minute, dlg->TaxData.TAXTime.Second);
+                    CTimeSpan span = curTime - TaxTime;
 
-                    if (dlg->TaxData.TAXTime.Year != 0 && dlg->TaxData.TAXTime.Month != 0
-                        && dlg->TaxData.TAXTime.Day != 0)
+                    if (span.GetTotalSeconds() > 60 || span.GetTotalSeconds() < -60)
                     {
-                        CTime curTime = CTime::GetCurrentTime();
-                        CTime TaxTime(dlg->TaxData.TAXTime.Year, dlg->TaxData.TAXTime.Month,
-                            dlg->TaxData.TAXTime.Day, dlg->TaxData.TAXTime.Hour,
-                            dlg->TaxData.TAXTime.Minute, dlg->TaxData.TAXTime.Second);
-                        CTimeSpan span = curTime - TaxTime;
+                        //MainDlg->SetFireText("set time");
+                        TRACE("tax set time\n");
+                        SYSTEMTIME time;
+                        GetLocalTime(&time);
+                        time.wYear = dlg->TaxData.TAXTime.Year;
+                        time.wMonth = dlg->TaxData.TAXTime.Month;
+                        time.wDay = dlg->TaxData.TAXTime.Day;
+                        time.wHour = dlg->TaxData.TAXTime.Hour;
+                        time.wMinute = dlg->TaxData.TAXTime.Minute;
+                        time.wSecond = dlg->TaxData.TAXTime.Second;
 
-                        if (span.GetTotalSeconds() > 60 || span.GetTotalSeconds() < -60)
-                        {
-                            //MainDlg->SetFireText("set time");
-                            TRACE("tax set time\n");
-                            SYSTEMTIME time;
-                            GetLocalTime(&time);
-                            time.wYear = dlg->TaxData.TAXTime.Year;
-                            time.wMonth = dlg->TaxData.TAXTime.Month;
-                            time.wDay = dlg->TaxData.TAXTime.Day;
-                            time.wHour = dlg->TaxData.TAXTime.Hour;
-                            time.wMinute = dlg->TaxData.TAXTime.Minute;
-                            time.wSecond = dlg->TaxData.TAXTime.Second;
-
-                            SetLocalTime(&time);
-                        }
+                        SetLocalTime(&time);
                     }
                 }
+
             }
             else if (RecBuf[0] == 0xFF && RecBuf[1] == 0x04) //报警中断
             {
@@ -371,7 +378,13 @@ int WINAPI Thread_Index(LPVOID lpPara)
     CString File;
 
     char hddPath[20] = "";
-    GetPrivateProfileString("LT_WXCLCFG", "HDD", "E://", hddPath, 20, ".//LT_WXCLCFG.ini");
+    httplib::Client cli{ "localhost:5000" };
+    auto res = cli.Get("/conf/HDD");
+    std::string ret;
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+    strcpy_s(hddPath, ret.c_str());
 
     if (!dlg->m_ManageDlg.IsHDD(hddPath))
     {
@@ -386,11 +399,11 @@ int WINAPI Thread_Index(LPVOID lpPara)
     }
 
     Path.Format("%slost+found", hddPath);
-    int res = 0;
+    int rest = 0;
     if (CreateDirectory(Path, NULL) == 0)
     {
-        res = GetLastError();
-        if (res == 3)
+        rest = GetLastError();
+        if (rest == 3)
         {
             //AfxMessageBox("录像存储路径不正确，请修改配置文件中的路径。");
             return -1;
@@ -398,9 +411,15 @@ int WINAPI Thread_Index(LPVOID lpPara)
     }
 
     char TrainNum[50] = "";
-    GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No0000", TrainNum, 50, ".//LT_WXCLCFG.ini");
+
+    res = cli.Get("/conf/TrainNum");
+    if (res && res->status == 200) {
+        ret = res->body;
+    }
+    strcpy_s(TrainNum, ret.c_str());
+
     Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",hddPath,TrainNum);	
-    //Path.Format("%s/6A-VIDEO-%s-北京蓝天多维/", hddPath, TrainNum);
+
     CreateDirectory(Path, NULL);
 
     SYSTEMTIME Time, TimeBuf;

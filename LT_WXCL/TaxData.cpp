@@ -43,7 +43,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 	unsigned char SendBuf[256] = "";
 
 	unsigned char num = 0;
-	while (1)
+	while (true)
 	{
 		memset(&DataBuf, 0x00, sizeof(DataBuf));
         auto _ = ReadFile(tPort, &DataBuf, 256, &dwRet, NULL);
@@ -62,7 +62,6 @@ UINT Thread_TaxData(LPVOID lParam) {
 
 			MainDlg->TaxStat = TRUE;
 			memcpy(&MainDlg->TaxData, &TaxBuf, sizeof(MainDlg->TaxData));
-
 			//////////////////////////////////////////////////////////////////////////
 			if (++Num >= 10)
 			{
@@ -70,8 +69,8 @@ UINT Thread_TaxData(LPVOID lParam) {
 
                 SendBuf[0] = 0xFF;
                 SendBuf[1] = 0x03;
-                SendBuf[2] = theApp.Local[0];
-                SendBuf[3] = theApp.Local[1];
+                SendBuf[2] = '4';
+                SendBuf[3] = theApp.Local;
                 memcpy(&SendBuf[4], &TaxBuf, sizeof(MainDlg->TaxData));
                 sendto(theApp.BSoc, (char*)SendBuf, sizeof(MainDlg->TaxData) + 6, 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
 
@@ -121,7 +120,7 @@ UINT Thread_TaxData(LPVOID lParam) {
 	return 0;
 }
 
-int TaxCOMInit(char* COM, char Parity) {
+int TaxCOMInit(char* COM, int Parity) {
 	DCB Dcb;
 	COMMTIMEOUTS CommTimeouts;
 
@@ -136,7 +135,6 @@ int TaxCOMInit(char* COM, char Parity) {
 	{
 		return -1;
 	}
-
 
 	GetCommState(tPort, &Dcb);
 	Dcb.BaudRate = 28800;
@@ -377,8 +375,7 @@ int PweCOMInit(char* COM, char Parity) {
 }
 
 
-// 智能电源
-// 如果不发送该报文，系统会断电重启
+// 电源保持，如果不发送该报文，系统会断电重启
 UINT Thread_PweData(LPVOID lParam) {
 
 	CLT_LCWB_1ADlg* MainDlg = (CLT_LCWB_1ADlg*)lParam;

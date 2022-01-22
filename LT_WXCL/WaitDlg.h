@@ -23,6 +23,8 @@ public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
+    int Num = 30;
+
 private:
 	CBrush m_brush;
 };

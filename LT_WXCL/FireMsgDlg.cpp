@@ -8,6 +8,7 @@
 
 #include "FireData.h"
 #include "FireMsgView.h"
+#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 
 
 // CFireMsgDlg 对话框
@@ -68,11 +69,18 @@ BOOL CFireMsgDlg::OnInitDialog()
 
     //串口初始化
     char FireCom[20] = "";
-    GetPrivateProfileString("LT_WXCLCFG", "FireCom", "COM2", FireCom, 20, ".//LT_WXCLCFG.ini");
-    if (WXCL_FireComInit(FireCom) != -1)
+    httplib::Client cli("localhost:5000");
+    auto res = cli.Get("/conf/FireCom");
+    std::string conf_firecom{""};
+    if (res && res->status == 200) {
+        conf_firecom = res->body;
+    }
+    strcpy_s(FireCom, conf_firecom.c_str());
+
+    if (FireComInit(FireCom) != -1)
     {
         //向EF板卡发送TAX箱消息，然后接收EF板卡回复，并广播
-        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_WXCL_FireData, this, 0, NULL);
+        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_FireData, this, 0, NULL);
     }
 
     for (int i = 0; i < 4; i++)
@@ -311,7 +319,7 @@ int CFireMsgDlg::SendFireMsg()
         SendBuf[78] += SendBuf[i];
     }
 
-    return WXCL_SendMsg(SendBuf, 79);
+    return SendMsg(SendBuf, 79);
 }
 
 int CFireMsgDlg::FireDataAnalyse(unsigned char* buf, int len, int Train, BOOL SendFlag /*= FALSE*/)
@@ -503,7 +511,7 @@ int CFireMsgDlg::StopWarFun()
     {
         SendBuf[15] += SendBuf[i];
     }
-    WXCL_SendMsg(SendBuf, 16);
+    SendMsg(SendBuf, 16);
     return 0;
 }
 

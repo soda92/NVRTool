@@ -42,7 +42,7 @@ typedef struct _TAXDATA {
 
 }TAXDATA, * pTAXDATA;
 
-int TaxCOMInit(char* COM, char Parity);
+int TaxCOMInit(char* COM, int Parity);
 UINT Thread_TaxData(LPVOID lParam);
 
 int TaxNetInit(char* ip);
