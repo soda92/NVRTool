@@ -31,18 +31,22 @@ public:
 
 	unsigned char OsdIndex;
 
-	LONG lUserID[32];
-	LONG lRealPlayHandle[32];
-    char ip[200][32];
+	LONG lUserID[32]{-1};
+	LONG lRealPlayHandle[32]{-1};
 
 	CBrush m_brush;
 	CFont newFont;
     CFont font_150;
 
-	int VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd);
+	int VideoPlay(char* ip, long& user_id, long& handle, HWND hWnd);
 
-	int VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* CheCi,
-        char* CheHao, char pos, char* SiJiHao);
+    int OSD_impl(
+        long user_id,
+        string info_record_status, // 左上角
+        string info_speed_mileage, // 右上角
+        string info_trainNum_EngineNo, // 左下角
+        string info_position_driver); // 右下角
+
 	int TimeCFG();
 
 	TAXDATA TaxData; // TAX数据

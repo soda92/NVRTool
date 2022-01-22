@@ -69,7 +69,7 @@ namespace TestUDisk {
 
 		f.close();
 	}
-	TEST(testURecord, parseConfig) {
+	/*TEST(testURecord, parseConfig) {
 		std::ofstream f{ "D:/file.txt" };
 		cert_urecord ur;
 		ur.username = "6A";
@@ -91,5 +91,5 @@ namespace TestUDisk {
 		EXPECT_TRUE(!cflag[3]);
 		EXPECT_TRUE(!cflag[4]);
 		EXPECT_TRUE(!cflag[5]);
-	}
+	}*/
 }

@@ -64,5 +64,4 @@ public:
     bool URecordStatus[6] = { false }; //通道U盘保存状态
 
     std::string udisk_path; //u盘目录
-    TCHAR szRootPathName[MAX_PATH] = ""; 
 };

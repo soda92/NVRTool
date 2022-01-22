@@ -175,7 +175,7 @@ int CManageDlg::StartURecord(char udisk)
     if (res && res->status == 200) {
         printf("%d %s\n", res->status, res->body.c_str());
         boost::json::value jv = boost::json::parse(res->body);
-        auto arr = jv.at("channels").as_array();
+        boost::json::array arr = jv.at("channels").as_array();
         for (size_t i = 0; i < 6; i++) {
             Global_UCFlag[i] = arr[i].as_bool();
         }

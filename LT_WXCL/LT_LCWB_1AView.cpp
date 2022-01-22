@@ -16,6 +16,7 @@
 #include <fmt/core.h>
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
+extern char Global_IPCName[12][50];
 
 namespace Interactive {
     void log(CString warnStr) {
@@ -165,32 +166,57 @@ int WINAPI Thread_Voice(LPVOID lpPara)
 int WINAPI Thread_SetOsd(LPVOID lpPara)
 {
     CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
-    int i = dlg->OsdIndex;
 
-    TRACE("osd i = %d\n", i);
-
-    while (1)
+    while (true)
     {
-        char Speed[20] = "";
-        char Mileage[20] = "";
-        char CheCi[20] = "";
-        char CheHao[20] = "";
-        char SiJiHao[20] = "";
+        for (int i = 0; i < 6; i++) {
+            auto user_id_index = 0;
+            if (theApp.Local[1] == 'A') {
+                user_id_index = i;
+            }
+            else {
+                user_id_index = i + 8;
+            }
+            if (dlg->lUserID[user_id_index] >= 0)
+            {
+                auto info_speed_mileage = fmt::format(
+                    "{}km/h {:.3lf}", dlg->TaxData.Speed, dlg->TaxData.Signpost / 1000.0
+                );
+                auto info_trainNum_EngineNo = fmt::format(
+                    "车次:{} 车号:{}", dlg->TaxData.TrainNum, dlg->TaxData.EngineNo
+                );
 
-        double LiCheng = dlg->TaxData.Signpost / 1000.0;
+                int ipcnum = 0;
+                if (i >= 0 && i < 8) {
+                    ipcnum = i;
+                }
+                if (i >= 8 && i < 16) {
+                    ipcnum = i - 2;
+                }
+                auto info_position_driver = fmt::format(
+                    "{} 司机:{}", Global_IPCName[ipcnum], dlg->TaxData.DriverNo
+                );
 
-        sprintf_s(CheCi, "%d", dlg->TaxData.TrainNum);
-
-        sprintf_s(Speed, "%d", dlg->TaxData.Speed);
-        sprintf_s(Mileage, "%.3lf", LiCheng);
-        sprintf_s(CheHao, "%d", dlg->TaxData.EngineNo);
-        sprintf_s(SiJiHao, "%d", dlg->TaxData.DriverNo);
-
-        if (dlg->lUserID[i] >= 0)
-        {
-            dlg->VideoOSDSet(&dlg->lUserID[i], Speed, Mileage, CheCi, CheHao, (i > 7 ? i - 8 : i), SiJiHao);
+                auto record_id_index = 0;
+                if (theApp.Local[1] == 'A') {
+                    record_id_index = i;
+                }
+                else {
+                    record_id_index = i + 6;
+                }
+                auto record_str = dlg->m_ManageDlg.RecordFlag[record_id_index] ? "REC" : "";
+                auto usb_record_str = dlg->m_ManageDlg.URecordStatus[i] ? "USB" : "";
+                auto info_record_status = fmt::format(
+                    "{} {}", record_str, usb_record_str
+                );
+                dlg->OSD_impl(
+                    dlg->lUserID[user_id_index],
+                    info_record_status,
+                    info_speed_mileage,
+                    info_trainNum_EngineNo,
+                    info_position_driver);
+            }
         }
-
         Sleep(2 * 1000);
     }
 
@@ -201,42 +227,35 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
 int WINAPI Thread_Play(LPVOID lpPara)
 {
     CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
-    char ip[30] = "";
-    //Sleep(5 * 1000);
 
-    int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
-
-    for (int i = tmp; i < (8 + tmp); i++)
-    {
-        dlg->OsdIndex = i;
-        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetOsd, lpPara, 0, NULL); //osd叠加线程
-        Sleep(50);
-    }
-
-    while (1)
+    while (true)
     {
         for (int i = 0; i < 32; i++)
         {
-
             if (dlg->lUserID[i] == -1)
             {
-
-                if (i <= 5 && i >= 0)
-                    sprintf_s(ip, "192.168.10%d.7%d", atoi(&theApp.Local[0]), i);
-                else if (i <= 13 && i >= 8)
-                    sprintf_s(ip, "192.168.10%d.8%d", atoi(&theApp.Local[0]), i - 8);
-                else
+                string ip;
+                if (i <= 5 && i >= 0) {
+                    ip = fmt::format("192.168.104.7{}", i);
+                }
+                else if (i <= 13 && i >= 8) {
+                    ip = fmt::format("192.168.104.8{}", i-8);
+                }
+                else {
                     continue;
+                }
 
-                TRACE("ipc ip = %s\n", ip);
-                strcpy_s(dlg->ip[i], ip);
-
-                int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
+                int res = dlg->VideoPlay(
+                    (char*)ip.c_str(),
+                    dlg->lUserID[i],
+                    dlg->lRealPlayHandle[i],
                     dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
 
-                if (res < 0)
+                if (res >= 0)
                 {
-                    //TRACE("ipc %s error\n",ip);
+                    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetOsd, lpPara, 0, NULL); //osd叠加线程
+                }
+                else {
                     dlg->lUserID[i] = -1;
                     dlg->lRealPlayHandle[i] = -1;
                 }
@@ -665,7 +684,7 @@ int WINAPI Thread_Index(LPVOID lpPara)
 
             if (dlg->m_ManageDlg.URecordFlag)
             {
-                FileName[0] = dlg->m_ManageDlg.szRootPathName[0];
+                FileName[0] = dlg->m_ManageDlg.udisk_path[0];
 
                 fd = fopen(FileName.c_str(), "ab+");
                 if (fd)

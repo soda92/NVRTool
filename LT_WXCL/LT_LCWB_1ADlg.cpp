@@ -337,75 +337,50 @@ void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
 
 }
 
-int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* CheCi, char* CheHao, char pos, char* SiJiHao)
+int CLT_LCWB_1ADlg::OSD_impl(
+    long user_id,
+    string info_record_status, // 左上角
+    string info_speed_mileage, // 右上角
+    string info_trainNum_EngineNo, // 左下角
+    string info_position_driver) // 右下角
 {
-	char OSDOne[100] = "";	 //右上角
-	char OSDTwo[100] = "";	 //左下角
-	char OSDThree[100] = ""; //右下角
 	NET_DVR_SHOWSTRING_V30 struShowString = { 0 };
 	unsigned long dwReturned = 0;
 
-	sprintf_s(OSDOne, "%skm/h %skm", Speed, Mileage);
-	sprintf_s(OSDTwo, "车次:%s 车号:%s", CheCi, CheHao);
-	sprintf_s(OSDThree, "%s 司机:%s", Global_IPCName[pos], SiJiHao);
+    struShowString.struStringInfo[0].wShowString = 1;
+    struShowString.struStringInfo[0].wStringSize = static_cast<WORD>(strlen(info_record_status.c_str()));
+    strcpy_s(struShowString.struStringInfo[0].sString, info_record_status.c_str());
+    struShowString.struStringInfo[0].wShowStringTopLeftX = 30;
+    struShowString.struStringInfo[0].wShowStringTopLeftY = 100;
 
-	struShowString.struStringInfo[0].wShowString = 1;
-	struShowString.struStringInfo[0].wStringSize = static_cast<WORD>(strlen(OSDOne));
-	strcpy_s(struShowString.struStringInfo[0].sString, OSDOne);
-	struShowString.struStringInfo[0].wShowStringTopLeftX = 400;
-	struShowString.struStringInfo[0].wShowStringTopLeftY = 32;
+    struShowString.struStringInfo[1].wShowString = 1;
+    struShowString.struStringInfo[1].wStringSize = static_cast<WORD>(strlen(info_speed_mileage.c_str()));
+    strcpy_s(struShowString.struStringInfo[1].sString, info_speed_mileage.c_str());
+    struShowString.struStringInfo[1].wShowStringTopLeftX = 400;
+    struShowString.struStringInfo[1].wShowStringTopLeftY = 32;
 
-	struShowString.struStringInfo[1].wShowString = 1;
-	struShowString.struStringInfo[1].wStringSize = static_cast<WORD>(strlen(OSDTwo));
-	strcpy_s(struShowString.struStringInfo[1].sString, OSDTwo);
-	struShowString.struStringInfo[1].wShowStringTopLeftX = 0;
-	struShowString.struStringInfo[1].wShowStringTopLeftY = 540;
+    struShowString.struStringInfo[2].wShowString = 1;
+    struShowString.struStringInfo[2].wStringSize = static_cast<WORD>(strlen(info_trainNum_EngineNo.c_str()));
+    strcpy_s(struShowString.struStringInfo[2].sString, info_trainNum_EngineNo.c_str());
+    struShowString.struStringInfo[2].wShowStringTopLeftX = 0;
+    struShowString.struStringInfo[2].wShowStringTopLeftY = 540;
 
-	struShowString.struStringInfo[2].wShowString = 1;
-	struShowString.struStringInfo[2].wStringSize = static_cast<WORD>(strlen(OSDThree));
-	strcpy_s(struShowString.struStringInfo[2].sString, OSDThree);
-	struShowString.struStringInfo[2].wShowStringTopLeftX = 360; //320
-	struShowString.struStringInfo[2].wShowStringTopLeftY = 540;
-
-    if (m_ManageDlg.URecordStatus[pos] && m_ManageDlg.RecordFlag[pos]) {
-        struShowString.struStringInfo[3].wShowString = 1;
-        struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen("REC USB"));
-        strcpy_s(struShowString.struStringInfo[3].sString, "REC USB");
-        struShowString.struStringInfo[3].wShowStringTopLeftX = 30;
-        struShowString.struStringInfo[3].wShowStringTopLeftY = 100;
-    }
-    else {
-        if (m_ManageDlg.RecordFlag[pos])
-        {
-            struShowString.struStringInfo[3].wShowString = 1;
-            struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen("REC"));
-            strcpy_s(struShowString.struStringInfo[3].sString, "REC");
-            struShowString.struStringInfo[3].wShowStringTopLeftX = 30;
-            struShowString.struStringInfo[3].wShowStringTopLeftY = 100;
-        }
-        else if (m_ManageDlg.URecordStatus[pos]) {
-            struShowString.struStringInfo[3].wShowString = 1;
-            struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen("USB"));
-            strcpy_s(struShowString.struStringInfo[3].sString, "USB");
-            struShowString.struStringInfo[3].wShowStringTopLeftX = 30;
-            struShowString.struStringInfo[3].wShowStringTopLeftY = 100;
-        }
-        else
-        {
-            struShowString.struStringInfo[3].wShowString = 0;
-        }
-    }
+    struShowString.struStringInfo[3].wShowString = 1;
+    struShowString.struStringInfo[3].wStringSize = static_cast<WORD>(strlen(info_position_driver.c_str()));
+    strcpy_s(struShowString.struStringInfo[3].sString, info_position_driver.c_str());
+    struShowString.struStringInfo[3].wShowStringTopLeftX = 360;
+    struShowString.struStringInfo[3].wShowStringTopLeftY = 540;
 
 	struShowString.dwSize = sizeof(struShowString);
 
-	if (!NET_DVR_SetDVRConfig(*pUid, NET_DVR_SET_SHOWSTRING_V30, 1, &struShowString, sizeof(NET_DVR_SHOWSTRING_V30)))
+	if (!NET_DVR_SetDVRConfig(user_id, NET_DVR_SET_SHOWSTRING_V30, 1, &struShowString, sizeof(NET_DVR_SHOWSTRING_V30)))
 	{
 		return -1;
 	}
 	return 0;
 }
 
-int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
+int CLT_LCWB_1ADlg::VideoPlay(char* ip, long& user_id, long& handle, HWND hWnd)
 {
 	//登录参数，包括设备地址、登录用户、密码等
 	NET_DVR_USER_LOGIN_INFO struLoginInfo = { 0 };
@@ -421,8 +396,8 @@ int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
 
     // PLOGD << "window handle: " << (long)pHandle;
 
-	*pUid = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
-	if (*pUid < 0)
+	user_id = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
+	if (user_id < 0)
 	{
 		TRACE("Login failed, error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
 		return -1;
@@ -437,14 +412,14 @@ int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
 	struPlayInfo.dwStreamType = 1; //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
 	struPlayInfo.dwLinkMode = 0;   //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
 
-	*pHandle = NET_DVR_RealPlay_V40(*pUid, &struPlayInfo, NULL, NULL);
-	if (*pHandle < 0)
-	{
-		TRACE("NET_DVR_RealPlay_V40 error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
-		NET_DVR_Logout(*pUid);
-		return -1;
-	}
-	//VideoOSDSet(pUid,"100","200","t23","12378",3,"12445");
+	handle = NET_DVR_RealPlay_V40(user_id, &struPlayInfo, NULL, NULL);
+    if (handle < 0)
+    {
+        TRACE("NET_DVR_RealPlay_V40 error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
+        NET_DVR_Logout(user_id);
+        return -1;
+    }
+
 	return 0;
 }
 
