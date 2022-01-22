@@ -19,21 +19,20 @@
 #include <boost/process/start_dir.hpp>
 
 #include "config.h"
+#include <boost/json.hpp>
 #include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 #include "fmt/core.h"
 
 #include "log.h"
 #include "logView.h"
 
-
-char UPath[20] = { 0 }; // u盘转存路径
-char TrainNum[50] = { 0 }; // 车型车号
-char RecordFlag[20] = { 0 }; //录像保存标志
-char IPCName[12][50] = { 0 }; //保存通道名称
+char Global_UPath[20] = { 0 }; // u盘转存路径
+char Global_TrainNum[50] = { 0 }; // 车型车号
+char Global_IPCName[12][50] = { 0 }; //保存通道名称
 
 namespace ManageView {
     void init() {
-        GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No0000", TrainNum, 50, ".//LT_WXCLCFG.ini");
+        GetPrivateProfileString("LT_WXCLCFG", "TrainNum", "No0000", Global_TrainNum, 50, ".//LT_WXCLCFG.ini");
 
         for (int i = 0; i < theApp.IPCNum; i++)
         {
@@ -42,7 +41,7 @@ namespace ManageView {
             sprintf_s(temp, "IPC%d", i + 1);
             GetPrivateProfileString("LT_WXCLCFG", temp, "IPC", ipc, 60, ".//LT_WXCLCFG.ini");
 
-            strcpy_s(IPCName[i], ipc);
+            strcpy_s(Global_IPCName[i], ipc);
         }
     }
 
@@ -64,7 +63,7 @@ namespace ManageView {
     }
 }
 
-std::array<bool, 6> UCFlag{ false };
+std::array<bool, 6> Global_UCFlag{ false };
 
 int WINAPI Thread_URecord(LPVOID lpPara)
 {
@@ -73,12 +72,8 @@ int WINAPI Thread_URecord(LPVOID lpPara)
     //log
     PLOGD << "U盘外挂";
 
-    char sysLog[256] = "";
-    //创建8个文件夹
     CString Path;
-    CString File;
-
-    Path.Format("%slost+found", UPath);
+    Path.Format("%slost+found", Global_UPath);
     int res = 0;
     if (CreateDirectory(Path, NULL) == 0)
     {
@@ -92,57 +87,52 @@ int WINAPI Thread_URecord(LPVOID lpPara)
     httplib::Client cli("http://localhost:5000");
     std::string url;
 
-    Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/", UPath, TrainNum);
+    Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/", Global_UPath, Global_TrainNum);
     CreateDirectory(Path, NULL);
 
     while (dlg->URecordFlag)
     {
         for (int i = 0; i < 6; i++)
         {
-
-            if (UCFlag[i] == true)
+            if (Global_UCFlag[i] == true)
             {
-                /*if (((CLT_LCWB_1ADlg*)theApp.m_pMainWnd)->lUserID[i] == -1) {
-                    continue;
-                }*/
-
                 if (dlg->URecordStatus[i] == false)
                 {
-                    //Path.Format("%s%d/",UPath,i+1);
-                    //rtsp://admin:hk123456@192.168.101.77:554/mpeg4/ch1/sub
-                    if (theApp.Local[1] == 'A') {
-                        File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i);
-                    }
-                    else {
-                        File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i);
-                    }
+                    auto ip_first = (theApp.Local[1] == 'A') ? 7 : 8;
+                    auto ip_last = i;
+                    auto port_number = (theApp.Local[1] == 'A') ? i + 1 : i + 6 + 1;
+                    auto cam_addr = fmt::format("rtsp://admin:hk123456@192.168.104.{}{}:554/Streaming/Channels/101", ip_first, ip_last);
 
-                    if (Video_StartRecord(
+                    auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
+                    auto IPCName = Global_IPCName[IPCNum];
+
+                    auto ret = Video_StartRecord(
                         // 进程任务号
                         12 + i + 1,
-                        File.GetBuffer(File.GetLength()),
+                        (char*)cam_addr.c_str(),
                         Path.GetBuffer(Path.GetLength()),
-                        TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i + 6)],
+                        Global_TrainNum, IPCName,
                         // 文件名里的通道号
-                        (theApp.Local[1] == 'A' ? i : i + 6) + 1)
-                        == -1)
+                        port_number);
+
+                    if (ret != -1)
+                    {
+                        dlg->URecordStatus[i] = true;
+                        PLOGD << IPCName << " 通道开始录像...";
+                    }
+                    else
                     {
                         dlg->URecordStatus[i] = false;
-                        auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
-                        PLOGD << IPCName[IPCNum] << " 通道录像连接错误！";
+                        PLOGD << IPCName << " 通道录像连接错误！";
 
-                        url = fmt::format("/add/IPC{}[{}]连接错误", IPCNum, IPCName[IPCNum]);
+                        url = fmt::format("/add/IPC{}[{}]连接错误", IPCNum, IPCName);
                         //cli.Get(url.c_str());
                         logn::camera_connect_failed(IPCNum);
                         LogView::Update();
                     }
-                    else
-                    {
-                        dlg->URecordStatus[i] = true;
-                        PLOGD << IPCName[(theApp.Local[1] == 'A' ? i : i + 6)] << " 通道开始录像...";
-                    }
 
-                    Sleep(50); // 必须等待一会, 否则会出现录像文件存到下一个文件夹的问题。
+                    // 必须等待一会, 否则会出现录像文件存到下一个文件夹的问题。
+                    Sleep(50);
                 }
             }
 
@@ -177,7 +167,7 @@ int CManageDlg::StartURecord(char* uPath)
     strcpy_s(FilePath, uPath);
     strcat_s(FilePath, "/license.txt");
 
-    if (util::URecordConfigAnalyse(FilePath, UCFlag) == -1)
+    if (util::URecordConfigAnalyse(FilePath, Global_UCFlag) == -1)
     {
         URecordFlag = false;
         return -1;
@@ -185,175 +175,41 @@ int CManageDlg::StartURecord(char* uPath)
     else
         URecordFlag = true;
 
-    strcpy_s(UPath, uPath);
+    strcpy_s(Global_UPath, uPath);
 
     //////////////////////////////////////////////////////////////////////////
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_URecord, this, 0, NULL);//开启录像线程
     return 0;
 }
 
-int DownConfigAnalyse(char* path, unsigned short* cflag, char* year, char* month, char* day, char* hour, char* minute, char* span)
-{
-    FILE* fd = NULL;
-    fopen_s(&fd, path, "rb");
-    if (!fd)
-        return -2;
-    char buf[2 * 1024] = "";
-    char* FindTemp = nullptr;
-    fread(buf, 1, sizeof(buf), fd);
-    char usr[20] = "";
-    char psw[20] = "";
-
-    //////////////////////////////////////////////////////////////////////////
-    //用户密码验证
-    FindTemp = strstr(buf, "Username");
-    if (FindTemp)
-    {
-        FindTemp = strchr(FindTemp, '[');
-        if (FindTemp)
-        {
-            int len = strchr(FindTemp, ']') - FindTemp - 1;
-            memcpy(usr, FindTemp + 1, len);
-        }
-    }
-    FindTemp = strstr(buf, "Password");
-    if (FindTemp)
-    {
-        FindTemp = strchr(FindTemp, '[');
-        if (FindTemp)
-        {
-            int len = strchr(FindTemp, ']') - FindTemp - 1;
-            memcpy(psw, FindTemp + 1, len);
-        }
-    }
-    if (strcmp(usr, "6A") || strcmp(psw, "A6"))
-    {
-        fclose(fd);
-        return -1;
-    }
-    //////////////////////////////////////////////////////////////////////////
-    //通道解析
-    char Channel[60] = "";
-    FindTemp = strstr(buf, "Channel");
-    if (FindTemp)
-    {
-        FindTemp = strchr(FindTemp, '[');
-        if (FindTemp)
-        {
-            int len = strchr(FindTemp, ']') - FindTemp - 1;
-            memcpy(Channel, FindTemp + 1, len);
-        }
-    }
-    if (!strcmp(Channel, ""))
-    {
-        fclose(fd);
-        return -1;
-    }
-    //解析要下载的通道
-    if (strcmp(Channel, "00"))
-    {
-        char* temp = Channel;
-        int pos = 0;
-        for (int i = 0; i < 8; i++)
-        {
-            pos = atoi(temp);
-            // TODO
-            *cflag |= 1 << pos - 1;
-            temp = strchr(temp, ',');
-            if (temp == nullptr)
-            {
-                break;
-            }
-            temp++;
-        }
-
-    }
-    else
-        *cflag = 0xFFFF;
-
-    //////////////////////////////////////////////////////////////////////////
-    //时间解析
-    char timeTemp[60] = "";
-
-    FindTemp = strstr(buf, "TimeFrom");
-    if (FindTemp)
-    {
-        FindTemp = strchr(FindTemp, '[');
-        if (FindTemp)
-        {
-            int len = strchr(FindTemp, ']') - FindTemp - 1;
-            memcpy(timeTemp, FindTemp + 1, len);
-        }
-    }
-    if (!strcmp(timeTemp, ""))
-    {
-        fclose(fd);
-        return -1;
-    }
-
-    memcpy(year, timeTemp, 4);
-    memcpy(month, timeTemp + 5, 2);
-    memcpy(day, timeTemp + 8, 2);
-    memcpy(hour, timeTemp + 11, 2);
-    memcpy(minute, timeTemp + 14, 2);
-
-    //char timeSpan[10] = "";
-
-    FindTemp = strstr(buf, "TimeSpan");
-    if (FindTemp)
-    {
-        FindTemp = strchr(FindTemp, '[');
-        if (FindTemp)
-        {
-            int len = strchr(FindTemp, ']') - FindTemp - 1;
-            memcpy(span, FindTemp + 1, len);
-        }
-    }
-    //////////////////////////////////////////////////////////////////////////
-
-    fclose(fd);
-    return 0;
-}
-
-int WINAPI Thread_DownLoad(LPVOID lpPara)
+int WINAPI Thread_UDisk_Process(LPVOID lpPara)
 {
     CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 
-    char FilePath[60] = "";
-    char UPath[60] = "";
-    strcpy_s(FilePath, dlg->m_ManageDlg.szRootPathName);
-    strcat_s(FilePath, "\\license.txt");
-    strcpy_s(UPath, dlg->m_ManageDlg.szRootPathName);
-    unsigned short CFlag = 0;//通道标记，8位代表8个通道，10011代表下载1，2，5通道
-    char TimeBe[30] = "";//开始时间
-    char TimeEn[30] = "";//结束时间
+    std::string url;
+    httplib::Client cli("http://localhost:5000");
+    url = fmt::format("/is_record/{}", dlg->m_ManageDlg.udisk_path[0]);
+    auto res = cli.Get(url.c_str());
 
-    char year[10] = "";
-    char month[10] = "";
-    char day[10] = "";
-    char hour[10] = "";
-    char minute[10] = "";
-    char span[10] = "";
-
-    int Res = DownConfigAnalyse(FilePath, &CFlag, year, month, day, hour, minute, span);
-    if (Res == -1)
-    {
-        dlg->m_ManageDlg.StartURecord(UPath);
-        return -1;
+    bool is_record = true;
+    if (res && res->status == 200) {
+        printf("%d %s\n", res->status, res->body.c_str());
+        boost::json::value jv = boost::json::parse(res->body);
+        is_record = jv.at("record").as_bool();
     }
-    else if (Res == -2)
+
+    if (is_record)
     {
-        memset(UPath, 0, sizeof(UPath));
-        memset(dlg->m_ManageDlg.szRootPathName, 0, sizeof(dlg->m_ManageDlg.szRootPathName));
+        dlg->m_ManageDlg.StartURecord(Global_UPath);
         return -1;
     }
 
-    
     //log
     PLOGD << "U盘下载";
 
     namespace bp = boost::process;
     auto curr = boost::filesystem::current_path();
+
 #if defined(DEBUG)
     bp::system("copy_file.exe", bp::start_dir(config::start_dir));
 #else

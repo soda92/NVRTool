@@ -13,6 +13,9 @@
 #include <string>
 #include <sstream>
 #include "progress_bar.h"
+#include <fmt/core.h>
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 namespace Interactive {
     void log(CString warnStr) {
@@ -351,45 +354,33 @@ int WINAPI Thread_UDrive(LPVOID lpPara)
     char szLogicalDriveStrings[BUFSIZ] = "";
     GetLogicalDriveStrings(BUFSIZ - 1, szLogicalDriveStrings);
     char* pDrive = szLogicalDriveStrings;
-    UINT uDriveType;
-    while (1)
-    {
-        uDriveType = GetDriveType(pDrive);
-        TRACE("driver = %s,type = %d\n", pDrive, uDriveType);
-        //DRIVE_UNKNOWN
-        if (uDriveType == DRIVE_REMOVABLE)
-        {
 
-            if (dlg->m_ManageDlg.IsHDD(pDrive))
+    while (strlen(pDrive) != 0)
+    {
+        if (GetDriveType(pDrive) == DRIVE_REMOVABLE)
+        {
+            auto res = dlg->m_ManageDlg.StartURecord(pDrive);
+            if (res != -1)
             {
-                continue;
+                dlg->m_ManageDlg.udisk_path = pDrive;
+                break;
             }
-            if (dlg->m_ManageDlg.StartURecord(pDrive) != -1)
-            {
-                strcpy(dlg->m_ManageDlg.szRootPathName, pDrive);
-            }
-            break;
         }
         pDrive += strlen(pDrive) + 1;
-        if (strlen(pDrive) == 0)
-        {
-            break;
-        }
     }
     //////////////////////////////////////////////////////////////////////////
-    CString Path;
+
     while (1)//usb检测
     {
         Sleep(5 * 1000);
-        if (!strcmp(dlg->m_ManageDlg.szRootPathName, ""))
+        if (dlg->m_ManageDlg.udisk_path == "")
         {
             dlg->m_ManageDlg.URecordFlag = FALSE;
-            //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(FALSE);
             TRACE("no usb\n");
         }
         else
         {
-
+            CString Path;
             Path.Format("%slost+found", dlg->m_ManageDlg.szRootPathName);
             int res = 0;
             if (CreateDirectory(Path, NULL) == 0)
@@ -398,35 +389,11 @@ int WINAPI Thread_UDrive(LPVOID lpPara)
                 if (res == 3)
                 {
                     TRACE("usb path error\n");
-                    memset(dlg->m_ManageDlg.szRootPathName, 0, sizeof(dlg->m_ManageDlg.szRootPathName));
+                    dlg->m_ManageDlg.udisk_path = "";
                     dlg->m_ManageDlg.URecordFlag = FALSE;
-
-                    //IOCtrl(LED_DOWNLOAD, FALSE);
-                    //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(FALSE);
-                    //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(FALSE);
                     continue;
                 }
             }
-            TRACE("usb on\n");
-            //dlg->GetDlgItem(IDC_BUTTON_USB)->ShowWindow(TRUE);
-        }
-
-        if (dlg->m_ManageDlg.URecordFlag)
-        {
-            //dlg->SetDlgItemText(IDC_BUTTON_URE, "外挂");
-            //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(TRUE);
-            //IOCtrl(LED_DOWNLOAD, TRUE);
-        }
-        else
-        {
-            char buf[10] = "";
-            //dlg->GetDlgItemText(IDC_BUTTON_URE, buf, 10);
-            if (strstr(buf, "下载") == NULL)
-            {
-                //dlg->GetDlgItem(IDC_BUTTON_URE)->ShowWindow(FALSE);
-                //IOCtrl(LED_DOWNLOAD, FALSE);
-            }
-
         }
     }
     return 0;
@@ -475,30 +442,35 @@ int WINAPI Thread_Index(LPVOID lpPara)
 
     SYSTEMTIME Time, TimeBuf;
     GetLocalTime(&TimeBuf);
-    char FilePath[200] = "";
+    std::string FilePath;
 
-    sprintf_s(FilePath, "%s/%d-%02d-%02d/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
-    CreateDirectory(FilePath, NULL);
+    FilePath = fmt::format("{}/{}-{:02d}-{:02d}/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
+
+    if (!fs::exists(FilePath)) {
+        fs::create_directory(FilePath);
+    }
+
     GetLocalTime(&Time);
-    char FileName[200] = "";
+    std::string FileName;
 
     TAXDATA TaxData{};
 
-    while (1)
+    while (true)
     {
         Sleep(1000);
         TaxData = dlg->TaxData;
         GetLocalTime(&Time);
         if (Time.wYear != TimeBuf.wYear || Time.wMonth != TimeBuf.wMonth || Time.wDay != TimeBuf.wDay)
         {
-            memset(FilePath, 0, sizeof(FilePath));
-
             GetLocalTime(&TimeBuf);
-            sprintf_s(FilePath, "%s/%d-%02d-%02d/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
-            CreateDirectory(FilePath, NULL);
+            FilePath = fmt::format("{}/{}-{:02d}-{:02d}/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
+            if (!fs::exists(FilePath)) {
+                fs::create_directory(FilePath);
+            }
+
         }
 
-        sprintf_s(FileName, "%s/%s_北京蓝天多维_%d%02d%02d.idx", FilePath, TrainNum, Time.wYear, Time.wMonth, Time.wDay);
+        FileName = fmt::format("{}/{}_北京蓝天多维_{}{:02d}{:02d}.idx", FilePath, TrainNum, Time.wYear, Time.wMonth, Time.wDay);
 
         if (TaxData.EngineNo != 0)
         {
@@ -518,12 +490,12 @@ int WINAPI Thread_Index(LPVOID lpPara)
             中央处理平台时间
             （由低到高依次为：年、月、日、时、分、秒，2000年计为0，余类推）
             */
-            IdxBuf[5] = Time.wYear - 2000;
-            IdxBuf[6] = Time.wMonth;
-            IdxBuf[7] = Time.wDay;
-            IdxBuf[8] = Time.wHour;
-            IdxBuf[9] = Time.wMinute;
-            IdxBuf[10] = Time.wSecond;
+            IdxBuf[5] = (unsigned char)(Time.wYear - 2000);
+            IdxBuf[6] = (unsigned char)Time.wMonth;
+            IdxBuf[7] = (unsigned char)Time.wDay;
+            IdxBuf[8] = (unsigned char)Time.wHour;
+            IdxBuf[9] = (unsigned char)Time.wMinute;
+            IdxBuf[10] = (unsigned char)Time.wSecond;
 
             /*
             中央处理平台车号
@@ -607,7 +579,7 @@ int WINAPI Thread_Index(LPVOID lpPara)
             */
             IdxBuf[52] = TaxData.TrainFlag;
             /*速度*/
-            IdxBuf[53] = TaxData.Speed;
+            IdxBuf[53] = (unsigned char)TaxData.Speed;
             /*
             预留字节
             (SPEED)
@@ -642,21 +614,21 @@ int WINAPI Thread_Index(LPVOID lpPara)
             /*总重
             （单位：吨）
             */
-            IdxBuf[64] = TaxData.CarWeight;
-            IdxBuf[65] = TaxData.CarWeight >> 8;
+            IdxBuf[64] = (unsigned char)TaxData.CarWeight;
+            IdxBuf[65] = (unsigned char)(TaxData.CarWeight >> 8);
             /*
             计长
             （单位：0.1米）
             */
-            IdxBuf[66] = TaxData.CarLong;
-            IdxBuf[67] = TaxData.CarLong >> 8;
+            IdxBuf[66] = (unsigned char)TaxData.CarLong;
+            IdxBuf[67] = (unsigned char)(TaxData.CarLong >> 8);
             /*辆数*/
             IdxBuf[68] = TaxData.CarCount;
             /*列车管压力
             （b9～b0:管压[kPa],b15～b10:预留）
             */
-            IdxBuf[69] = TaxData.PipePressure;
-            IdxBuf[70] = TaxData.PipePressure >> 8;
+            IdxBuf[69] = (unsigned char)TaxData.PipePressure;
+            IdxBuf[70] = (unsigned char)(TaxData.PipePressure >> 8);
 
             /*装置状态
             （b0:1/0-降级/监控，b2:1/0-调车/非调车）
@@ -739,7 +711,7 @@ int WINAPI Thread_Index(LPVOID lpPara)
             }
             //////////////////////////////////////////////////////////////////////////
 
-            FILE* fd = fopen(FileName, "ab+");
+            FILE* fd = fopen(FileName.c_str(), "ab+");
             if (fd)
             {
                 fwrite(IdxBuf, 1, 96, fd);
@@ -751,7 +723,7 @@ int WINAPI Thread_Index(LPVOID lpPara)
             {
                 FileName[0] = dlg->m_ManageDlg.szRootPathName[0];
 
-                fd = fopen(FileName, "ab+");
+                fd = fopen(FileName.c_str(), "ab+");
                 if (fd)
                 {
                     fwrite(IdxBuf, 1, 96, fd);

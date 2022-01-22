@@ -83,7 +83,7 @@ public:
     virtual void OnCancel();
     virtual void OnOK();
 
-    // 判断FireMsgDlg是否已经退出
+    // not very useful
     bool firemsgdlg_exited = false;
 
     bool usb_flag = false;

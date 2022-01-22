@@ -4,6 +4,8 @@
 #include "ListCtrlCl.h"
 #include "resource.h"
 #include <vector>
+#include <string>
+using namespace std;
 
 // CManageDlg 对话框
 
@@ -23,10 +25,12 @@ public:
 	int SetIPCState();
 	int SetHDDState();
 
-    char OnlineDev[6] = {0}; // 在线设备
-	int FindAndDeleteRecord(CString Path);
-	CString FindDir(char* HddPath);
-	BOOL IsHDD(char* Path);
+	/// <summary>
+	/// 判断是否是硬盘
+	/// </summary>
+	/// <param name="Path">磁盘盘符</param>
+	/// <returns></returns>
+	bool IsHDD(char* Path);
 
 
 	// 对话框数据
@@ -36,6 +40,11 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 支持
 
 	DECLARE_MESSAGE_MAP()
+
+private:
+    CBrush m_brush;
+    CFont newFont1;
+
 public:
 	int num;
 	CListCtrlCl m_IPCStateList;
@@ -44,19 +53,16 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 
-private:
-	CBrush m_brush;
-	CFont newFont1;
-public:
 	CStatic m_static_device;
 	CStatic m_static_hard;
     CStatic program_version;
 
-	char RecordFlag[20];//录像保存标志
+	char RecordFlag[20]; //录像保存标志
 
     int StartURecord(char* uPath);
-    bool URecordFlag; // U盘转存标记
-    bool URecordStatus[6] = { false }; // 通道U盘保存状态
+    bool URecordFlag; //U盘转存标记
+    bool URecordStatus[6] = { false }; //通道U盘保存状态
 
-    TCHAR szRootPathName[MAX_PATH] = ""; // U盘目录
+    std::string udisk_path; //u盘目录
+    TCHAR szRootPathName[MAX_PATH] = ""; 
 };

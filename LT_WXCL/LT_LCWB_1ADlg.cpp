@@ -36,7 +36,7 @@
 
 // CLT_WXCLDlg 对话框
 
-extern char IPCName[12][50];
+extern char Global_IPCName[12][50];
 char FirstDriveFromMask(ULONG unitmask);
 
 
@@ -347,7 +347,7 @@ int CLT_LCWB_1ADlg::VideoOSDSet(long* pUid, char* Speed, char* Mileage, char* Ch
 
 	sprintf_s(OSDOne, "%skm/h %skm", Speed, Mileage);
 	sprintf_s(OSDTwo, "车次:%s 车号:%s", CheCi, CheHao);
-	sprintf_s(OSDThree, "%s 司机:%s", IPCName[pos], SiJiHao);
+	sprintf_s(OSDThree, "%s 司机:%s", Global_IPCName[pos], SiJiHao);
 
 	struShowString.struStringInfo[0].wShowString = 1;
 	struShowString.struStringInfo[0].wStringSize = static_cast<WORD>(strlen(OSDOne));
@@ -526,7 +526,7 @@ int CLT_LCWB_1ADlg::FireUdpInit()
 	Addr.sin_port = htons(8000);
 	Addr.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(BRecUdp, (struct sockaddr*)&Addr, sizeof(sockaddr)) < 0)
+	if (::bind(BRecUdp, (struct sockaddr*)&Addr, sizeof(sockaddr)) < 0)
 		return -1;
 
 	return 0;
@@ -546,22 +546,20 @@ char FirstDriveFromMask(ULONG unitmask)
 	return (i + 'A');
 }
 
-LONG JudgeDeviceLetter(LONG nFlags)
+char get_device_letter_from_mask(DWORD unitmask)
 {
     int i;
     for (i = 0; i < 26; i++)
     {
-        if (nFlags & 1)
+        if (unitmask & 1)
             break;
-        nFlags = nFlags >> 1;
+        unitmask = unitmask >> 1;
     }
     return i + 'A';
 }
 
 BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 {
-	//MessageBox("收到消息");
-
     DEV_BROADCAST_VOLUME* pDevVolume = (DEV_BROADCAST_VOLUME*)dwData;
     if (nEventType != DBT_DEVICEARRIVAL)
         return TRUE;
@@ -569,24 +567,21 @@ BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
     if (pDevVolume->dbcv_devicetype != DBT_DEVTYP_VOLUME)
         return TRUE;
 
-    int nDisk = JudgeDeviceLetter(pDevVolume->dbcv_unitmask);
+    char disk = get_device_letter_from_mask(pDevVolume->dbcv_unitmask);
 
-    TCHAR uPath[100] = "";
-    _sntprintf_s(uPath, MAX_PATH, _T("%c:\\"), nDisk);
+    auto uPath = fmt::format("{}:\\", disk);
 
-    if (m_ManageDlg.IsHDD(uPath))
+    if (m_ManageDlg.IsHDD((char*)uPath.c_str()))
     {
         this->usb_flag = false;
         return FALSE;
     }
 
-    memcpy(m_ManageDlg.szRootPathName, uPath, sizeof(uPath));
+    m_ManageDlg.udisk_path = uPath;
 
-    //strcat(szRootPathName,"Record");
-    //MessageBox(szRootPathName);   //获取到u盘的根目录
     this->usb_flag = true;
 
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_DownLoad, this, 0, NULL);//开启下载线程
+    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_UDisk_Process, this, 0, NULL);//开启下载线程
 
 	return TRUE;
 }

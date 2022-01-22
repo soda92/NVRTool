@@ -11,6 +11,10 @@
 #include "hdd_state.h"
 #include "log.h"
 #include "LogView.h"
+#include <string>
+#include <boost/filesystem.hpp>
+using namespace std;
+using namespace boost::filesystem;
 
 // CManageDlg 对话框
 
@@ -55,15 +59,11 @@ int CManageDlg::SetIPCState()
         {
             m_IPCStateList.SetItemText(i, 4, _T("录像"));
             m_IPCStateList.SetItemTextColor(4, i, RGB(0, 255, 0));
-
-            OnlineDev[i] = 1;
         }
         else
         {
             m_IPCStateList.SetItemText(i, 4, _T("未录像"));
             m_IPCStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
-
-            OnlineDev[i] = 0;
         }
         Sleep(100);
     }
@@ -71,323 +71,72 @@ int CManageDlg::SetIPCState()
     return 0;
 }
 
-int CManageDlg::FindAndDeleteRecord(CString Path)
+bool CManageDlg::IsHDD(char* Path)
 {
-    CFileFind ff;
-    CString FileName;
-    //////////////////////////////////////////////////////////////////////////
-    //找出最早的非空文件夹
-    CString dir = Path;
-    dir += "*.*";
-
-    BOOL res = ff.FindFile(dir);
-    while (res)
-    {
-        res = ff.FindNextFile();
-        if (ff.IsDirectory() && !ff.IsDots())
-        {
-            //////////////////////////////////////////////////////////////////////////
-            //判断文件夹是否空
-            CFileFind ffEmpty;
-            dir = Path;
-            dir += ff.GetFileName();
-            CString DirTemp = dir;
-            dir += "/*.*";
-            BOOL ffRes = ffEmpty.FindFile(dir);
-            BOOL DirIsEmpty = TRUE;
-            CString IdxFileName;
-            while (ffRes)
-            {
-                ffRes = ffEmpty.FindNextFile();
-                if (!ffEmpty.IsDirectory() && !ffEmpty.IsDots())
-                {
-                    if (ffEmpty.GetFileName().Find(".idx") > 0)
-                    {
-                        IdxFileName = ffEmpty.GetFileName();
-                        continue;
-                    }
-                    DirIsEmpty = FALSE;
-                    break;
-                }
-            }
-            ffEmpty.Close();
-            //////////////////////////////////////////////////////////////////////////
-            if (!DirIsEmpty)
-            {
-                if (FileName.IsEmpty())
-                {
-                    FileName = ff.GetFileName();
-                }
-                else
-                {
-                    if (strcmp(ff.GetFileName().GetBuffer(), FileName) < 0)
-                    {
-                        FileName = ff.GetFileName();
-                    }
-                }
-            }
-            else
-            {
-                if (!IdxFileName.IsEmpty())
-                {
-                    CString idxPath = DirTemp + "/";
-                    idxPath += IdxFileName;
-                    DeleteFile(idxPath);
-                }
-                RemoveDirectory(DirTemp);
-            }
-        }
+    if (GetDriveType(Path) == DRIVE_REMOVABLE) {
+        return false;
     }
-    ff.Close();
-    //////////////////////////////////////////////////////////////////////////
-    //找出最早的视频
-    dir = Path;
-    dir += FileName;
-    Path = dir;
-    dir += "/*.mp4";
-    res = ff.FindFile(dir);
-
-    FileName.Empty();
-    while (res)
-    {
-        res = ff.FindNextFile();
-        if (!ff.IsDirectory() && !ff.IsDots())
-        {
-            if (FileName.IsEmpty())
-            {
-                FileName = ff.GetFileName();
-            }
-            else
-            {
-
-                char* FileNameTemp = FileName.GetBuffer();
-                CString findFile = ff.GetFileName();
-                char* FindFileName = findFile.GetBuffer();
-                for (int i = 0; i < 4; i++)
-                {
-                    char* temp = nullptr;
-                    temp = strchr(FileNameTemp, '_');
-                    if (temp)
-                    {
-                        FileNameTemp = temp + 1;
-                    }
-                    temp = strchr(FindFileName, '_');
-                    if (temp)
-                    {
-                        FindFileName = temp + 1;
-                    }
-                }
-
-                if (strcmp(FindFileName, FileNameTemp) < 0)
-                {
-                    FileName = ff.GetFileName();
-                }
-            }
-        }
-    }
-    ff.Close();
-    if (!FileName.IsEmpty())
-    {
-        CString filePath;
-        filePath.Format("%s/%s", Path, FileName);
-        PLOGD << "Deleting..." << filePath;
-        DeleteFile(filePath);
-    }
-
-    //////////////////////////////////////////////////////////////////////////
-    return 0;
-}
-
-CString CManageDlg::FindDir(char* HddPath)
-{
-    CFileFind ff;
-    CStringArray DirArray;
-    int index = 0;
-    CString DirBuf;
-    CString ResDir;
-
-    CString dir = HddPath;
-    dir += "LT-VIDEO-*.*";
-
-    BOOL res = ff.FindFile(dir);
-    while (res)
-    {
-        res = ff.FindNextFile();
-        if (ff.IsDirectory() && !ff.IsDots())
-        {
-            //TRACE("DIR NAME = %s\n",ff.GetFileName());
-            CFileFind Subff;
-            CString SubDir = HddPath + ff.GetFileName();
-            SubDir += "/*.*";
-            CString SubDirBuf;
-
-            BOOL SubRes = Subff.FindFile(SubDir);
-            while (SubRes)
-            {
-                SubRes = Subff.FindNextFile();
-                if (Subff.IsDirectory() && !Subff.IsDots())
-                {
-
-                    if (SubDirBuf.IsEmpty())
-                    {
-                        SubDirBuf = Subff.GetFileName();
-                    }
-                    else
-                    {
-                        if (strcmp(Subff.GetFileName(), SubDirBuf) < 0)
-                        {
-                            SubDirBuf = Subff.GetFileName();
-                        }
-                    }
-                }
-            }
-            if (DirBuf.IsEmpty())
-            {
-                DirBuf = SubDirBuf;
-                ResDir = ff.GetFileName();
-            }
-            else
-            {
-                if (strcmp(SubDirBuf, DirBuf) < 0)
-                {
-                    DirBuf = SubDirBuf;
-                    ResDir = ff.GetFileName();
-                }
-            }
-            //TRACE("SUB DIR NAME = %s,%s\n",DirBuf,ResDir);
-            Subff.Close();
-        }
-    }
-    ff.Close();
-
-    return ResDir;
-}
-
-BOOL CManageDlg::IsHDD(char* Path)
-{
-    ULARGE_INTEGER FreeAv, TotalBytes, FreeBytes;
-    if (GetDiskFreeSpaceEx(Path, &FreeAv, &TotalBytes, &FreeBytes))
-    {
-
-        if (TotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024) > 100)//判断总空间是否大于100G
-        {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
+    return true;
 }
 
 int WINAPI Thread_Record(LPVOID lpPara)
 {
     CManageDlg* dlg = (CManageDlg*)lpPara;
 
-    char sysLog[256] = "";
-
-    while (1)
+    while (true)
     {
-        if (!dlg->IsHDD(theApp.HDDPath))
-        {
-            if (dlg->IsHDD("e://"))
-            {
-                strcpy_s(theApp.HDDPath, "e://");
-            }
-            else if (dlg->IsHDD("f://"))
-            {
-                strcpy_s(theApp.HDDPath, "f://");
-            }
-            else
-            {
-                Sleep(5 * 1000);
-                continue;
-            }
+        auto test_path = fmt::format("{}lost+found", theApp.HDDPath);
+        path p{ test_path };
+        if (exists(p)) {
+            remove_all(p);
         }
-
-        //创建文件夹
-        CString Path;
-        CString File;
-
-        Path.Format("%slost+found", theApp.HDDPath);
-        int res = 0;
-        if (CreateDirectory(Path, NULL) == 0)
+        if (!create_directory(p))
         {
-            res = GetLastError();
-            if (res == 3)
-            {
-                dlg->MessageBox(_T("录像存储路径不正确，请修改配置文件中的路径。"));
-                return -1;
-            }
+            dlg->MessageBox(TEXT("录像存储路径不正确，请修改配置文件中的路径。"));
+            return -1;
         }
-        Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/", theApp.HDDPath, TrainNum);
+        remove(p);
 
-        CreateDirectory(Path, NULL);
+        auto dir = fmt::format("{}/LT-VIDEO-{}-北京蓝天多维/", theApp.HDDPath, Global_TrainNum);
+        std::string cam_addr{};
+        create_directory(dir);
 
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 12; i++)
         {
             if (dlg->RecordFlag[i] == 0)
             {
-                if (theApp.Local[1] == 'A') {
-                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i);
-                }
-                else {
-                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i);
-                }
+                char* ipcname;
+                int nport;
+                int tasknum;
+                int ipfirst = (i < 6) ? 7 : 8;
+                int iplast = (i < 6) ? i : i - 6;
+                cam_addr = fmt::format("rtsp://admin:hk123456@192.168.104.{}{}:554/Streaming/Channels/101", ipfirst, iplast);
 
-                if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
-                    Path.GetBuffer(Path.GetLength()),
-                    TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i + 6)],
-                    (theApp.Local[1] == 'A' ? i : i + 6) + 1) == -1)
+                ipcname = Global_IPCName[i];
+                nport = i + 1;
+                tasknum = nport - 1;
+                auto ret = Video_StartRecord(
+                    tasknum,
+                    (char*)cam_addr.c_str(),
+                    (char*)dir.c_str(),
+                    Global_TrainNum, ipcname,
+                    nport);
+
+                if (ret != -1)
                 {
-                    dlg->RecordFlag[i] = 0;
-                    TRACE("%d port failed\n", i);
-                    sprintf_s(sysLog, "%d 通道录像连接错误！\n", i);
-                    auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
-                    logn::camera_connect_failed(IPCNum);
-                    LogView::Update();
+                    dlg->RecordFlag[i] = 1;
+                    PLOGD << fmt::format("{}通道开始录像...\n", i);
                 }
                 else
                 {
-                    dlg->RecordFlag[i] = 1;
-                    TRACE("path = %s\n", Path);
-                    sprintf_s(sysLog, "%d 通道开始录像...\n", i);
-                }
-
-                Sleep(50);//必须等待一会。否则会出现录像文件存到下一个文件夹的问题。
-            }
-        }
-
-        //另一节录像
-        for (int i = 6; i < 12; i++)
-        {
-            if (dlg->RecordFlag[i] == 0)
-            {
-                if (theApp.Local[1] == 'A') {
-                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i - 6);
-                }
-                else {
-                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i - 6);
-                }
-
-                if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
-                    Path.GetBuffer(Path.GetLength()),
-                    TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i - 6)],
-                    (theApp.Local[1] == 'A' ? i : i - 6) + 1) == -1)
-                {
                     dlg->RecordFlag[i] = 0;
-                    TRACE("%d port failed\n", i);
-                    sprintf_s(sysLog, "%d 通道录像连接错误！\n", i);
-                    auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
-                    logn::camera_connect_failed(IPCNum);
+                    PLOGD << fmt::format("{}通道录像连接错误！\n", i);
+                    logn::camera_connect_failed(nport);
                     LogView::Update();
                 }
-                else
-                {
-                    dlg->RecordFlag[i] = 1;
-                    TRACE("path = %s\n", Path);
-                    sprintf_s(sysLog, "%d 通道开始录像...\n", i);
-                }
 
-                Sleep(50);//必须等待一会。否则会出现录像文件存到下一个文件夹的问题。
+                // 必须等待一会。否则会出现录像文件存到下一个文件夹的问题。
+                Sleep(50);
             }
         }
 
@@ -443,39 +192,6 @@ int CManageDlg::SetHDDState()
             m_HDDStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
         }
     }
-
-
-
-    //U
-    if (URecordFlag && strcmp(UPath, ""))
-    {
-        //////////////////////////////////////////////////////////////////////////
-
-        //////////////////////////////////////////////////////////////////////////
-        ULARGE_INTEGER uFreeAv, uTotalBytes, uFreeBytes;
-        if (GetDiskFreeSpaceEx(UPath, &uFreeAv, &uTotalBytes, &uFreeBytes))
-        {
-            //////////////////////////////////////////////////////////////////////////
-            TRACE("u = %d\n", uFreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
-
-
-            //////////////////////////////////////////////////////////////////////////
-            //小于2G时删除
-            if (uFreeAv.QuadPart / (ULONGLONG)(1024 * 1024 * 1024) <= 1 && (uTotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024)) > 0)
-            {
-
-                CString uPath;
-                uPath.Format("%s/%s/", UPath, FindDir(UPath));
-                //uPath.Format("%s/LT-VIDEO-%s-北京蓝天多维/",UPath,TrainNum);
-                //uPath.Format("%s/6A-VIDEO-%s-北京蓝天多维/",UPath,TrainNum);
-
-                FindAndDeleteRecord(uPath);
-
-            }
-        }
-    }
-
-
 
     return 0;
 }
@@ -579,14 +295,18 @@ int CManageDlg::SetList()
         m_IPCStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
         m_IPCStateList.SetItemText(i, 5, _T("LTDW"));
     }
+
+    // 获取IPC名称
     for (int i = 0; i < 12; i++)
     {
         char ipc[60] = "";
         char temp[20] = "";
         sprintf_s(temp, "IPC%d", i + 1);
         GetPrivateProfileString(_T("LT_WXCLCFG"), temp, _T("无"), ipc, 60, _T(".//LT_WXCLCFG.ini"));
-        strcpy_s(IPCName[i], ipc);
+        strcpy_s(Global_IPCName[i], ipc);
     }
+
+    // 设置设备管理界面-通道名称
     char local_name[20] = "";
     GetPrivateProfileString(TEXT("LT_WXCLCFG"), "Local", "4A", local_name, 20, _T(".//LT_WXCLCFG.ini"));
     int i_start = 0;
@@ -594,11 +314,10 @@ int CManageDlg::SetList()
         i_start = 6;
     }
     for (int i = i_start; i < i_start + 6; i++) {
-        m_IPCStateList.SetItemText(i - i_start, 2, IPCName[i]);
+        m_IPCStateList.SetItemText(i - i_start, 2, Global_IPCName[i]);
     }
 
-
-    //HDD LIST
+    // 磁盘列表
     for (auto i : { 0,1 }) {
         if (i == 0) {
             m_HDDStateList.InsertItem(i, _T("A"));

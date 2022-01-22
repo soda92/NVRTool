@@ -3,21 +3,21 @@ import shutil
 import os
 import glob
 from get_version import get_version
+import win32api
+import win32file
 
 
-def detect_usb():
-    for i in [f"{x}:" for x in list("EFGH")]:
-        if os.path.exists(i):
-            total, _, _ = shutil.disk_usage(i)
-            size_GB = total // (2 ** 30)
-            if size_GB < 200:
-                print(f"found udisk: {i}")
-                return i
-    return None
+def get_udisk():
+    for i in win32api.GetLogicalDriveStrings().split("\x00"):
+        if i == "":
+            continue
+        if win32file.GetDriveType(i) == win32file.DRIVE_REMOVABLE:
+            return i[0] + ":"
+    raise SystemError("Cannot find udisk")
 
 
 def copy_dist_to_udisk():
-    udisk = detect_usb()
+    udisk = get_udisk()
     if udisk != None:
         print(f"copying to {udisk}...")
         if os.path.exists(udisk):

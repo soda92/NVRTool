@@ -38,7 +38,7 @@ namespace LogView {
             else if (_log.message.substr(0, 3) == "cam") {
                 auto IPCNum_str = _log.message.substr(4, 2);
                 auto IPCNum = std::stoi(IPCNum_str);
-                auto message = IPCName[IPCNum];
+                auto message = Global_IPCName[IPCNum];
                 CString str;
                 str.Format(_TEXT("IPC%d[%s]Á¬½ÓÊ§°Ü"), IPCNum+1, message);
                 nItem = dlg->m_logDlg.log_list.InsertItem(0, str);
