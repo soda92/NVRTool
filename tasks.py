@@ -27,16 +27,11 @@ def copy_dist_to_udisk():
         print("cannot find udisk.")
 
 @task
-def copyconf(c):
-    shutil.copy("LT_WXCLCFG.ini", "Debug")
-    shutil.copy("LT_WXCLCFG.ini", "Release")
-
-@task
 def build(c):
     """build"""
     print("current dir: ", os.getcwd())
     print("copying file...")
-    copyconf(c)
+
     dirname = f"nsis-build/TaiYuan-Release-{get_version()}"
     if os.path.exists(dirname):
         shutil.rmtree(dirname)
