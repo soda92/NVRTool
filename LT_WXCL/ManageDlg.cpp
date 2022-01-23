@@ -238,7 +238,7 @@ BOOL CManageDlg::OnInitDialog()
     m_HDDStateList.SetTextColor(RGB(255, 255, 255));
 
     httplib::Client cli{ "localhost:5000" };
-    auto res = cli.Get("/conf/HDD");
+    auto res = cli.Get("/conf/Disk");
     std::string ret;
     if (res && res->status == 200) {
         ret = res->body;

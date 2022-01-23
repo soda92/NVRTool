@@ -23,6 +23,7 @@
 #include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 #include "fmt/core.h"
 namespace fs = boost::filesystem;
+using namespace boost::json;
 
 #include "log.h"
 #include "logView.h"
@@ -46,6 +47,9 @@ namespace ManageView {
             if (res && res->status == 200) {
                 ret = res->body;
             }
+            value jv = parse(ret);
+            auto ret2 = jv.at("result").as_string();
+
             strcpy_s(Global_IPCName[i], ret.c_str());
         }
     }
