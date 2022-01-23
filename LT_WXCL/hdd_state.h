@@ -27,6 +27,11 @@ bool get_hdd_state(std::string ip, double &total, double& used, double& free) {
         used = jv.at("used").as_double();
         free = jv.at("free").as_double();
         printf("total: %lf, used: %lf, free: %lf\n", total, used, free);
+
+        if (total == 0) {
+            return false;
+        }
+
         return true;
     }
     else {

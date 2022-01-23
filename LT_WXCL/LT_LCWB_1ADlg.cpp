@@ -444,7 +444,6 @@ int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
 		NET_DVR_Logout(*pUid);
 		return -1;
 	}
-	//VideoOSDSet(pUid,"100","200","t23","12378",3,"12445");
 	return 0;
 }
 
@@ -473,13 +472,12 @@ int CLT_LCWB_1ADlg::TimeCFG()
 	NvrTime.dwMinute = Time.wMinute;
 	NvrTime.dwSecond = Time.wSecond;
 
-	int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
+	int tmp = (theApp.Local[1] == 'A' ? 0 : 6);
 
-	for (int i = tmp; i < (8 + tmp); i++)
+	for (int i = tmp; i < (6 + tmp); i++)
 	{
 		if (lUserID[i] >= 0)
 		{
-
 			bool res = NET_DVR_SetDVRConfig(lUserID[i], NET_DVR_SET_TIMECFG, 0, &NvrTime, sizeof(NvrTime));
 			if (!res)
 			{

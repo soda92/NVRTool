@@ -59,7 +59,6 @@ UINT Thread_TaxData(LPVOID lParam) {
 		TAX_TYPE = AnalyseTax(DataBuf, &TaxBuf);
 		if (TAX_TYPE > 0)
 		{
-
 			MainDlg->TaxStat = TRUE;
 			memcpy(&MainDlg->TaxData, &TaxBuf, sizeof(MainDlg->TaxData));
 

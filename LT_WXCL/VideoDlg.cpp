@@ -210,45 +210,45 @@ afx_msg LRESULT CVideoDlg::OnMyUserFullScreen(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-int CVideoDlg::ChangeWndRects(bool isSingle, int pos)
+int CVideoDlg::ChangeWndRects(bool is_normal, int pos)
 {
     CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)theApp.m_pMainWnd;
-	if (!isSingle)
+	if (is_normal)
+	{
+        for (int i = 0; i < 32; i++)
+        {
+            m_videoPlayWnd[i]->MoveWindow(&m_videoPlayRects[i]);
+            if (i <= 4 * (pos / 4) + 3 && i >= 4 * (pos / 4))
+            {
+                m_videoPlayWnd[i]->ShowWindow(TRUE);
+            }
+            else
+                m_videoPlayWnd[i]->ShowWindow(FALSE);
+        }
+        fullscreened = false;
+	}
+	else
 	{
         // ·ÀÖ¹ÖØ¸´²Ù×÷
         if (fullscreened && fullscreen_id == pos) {
             return 0;
         }
-		for (int i = 0; i < 32; i++)
-		{
-			if (i == pos)
-			{
-				m_videoPlayWnd[i]->MoveWindow(&m_SingleWndRec);
-                
-				m_videoPlayWnd[i]->ShowWindow(TRUE);
+        for (int i = 0; i < 32; i++)
+        {
+            if (i == pos)
+            {
+                m_videoPlayWnd[i]->MoveWindow(&m_SingleWndRec);
+
+                m_videoPlayWnd[i]->ShowWindow(TRUE);
                 if (!fullscreened) {
                     fullscreened = true;
                 }
-			}
-			else
-			{
-				m_videoPlayWnd[i]->ShowWindow(FALSE);
-			}
-		}
-	}
-	else
-	{
-		for (int i = 0; i < 32; i++)
-		{
-			m_videoPlayWnd[i]->MoveWindow(&m_videoPlayRects[i]);
-			if (i <= 4 * (pos / 4) + 3 && i >= 4 * (pos / 4))
-			{
-				m_videoPlayWnd[i]->ShowWindow(TRUE);
-			}
-			else
-				m_videoPlayWnd[i]->ShowWindow(FALSE);
-		}
-        fullscreened = false;
+            }
+            else
+            {
+                m_videoPlayWnd[i]->ShowWindow(FALSE);
+            }
+        }
 	}
 	return 0;
 }
