@@ -15,6 +15,7 @@
 #include <boost/filesystem.hpp>
 using namespace std;
 using namespace boost::filesystem;
+#include <D:/src/vcpkg/installed/x86-windows/include/httplib.h>
 
 // CManageDlg 对话框
 
@@ -108,21 +109,26 @@ int WINAPI Thread_Record(LPVOID lpPara)
                 char* ipcname;
                 int nport;
                 int tasknum;
-                int ipfirst = (i < 6) ? 7 : 8;
-                int iplast = (i < 6) ? i : i - 6;
-                cam_addr = fmt::format("rtsp://admin:hk123456@192.168.104.{}{}:554/Streaming/Channels/101", ipfirst, iplast);
+
+                httplib::Client cli{ "localhost:5000" };
+                auto res = cli.Get(fmt::format("/cam/{}", i + 1).c_str());
+                std::string ret;
+                if (res && res->status == 200) {
+                    ret = res->body;
+                }
+                cam_addr = ret;
 
                 ipcname = Global_IPCName[i];
                 nport = i + 1;
                 tasknum = nport - 1;
-                auto ret = Video_StartRecord(
+                auto rest = Video_StartRecord(
                     tasknum,
                     (char*)cam_addr.c_str(),
                     (char*)dir.c_str(),
                     Global_TrainNum, ipcname,
                     nport);
 
-                if (ret != -1)
+                if (rest != -1)
                 {
                     dlg->RecordFlag[i] = 1;
                     PLOGD << fmt::format("{}通道开始录像...\n", i);

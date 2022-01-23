@@ -110,12 +110,19 @@ int WINAPI Thread_URecord(LPVOID lpPara)
                     auto ip_first = (theApp.Local == 'A') ? 7 : 8;
                     auto ip_last = i;
                     auto port_number = (theApp.Local == 'A') ? i + 1 : i + 6 + 1;
-                    auto cam_addr = fmt::format("rtsp://admin:hk123456@192.168.104.{}{}:554/Streaming/Channels/101", ip_first, ip_last);
+
+                    httplib::Client cli{ "localhost:5000" };
+                    auto res = cli.Get(fmt::format("/cam/{}", port_number).c_str());
+                    std::string ret;
+                    if (res && res->status == 200) {
+                        ret = res->body;
+                    }
+                    std::string cam_addr = ret;
 
                     auto IPCNum = (theApp.Local == 'A' ? i : i + 6);
                     auto IPCName = Global_IPCName[IPCNum];
 
-                    auto ret = Video_StartRecord(
+                    auto rest = Video_StartRecord(
                         // 进程任务号
                         12 + i + 1,
                         (char*)cam_addr.c_str(),
@@ -124,7 +131,7 @@ int WINAPI Thread_URecord(LPVOID lpPara)
                         // 文件名里的通道号
                         port_number);
 
-                    if (ret != -1)
+                    if (rest != -1)
                     {
                         dlg->URecordStatus[i] = true;
                         PLOGD << IPCName << " 通道开始录像...";
