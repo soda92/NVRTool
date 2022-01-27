@@ -20,6 +20,9 @@ bool get_hdd_state(std::string ip, double &total, double& used, double& free) {
     auto address = fmt::format("http://{}:8080", ip);
     httplib::Client cli(address);
     auto res = cli.Get("/size");
+    total = 0;
+    used = 0;
+    free = 0;
     if (res && res->status == 200) {
         printf("%d %s\n", res->status, res->body.c_str());
         value jv = parse(res->body);

@@ -21,10 +21,14 @@ File /r "nsis-build\TaiYuan-Release-{version}"
 
 # 重复安装时
 Delete "$INSTDIR\TaiYuan-Release-{version}\not-first-launch.txt"
+Delete "$SMPROGRAMS\Startup\硬盘状态指示.lnk"
+Delete "$SMPROGRAMS\Startup\硬盘删除文件.lnk"
 
 # 程序启动
 SetOutPath "$INSTDIR\TaiYuan-Release-{version}"
+; CreateShortCut "$SMPROGRAMS\Startup\硬盘状态指示.lnk" "$INSTDIR\TaiYuan-Release-{version}\hdd_state.exe"
 CreateShortCut "$SMPROGRAMS\Startup\太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-{version}\launcher.exe"
+; CreateShortCut "$SMPROGRAMS\Startup\硬盘删除文件.lnk" "$INSTDIR\TaiYuan-Release-{version}\delete_file.exe"
 SetOutPath "$INSTDIR\TaiYuan-Release-{version}"
 CreateShortCut "$SMPROGRAMS\太原机车防火视频程序.lnk" "$INSTDIR\TaiYuan-Release-{version}\launcher.exe"
 
@@ -82,8 +86,8 @@ SectionEnd
 
 section
 
-# 将配置文件复制到D盘，然后复制到新安装的目录
-ExecWait "$INSTDIR\TaiYuan-Release-{version}\relocate-configs.exe"
+; # 将配置文件复制到D盘，然后复制到新安装的目录
+; ExecWait "$INSTDIR\TaiYuan-Release-{version}\relocate-configs.exe"
 
 
 MessageBox MB_YESNO|MB_ICONQUESTION "安装成功，需要重启计算机。" IDNO +2
