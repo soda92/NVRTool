@@ -72,7 +72,6 @@ namespace Interactive {
                 dlg->m_VideoDlg.OnBnClickedButtonBa();
             }
         }
-
        
         // 最大化
         auto detector_num = 0;
@@ -90,10 +89,12 @@ namespace Interactive {
         char video_num_cstr[21] = { '\0' };
         // 读取对应IPC
         GetPrivateProfileString("LT_WXCLCFG", detector.c_str(), "0", video_num_cstr, 20, ".//LT_WXCLCFG.ini");
-        int video_num = std::stoi(std::string(video_num_cstr));
-        PLOGD << "video num: " << video_num;
+        auto ipc_num = std::stoi(std::string(video_num_cstr));
+        PLOGD << "video num: " << ipc_num;
+
         // 切换窗口
-        dlg->m_VideoDlg.ChangeWndRects(0, video_num - 1);
+        auto window_num = (ipc_num > 6) ? ipc_num + 2 : ipc_num;
+        dlg->m_VideoDlg.ChangeWndRects(false, window_num - 1);
     }
 }
 
@@ -166,7 +167,7 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
 
     TRACE("osd i = %d\n", i);
 
-    while (1)
+    while (true)
     {
         char Speed[20] = "";
         char Mileage[20] = "";
@@ -185,7 +186,7 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
 
         if (dlg->lUserID[i] >= 0)
         {
-            dlg->VideoOSDSet(&dlg->lUserID[i], Speed, Mileage, CheCi, CheHao, (i > 7 ? i - 8 : i), SiJiHao);
+            dlg->VideoOSDSet(&dlg->lUserID[i], Speed, Mileage, CheCi, CheHao, i, SiJiHao);
         }
 
         Sleep(2 * 1000);
@@ -201,41 +202,47 @@ int WINAPI Thread_Play(LPVOID lpPara)
     char ip[30] = "";
     //Sleep(5 * 1000);
 
-    int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
+    int tmp = (theApp.Local[1] == 'A' ? 0 : 6);
 
-    for (int i = tmp; i < (8 + tmp); i++)
+    for (int i = tmp; i < (6 + tmp); i++)
     {
         dlg->OsdIndex = i;
         CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetOsd, lpPara, 0, NULL); //osd叠加线程
         Sleep(50);
     }
 
-    while (1)
+    while (true)
     {
-        for (int i = 0; i < 32; i++)
+        for (int i = 0; i < 12; i++)
         {
 
             if (dlg->lUserID[i] == -1)
             {
-
-                if (i <= 5 && i >= 0)
-                    sprintf_s(ip, "192.168.10%d.7%d", atoi(&theApp.Local[0]), i);
-                else if (i <= 13 && i >= 8)
-                    sprintf_s(ip, "192.168.10%d.8%d", atoi(&theApp.Local[0]), i - 8);
-                else
-                    continue;
+                int window_id;
+                if (i < 6) {
+                    sprintf_s(ip, "192.168.104.7%d", i);
+                    window_id = i;
+                }
+                else {
+                    sprintf_s(ip, "192.168.104.8%d", i - 6);
+                    window_id = i + 2;
+                }
 
                 TRACE("ipc ip = %s\n", ip);
                 strcpy_s(dlg->ip[i], ip);
 
-                int res = dlg->VideoPlay(dlg->ip[i], &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
-                    dlg->m_VideoDlg.m_videoPlayWnd[i]->GetSafeHwnd());
+                int res = dlg->VideoPlay(ip, &(dlg->lUserID[i]), &(dlg->lRealPlayHandle[i]),
+                    dlg->m_VideoDlg.m_videoPlayWnd[window_id]->GetSafeHwnd());
 
                 if (res < 0)
                 {
                     //TRACE("ipc %s error\n",ip);
                     dlg->lUserID[i] = -1;
                     dlg->lRealPlayHandle[i] = -1;
+
+                    logn::camera_connect_failed(i);
+                    LogView::Update();
+
                 }
             }
             Sleep(50);

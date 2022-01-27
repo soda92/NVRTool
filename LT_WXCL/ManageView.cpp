@@ -19,6 +19,11 @@
 #include <boost/process/start_dir.hpp>
 
 #include "config.h"
+#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
+#include "fmt/core.h"
+
+#include "log.h"
+#include "logView.h"
 
 
 char UPath[20] = { 0 }; // u盘转存路径
@@ -84,6 +89,8 @@ int WINAPI Thread_URecord(LPVOID lpPara)
             return -1;
         }
     }
+    httplib::Client cli("http://localhost:5000");
+    std::string url;
 
     Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/", UPath, TrainNum);
     CreateDirectory(Path, NULL);
@@ -110,15 +117,24 @@ int WINAPI Thread_URecord(LPVOID lpPara)
                         File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i);
                     }
 
-                    if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
+                    if (Video_StartRecord(
+                        // 进程任务号
+                        12 + i + 1,
+                        File.GetBuffer(File.GetLength()),
                         Path.GetBuffer(Path.GetLength()),
                         TrainNum, IPCName[(theApp.Local[1] == 'A' ? i : i + 6)],
-                        // 通道号
+                        // 文件名里的通道号
                         (theApp.Local[1] == 'A' ? i : i + 6) + 1)
                         == -1)
                     {
                         dlg->URecordStatus[i] = false;
-                        PLOGD << IPCName[(theApp.Local[1] == 'A' ? i : i + 6)] << " 通道录像连接错误！";
+                        auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
+                        PLOGD << IPCName[IPCNum] << " 通道录像连接错误！";
+
+                        url = fmt::format("/add/IPC{}[{}]连接错误", IPCNum, IPCName[IPCNum]);
+                        //cli.Get(url.c_str());
+                        logn::camera_connect_failed(IPCNum);
+                        LogView::Update();
                     }
                     else
                     {
@@ -135,7 +151,7 @@ int WINAPI Thread_URecord(LPVOID lpPara)
     }
     for (int i = 0; i < 6; i++)
     {
-        Video_StopRecord((theApp.Local[1] == 'A' ? i : i + 6) + 1);
+        Video_StopRecord(12 + i + 1);
         dlg->URecordStatus[i] = false;
     }
     return 0;
@@ -146,11 +162,12 @@ int CManageDlg::StartURecord(char* uPath)
 {
     if (URecordFlag)
     {
-        URecordFlag = FALSE;
+        URecordFlag = false;
         Sleep(12 * 1000);//wait 12s
         for (int i = 0; i < 6; i++)
         {
-            Video_StopRecord((theApp.Local[1] == 'A' ? i : i + 6) + 1);
+            //               任务ID
+            Video_StopRecord(12 + i + 1);
             URecordStatus[i] = false;
         }
         Sleep(1000);
@@ -162,11 +179,11 @@ int CManageDlg::StartURecord(char* uPath)
 
     if (util::URecordConfigAnalyse(FilePath, UCFlag) == -1)
     {
-        URecordFlag = FALSE;
+        URecordFlag = false;
         return -1;
     }
     else
-        URecordFlag = TRUE;
+        URecordFlag = true;
 
     strcpy_s(UPath, uPath);
 

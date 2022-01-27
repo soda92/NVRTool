@@ -3,6 +3,8 @@
 //
 
 #include "stdafx.h"
+#include "resource.h"
+
 #include "LT_LCWB_1A.h"
 #include "LT_LCWB_1ADlg.h"
 #include "afxdialogex.h"
@@ -21,6 +23,10 @@
 
 #include <boost/filesystem.hpp>
 #include "progress_bar.h"
+#include <string>
+#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
+#include "fmt/core.h"
+
 
 
 #ifdef _DEBUG
@@ -102,7 +108,7 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
         // GUID_DEVINTERFACE_DISK
         { 0x53f56307, 0xb6bf, 0x11d0, { 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b } },
 
-        // GUID_DEVINTERFACE_HID, 
+        // GUID_DEVINTERFACE_HID,
         { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } },
 
         // GUID_NDIS_LAN_CLASS
@@ -179,6 +185,10 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
     m_TabCtrl.MoveWindow(-3, -3, SCREEN_X + 3, SCREEN_Y + 3);
     stop_warn.MoveWindow(SCREEN_X - 125, 3, 120, 35);
 
+    m_logDlg.Create(IDD_DIALOG_LOG, GetDlgItem(IDC_TAB1));
+
+    logn::system_start();
+    LogView::Update();
 	m_TabCtrl.InsertItem(0, _T("视频预览"));
 	m_VideoDlg.Create(IDD_DIALOG_VIDEO, GetDlgItem(IDC_TAB1));
 	m_TabCtrl.InsertItem(1, _T("设备管理"));
@@ -186,7 +196,6 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	m_TabCtrl.InsertItem(2, _T("火警信息"));
 	m_FireMsgDlg.Create(IDD_DIALOG_FIRE, GetDlgItem(IDC_TAB1));
     m_TabCtrl.InsertItem(3, _T("事件记录"));
-    m_logDlg.Create(IDD_DIALOG_LOG, GetDlgItem(IDC_TAB1));
 
 	CRect rc; //标签页里的窗口大小
 	m_TabCtrl.GetClientRect(&rc);
@@ -246,8 +255,11 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Index, this, 0, NULL); // 开启公共信息记录线程
 
     // 系统启动
-    logn::system_start();
-    LogView::Update();
+    std::string url;
+    httplib::Client cli("http://localhost:5000");
+    url = fmt::format("/add/系统启动");
+    //cli.Get(url.c_str());
+    
 	return TRUE; // 除非将焦点设置到控件，否则返回 TRUE
 }
 
@@ -422,7 +434,7 @@ int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
 	struPlayInfo.hPlayWnd = hWnd;  //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
 	struPlayInfo.lChannel = 1;	   //预览通道号
 
-	struPlayInfo.dwStreamType = 0; //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
+	struPlayInfo.dwStreamType = 1; //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
 	struPlayInfo.dwLinkMode = 0;   //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
 
 	*pHandle = NET_DVR_RealPlay_V40(*pUid, &struPlayInfo, NULL, NULL);
@@ -432,7 +444,6 @@ int CLT_LCWB_1ADlg::VideoPlay(char* ip, long* pUid, long* pHandle, HWND hWnd)
 		NET_DVR_Logout(*pUid);
 		return -1;
 	}
-	//VideoOSDSet(pUid,"100","200","t23","12378",3,"12445");
 	return 0;
 }
 
@@ -461,13 +472,12 @@ int CLT_LCWB_1ADlg::TimeCFG()
 	NvrTime.dwMinute = Time.wMinute;
 	NvrTime.dwSecond = Time.wSecond;
 
-	int tmp = (theApp.Local[1] == 'A' ? 0 : 8);
+	int tmp = (theApp.Local[1] == 'A' ? 0 : 6);
 
-	for (int i = tmp; i < (8 + tmp); i++)
+	for (int i = tmp; i < (6 + tmp); i++)
 	{
 		if (lUserID[i] >= 0)
 		{
-
 			bool res = NET_DVR_SetDVRConfig(lUserID[i], NET_DVR_SET_TIMECFG, 0, &NvrTime, sizeof(NvrTime));
 			if (!res)
 			{
@@ -643,6 +653,11 @@ void CLT_LCWB_1ADlg::OnCancel()
     // TODO: 在此添加专用代码和/或调用基类
 
     // 保存事件记录
+    std::string url;
+    httplib::Client cli("http://localhost:5000");
+    url = fmt::format("/add/系统退出");
+    //cli.Get(url.c_str());
+    LogView::Update();
     logn::system_exit();
     CDialogEx::OnCancel();
 }
@@ -651,8 +666,13 @@ void CLT_LCWB_1ADlg::OnCancel()
 void CLT_LCWB_1ADlg::OnOK()
 {
     // TODO: 在此添加专用代码和/或调用基类
-    // 
+    //
     // 保存事件记录
+    std::string url;
+    httplib::Client cli("http://localhost:5000");
+    url = fmt::format("/add/系统退出");
+    //cli.Get(url.c_str());
+    LogView::Update();
     logn::system_exit();
     CDialogEx::OnOK();
 }

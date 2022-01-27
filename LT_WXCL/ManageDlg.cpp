@@ -8,6 +8,9 @@
 
 #include "VideoPlay.h"
 #include "ManageView.h"
+#include "hdd_state.h"
+#include "log.h"
+#include "LogView.h"
 
 // CManageDlg 对话框
 
@@ -337,7 +340,6 @@ int WINAPI Thread_Record(LPVOID lpPara)
                 {
                     dlg->RecordFlag[i] = 0;
                     TRACE("%d port failed\n", i);
-                    sprintf_s(sysLog, "%d 通道录像连接错误！\n", i);
                 }
                 else
                 {
@@ -356,10 +358,10 @@ int WINAPI Thread_Record(LPVOID lpPara)
             if (dlg->RecordFlag[i] == 0)
             {
                 if (theApp.Local[1] == 'A') {
-                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i - 6);
+                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i - 6);
                 }
                 else {
-                    File.Format("rtsp://admin:hk123456@192.168.104.8%d:554/Streaming/Channels/101", i - 6);
+                    File.Format("rtsp://admin:hk123456@192.168.104.7%d:554/Streaming/Channels/101", i - 6);
                 }
 
                 if (Video_StartRecord(i + 1, File.GetBuffer(File.GetLength()),
@@ -370,6 +372,9 @@ int WINAPI Thread_Record(LPVOID lpPara)
                     dlg->RecordFlag[i] = 0;
                     TRACE("%d port failed\n", i);
                     sprintf_s(sysLog, "%d 通道录像连接错误！\n", i);
+                    auto IPCNum = (theApp.Local[1] == 'A' ? i : i + 6);
+                    logn::camera_connect_failed(IPCNum);
+                    LogView::Update();
                 }
                 else
                 {
@@ -408,6 +413,7 @@ int CManageDlg::SetHDDState()
     //CString strAllInfo;
     ULARGE_INTEGER FreeAv, TotalBytes, FreeBytes;
     if (GetDiskFreeSpaceEx(theApp.HDDPath, &FreeAv, &TotalBytes, &FreeBytes))
+    
     {
         //格式化信息，并显示出来
         CString strTotalBytes, strFreeBytes;
@@ -424,18 +430,6 @@ int CManageDlg::SetHDDState()
             m_HDDStateList.SetItemText(0, 4, "正常");
             m_HDDStateList.m_ItemTextColor.RemoveAll();
             m_HDDStateList.SetItemTextColor(4, 0, RGB(0, 255, 0));
-
-            //硬盘小于10G时将分别删除8个通道里最早的一个文件
-            TRACE("FreeBytes = %dG\n", FreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024));
-            if (FreeBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024) <= 9 && (TotalBytes.QuadPart / (ULONGLONG)(1024 * 1024 * 1024)) > 0)
-            {
-                CString Path;
-                Path.Format("%s/%s/", theApp.HDDPath, FindDir(theApp.HDDPath));
-                //Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",theApp.HDDPath,TrainNum);
-                //////////////////////////////////////////////////////////////////////////
-                FindAndDeleteRecord(Path);
-
-            }
         }
 
     }
@@ -448,6 +442,7 @@ int CManageDlg::SetHDDState()
         m_HDDStateList.SetItemTextColor(4, 0, RGB(255, 0, 0));
         //((CLDFM4EVideoDlg*)theApp.pMainDlg)->SetFireText("硬盘故障！！！");
     }
+
 
     //U
     if (URecordFlag && strcmp(UPath, ""))
@@ -547,7 +542,7 @@ int CManageDlg::InitList()
 {
     DWORD dwStyle = m_IPCStateList.GetExtendedStyle();
     dwStyle |= LVS_EX_FULLROWSELECT;//选中某行使整行高亮（只适用与report风格的listctrl）
-    dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）	
+    dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）
     m_IPCStateList.SetExtendedStyle(dwStyle); //设置扩展风格
     m_HDDStateList.SetExtendedStyle(dwStyle);
 
@@ -590,22 +585,33 @@ int CManageDlg::SetList()
         GetPrivateProfileString(_T("LT_WXCLCFG"), temp, _T("无"), ipc, 60, _T(".//LT_WXCLCFG.ini"));
         strcpy_s(IPCName[i], ipc);
     }
+    char local_name[20] = "";
+    GetPrivateProfileString(TEXT("LT_WXCLCFG"), "Local", "4A", local_name, 20, _T(".//LT_WXCLCFG.ini"));
+    int i_start = 0;
+    if (local_name[1] == 'B') {
+        i_start = 6;
+    }
+    for (int i = i_start; i < i_start + 6; i++) {
+        m_IPCStateList.SetItemText(i - i_start, 2, IPCName[i]);
+    }
 
-    m_IPCStateList.SetItemText(0, 2, _T("路况"));
-    m_IPCStateList.SetItemText(1, 2, _T("司机室"));
-    m_IPCStateList.SetItemText(2, 2, _T("高压室1"));
-    m_IPCStateList.SetItemText(3, 2, _T("高压室2"));
-    m_IPCStateList.SetItemText(4, 2, _T("左走廊"));
-    m_IPCStateList.SetItemText(5, 2, _T("右走廊"));
 
     //HDD LIST
-    m_HDDStateList.InsertItem(0, _T("1"));
-    m_HDDStateList.SetItemText(0, 1, _T("硬盘"));
-    m_HDDStateList.SetItemText(0, 2, _T("0"));
-    m_HDDStateList.SetItemText(0, 3, _T("0"));
-    m_HDDStateList.SetItemText(0, 4, _T("错误"));
-    m_HDDStateList.SetItemTextColor(4, 0, RGB(255, 0, 0));
-    m_HDDStateList.SetItemText(0, 5, _T("LTDW"));
+    for (auto i : { 0 }) {
+        if (i == 0) {
+            m_HDDStateList.InsertItem(i, _T("1"));
+        }
+        else {
+            m_HDDStateList.InsertItem(i, _T("B"));
+        }
+        m_HDDStateList.SetItemText(i, 1, _T("硬盘"));
+        m_HDDStateList.SetItemText(i, 2, _T("0G"));
+        m_HDDStateList.SetItemText(i, 3, _T("0G"));
+        m_HDDStateList.SetItemText(i, 4, _T("错误"));
+        m_HDDStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
+        m_HDDStateList.SetItemText(i, 5, _T("LTDW"));
+    }
+
 
     return 0;
 }
@@ -624,13 +630,13 @@ void CManageDlg::OnSize(UINT nType, int cx, int cy)
             rc.right / 20, rc.bottom / 20, rc.right / 20 * 18, rc.bottom / 15 * 8 + 10);
         m_IPCStateList.MoveWindow(
             rc.right / 20 + 30, rc.bottom / 15 + 30,
-            (rc.right / 20 * 18 - 60), (rc.bottom / 15 * 8 - 50));
+            (rc.right / 20 * 18 - 40), (rc.bottom / 15 * 8 - 30));
 
         GetDlgItem(IDC_STATIC2)->MoveWindow(
             rc.right / 20, rc.bottom / 15 * 10, rc.right / 20 * 18, rc.bottom / 15 * 4 + 10);
         m_HDDStateList.MoveWindow(
-            rc.right / 20 + 30, rc.bottom / 15 * 10 + 40,
-            rc.right / 20 * 18 - 60, rc.bottom / 15 * 4 - 48);
+            rc.right / 20 + 30, rc.bottom / 15 * 10 + 30,
+            rc.right / 20 * 18 - 60, rc.bottom / 15 * 4 - 28);
     }
 }
 
@@ -645,7 +651,7 @@ HBRUSH CManageDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
     HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
-    if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色  
+    if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色
         return m_brush;
 
     if (nCtlColor == CTLCOLOR_STATIC)

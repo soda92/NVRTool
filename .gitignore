@@ -86,5 +86,25 @@ systemlog.txt
 project.lock.json
 project.assets.json
 
-
+# python cache
 __pycache__
+
+# old deps
+core
+packages
+
+# deps
+
+req_pack
+
+# generated window
+*window.py
+
+# virtualenv
+venv*
+
+# pyinstaller
+*.spec
+build
+dist
+

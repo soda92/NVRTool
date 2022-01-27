@@ -19,12 +19,13 @@ using boost::json::value_from_tag;
 using boost::json::value;
 using boost::json::value_to;
 using boost::json::object;
+#include <fmt/core.h>
 
 #include "log.h"
 
 
 namespace logn {
-    
+
     value log_value;
 
     // –Ú¡–ªØ
@@ -164,6 +165,15 @@ namespace logn {
     void system_start() {
         logn::log log;
         log.message = "system startup";
+        log.level = 1;
+        log.time = get_date();
+        logn::addlog(log);
+        logn::save();
+    }
+
+    void camera_connect_failed(int IPCNum){
+        logn::log log;
+        log.message = fmt::format("cam {:02d} error", IPCNum);
         log.level = 1;
         log.time = get_date();
         logn::addlog(log);
