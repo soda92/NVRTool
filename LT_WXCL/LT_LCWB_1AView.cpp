@@ -15,7 +15,6 @@
 #include "progress_bar.h"
 #include <fmt/core.h>
 #include <boost/filesystem.hpp>
-#include <D:/src/vcpkg/installed/x86-windows/include/httplib.h>
 namespace fs = boost::filesystem;
 extern char Global_IPCName[12][50];
 
@@ -95,12 +94,7 @@ namespace Interactive {
         char video_num_cstr[21] = { '\0' };
 
         // 读取对应IPC
-        httplib::Client cli{ "localhost:5000" };
-        auto res = cli.Get(fmt::format("/conf/{}", detector).c_str());
-        std::string ret;
-        if (res && res->status == 200) {
-            ret = res->body;
-        }
+        std::string ret = http_get(fmt::format("/conf/{}", detector));
         strcpy_s(video_num_cstr, ret.c_str());
 
         int video_num = std::stoi(std::string(video_num_cstr));
@@ -373,60 +367,21 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 int WINAPI Thread_Index(LPVOID lpPara)
 {
     CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
-    //创建文件夹
-    CString Path;
-    CString File;
 
-    char hddPath[20] = "";
-    httplib::Client cli{ "localhost:5000" };
-    auto res = cli.Get("/conf/HDD");
-    std::string ret;
-    if (res && res->status == 200) {
-        ret = res->body;
+    std::string hddPath = http_get("/conf/Disk");
+    std::string TrainNum = http_get("/conf/TrainNum");
+
+    auto dir = fmt::format("{}:/LT-VIDEO-{}-北京蓝天多维", hddPath, TrainNum);
+
+    if (!fs::exists(dir)) {
+        fs::create_directory(dir);
     }
-    strcpy_s(hddPath, ret.c_str());
-
-    if (!dlg->m_ManageDlg.IsHDD(hddPath))
-    {
-        if (dlg->m_ManageDlg.IsHDD("e://"))
-        {
-            strcpy(hddPath, "e://");
-        }
-        else if (dlg->m_ManageDlg.IsHDD("f://"))
-        {
-            strcpy(hddPath, "f://");
-        }
-    }
-
-    Path.Format("%slost+found", hddPath);
-    int rest = 0;
-    if (CreateDirectory(Path, NULL) == 0)
-    {
-        rest = GetLastError();
-        if (rest == 3)
-        {
-            //AfxMessageBox("录像存储路径不正确，请修改配置文件中的路径。");
-            return -1;
-        }
-    }
-
-    char TrainNum[50] = "";
-
-    res = cli.Get("/conf/TrainNum");
-    if (res && res->status == 200) {
-        ret = res->body;
-    }
-    strcpy_s(TrainNum, ret.c_str());
-
-    Path.Format("%s/LT-VIDEO-%s-北京蓝天多维/",hddPath,TrainNum);	
-
-    CreateDirectory(Path, NULL);
 
     SYSTEMTIME Time, TimeBuf;
     GetLocalTime(&TimeBuf);
     std::string FilePath;
 
-    FilePath = fmt::format("{}/{}-{:02d}-{:02d}/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
+    FilePath = fmt::format("{}/{}-{:02d}-{:02d}/", dir, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
 
     if (!fs::exists(FilePath)) {
         fs::create_directory(FilePath);
@@ -445,7 +400,7 @@ int WINAPI Thread_Index(LPVOID lpPara)
         if (Time.wYear != TimeBuf.wYear || Time.wMonth != TimeBuf.wMonth || Time.wDay != TimeBuf.wDay)
         {
             GetLocalTime(&TimeBuf);
-            FilePath = fmt::format("{}/{}-{:02d}-{:02d}/", Path, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
+            FilePath = fmt::format("{}/{}-{:02d}-{:02d}/", dir, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
             if (!fs::exists(FilePath)) {
                 fs::create_directory(FilePath);
             }
@@ -486,7 +441,7 @@ int WINAPI Thread_Index(LPVOID lpPara)
             */
             char CheHao[16+1]{};
             // https://stackoverflow.com/a/276869/12291425
-            sprintf_s(CheHao, "%-16s", TrainNum);
+            sprintf_s(CheHao, "%-16s", TrainNum.c_str());
 
             memcpy_s(&IdxBuf[11], 16, CheHao, 16);
             // TAX报文有效

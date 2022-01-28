@@ -31,7 +31,7 @@ public:
 	/// </summary>
 	/// <param name="Path">磁盘盘符</param>
 	/// <returns></returns>
-	bool IsHDD(char* Path);
+	bool IsHDD(char disk);
 
 
 	// 对话框数据

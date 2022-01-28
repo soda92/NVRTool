@@ -24,7 +24,6 @@
 #include <boost/filesystem.hpp>
 #include "progress_bar.h"
 #include <string>
-#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 #include "fmt/core.h"
 
 
@@ -166,12 +165,8 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 #endif
 
 	theApp.pMainDlg = this;
-    httplib::Client cli("localhost:5000");
-    auto res = cli.Get("/local");
-    std::string ret{ "" };
-    if (res && res->status == 200) {
-        ret = res->body;
-    }
+
+    std::string ret = http_get("/local");
     theApp.Local= ret[0];
 
 	///**************
@@ -213,41 +208,24 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 
 	m_VideoDlg.ShowWindow(TRUE);
 
-	char TaxCom[20] = "";
-    res = cli.Get("/conf/TaxCom");
-    if (res && res->status == 200) {
-        ret = res->body;
-    }
-    strcpy_s(TaxCom, ret.c_str());
+	auto TaxCom = http_get("/conf/TaxCom").c_str();
 
-    res = cli.Get("/conf/TaxParity");
-    if (res && res->status == 200) {
-        ret = res->body;
-    }
-	auto Parity = stoi(ret.substr(0,1));
+    ret = http_get("/conf/TaxParity");
+    auto Parity = stoi(ret.substr(0, 1));
 
-	if (TaxCOMInit(TaxCom, Parity) != -1)
+	if (TaxCOMInit((char*)TaxCom, Parity) != -1)
 	{
 		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_TaxData, this, 0, NULL);
 		SetTimer(3, 20 * 1000, NULL);
 	}
 	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetIpcTime, this, 0, NULL); //校时 10min
 
-	char PweCom[20] = "";
+	auto PweCom = http_get("/conf/PweCom").c_str();
 
-    res = cli.Get("/conf/PweCom");
-    if (res && res->status == 200) {
-        ret = res->body;
-    }
-    strcpy_s(PweCom, ret.c_str());
-
-    res = cli.Get("/conf/PweParity");
-    if (res && res->status == 200) {
-        ret = res->body;
-    }
+    ret = http_get("/conf/PweParity");
     Parity = stoi(ret.substr(0, 1));
 
-	if (PweCOMInit(PweCom, Parity) != -1)
+	if (PweCOMInit((char*)PweCom, Parity) != -1)
 	{
 		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_PweData, this, 0, NULL);
 	}
@@ -562,17 +540,15 @@ BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
     if (pDevVolume->dbcv_devicetype != DBT_DEVTYP_VOLUME)
         return TRUE;
 
-    char disk = get_device_letter_from_mask(pDevVolume->dbcv_unitmask);
+    char udisk = get_device_letter_from_mask(pDevVolume->dbcv_unitmask);
 
-    auto uPath = fmt::format("{}:\\", disk);
-
-    if (m_ManageDlg.IsHDD((char*)uPath.c_str()))
+    if (m_ManageDlg.IsHDD(udisk))
     {
         this->usb_flag = false;
         return FALSE;
     }
 
-    m_ManageDlg.udisk_path = uPath;
+    m_ManageDlg.udisk_path = udisk;
 
     this->usb_flag = true;
 
@@ -646,8 +622,8 @@ void CLT_LCWB_1ADlg::OnCancel()
 
     // 保存事件记录
     std::string url;
-    httplib::Client cli("http://localhost:5000");
-    url = fmt::format("/add/系统退出");
+    //httplib::Client cli("http://localhost:5000");
+    //url = fmt::format("/add/系统退出");
     //cli.Get(url.c_str());
     LogView::Update();
     logn::system_exit();
@@ -661,8 +637,8 @@ void CLT_LCWB_1ADlg::OnOK()
     //
     // 保存事件记录
     std::string url;
-    httplib::Client cli("http://localhost:5000");
-    url = fmt::format("/add/系统退出");
+    //httplib::Client cli("http://localhost:5000");
+    //url = fmt::format("/add/系统退出");
     //cli.Get(url.c_str());
     LogView::Update();
     logn::system_exit();

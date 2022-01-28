@@ -72,9 +72,15 @@ int CManageDlg::SetIPCState()
     return 0;
 }
 
-bool CManageDlg::IsHDD(char* Path)
+bool CManageDlg::IsHDD(char disk)
 {
-    if (GetDriveType(Path) == DRIVE_REMOVABLE) {
+    namespace fs = boost::filesystem;
+    if (fs::exists(fmt::format("{}:/force_disk.txt", disk))) {
+        return true;
+    }
+    char disk_path[2]{ '\0' };
+    disk_path[0] = disk;
+    if (GetDriveType(disk_path) == DRIVE_REMOVABLE) {
         return false;
     }
     return true;
@@ -110,12 +116,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
                 int nport;
                 int tasknum;
 
-                httplib::Client cli{ "localhost:5000" };
-                auto res = cli.Get(fmt::format("/cam/{}", i + 1).c_str());
-                std::string ret;
-                if (res && res->status == 200) {
-                    ret = res->body;
-                }
+                std::string ret = http_get(fmt::format("/cam/{}", i + 1));
                 cam_addr = ret;
 
                 ipcname = Global_IPCName[i];
@@ -305,12 +306,7 @@ int CManageDlg::SetList()
     // 设置设备管理界面-通道名称
     char local_name[20] = "";
 
-    httplib::Client cli{ "localhost:5000" };
-    auto res = cli.Get("/local");
-    std::string ret;
-    if (res && res->status == 200) {
-        ret = res->body;
-    }
+    std::string ret = http_get("/local");
     strcpy_s(local_name, ret.c_str());
 
     int i_start = 0;

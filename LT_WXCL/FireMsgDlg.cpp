@@ -8,7 +8,6 @@
 
 #include "FireData.h"
 #include "FireMsgView.h"
-#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 
 
 // CFireMsgDlg 对话框
@@ -68,16 +67,9 @@ BOOL CFireMsgDlg::OnInitDialog()
     InitList();
 
     //串口初始化
-    char FireCom[20] = "";
-    httplib::Client cli("localhost:5000");
-    auto res = cli.Get("/conf/FireCom");
-    std::string conf_firecom{""};
-    if (res && res->status == 200) {
-        conf_firecom = res->body;
-    }
-    strcpy_s(FireCom, conf_firecom.c_str());
+    auto FireCom = http_get("/conf/FireCom").c_str();
 
-    if (FireComInit(FireCom) != -1)
+    if (FireComInit((char*)FireCom) != -1)
     {
         //向EF板卡发送TAX箱消息，然后接收EF板卡回复，并广播
         CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_FireData, this, 0, NULL);

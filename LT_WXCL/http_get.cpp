@@ -39,10 +39,11 @@ std::string utf8_to_gbk(std::string src) {
 
 
 // Performs an HTTP GET and prints the response
-std::string http_get(std::string path) {
+std::string http_get(std::string path, int port) {
     try {
         auto const host = "localhost";
-        auto const port = "5000";
+        auto port_str = fmt::format("{}", port);
+        auto const port = port_str.c_str();
         auto const target = path.c_str();
         int version = 11;
 

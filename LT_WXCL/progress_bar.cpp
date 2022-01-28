@@ -3,22 +3,21 @@
 #include <thread>
 #include <boost/process.hpp>
 #include <boost/process/start_dir.hpp>
+#include "http_get.h"
 
 #include "config.h"
-#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 
 
 namespace progress_bar {
 
     namespace bp = boost::process;
-    httplib::Client cli("http://localhost:55555");
 
     void show_impl() {
-        auto res = cli.Get("/show");
+        auto res = http_get("/show", 55555);
     }
 
     void hide_impl() {
-        auto res = cli.Get("/hide");
+        auto res = http_get("/hide", 55555);
     }
 
     void show() {

@@ -1,5 +1,4 @@
 #pragma once
-#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 #include <cstdio>
 #include <string>
 #include <fmt/core.h>
@@ -17,20 +16,13 @@ using namespace std;
 /// <returns>ÊÇ·ñ³É¹¦</returns>
 bool get_hdd_state(std::string ip, double &total, double& used, double& free) {
     // HTTP
-    auto address = fmt::format("http://{}:5000", ip);
-    httplib::Client cli(address);
-    auto res = cli.Get("/size");
-    if (res && res->status == 200) {
-        printf("%d %s\n", res->status, res->body.c_str());
-        value jv = parse(res->body);
-        total = jv.at("total").as_double();
-        used = jv.at("used").as_double();
-        free = jv.at("free").as_double();
-        printf("total: %lf, used: %lf, free: %lf\n", total, used, free);
-        return true;
-    }
-    else {
+    auto ret = http_get("/size");
+    if (ret == "") {
         return false;
     }
-    return false;
+    value jv = parse(ret);
+    total = jv.at("total").as_double();
+    used = jv.at("used").as_double();
+    free = jv.at("free").as_double();
+    return true;
 }
