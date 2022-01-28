@@ -5,6 +5,7 @@
 #include "resource.h"
 #include <vector>
 #include <string>
+#include "http_get.h"
 using namespace std;
 
 // CManageDlg ¶Ô»°¿ò

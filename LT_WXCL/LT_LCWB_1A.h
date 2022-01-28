@@ -21,7 +21,7 @@ class CLT_LCWB_1AApp : public CWinApp
 public:
 	CLT_LCWB_1AApp();
 	void* pMainDlg;
-	char HDDPath[20];//б╪оЯ╢Ф╢╒б╥╬╤
+	char HDDPath; //╢еелел╥Ш
 
 	char Local; //AB╫з
 	char Remote;

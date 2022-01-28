@@ -11,11 +11,11 @@
 #include "hdd_state.h"
 #include "log.h"
 #include "LogView.h"
-#include <string>
+
 #include <boost/filesystem.hpp>
 using namespace std;
 using namespace boost::filesystem;
-#include <D:/src/vcpkg/installed/x86-windows/include/httplib.h>
+
 
 // CManageDlg 对话框
 
@@ -86,7 +86,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
 
     while (true)
     {
-        auto test_path = fmt::format("{}lost+found", theApp.HDDPath);
+        auto test_path = fmt::format("{}:/lost+found", theApp.HDDPath);
         path p{ test_path };
         if (exists(p)) {
             remove_all(p);
@@ -98,7 +98,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
         }
         remove(p);
 
-        auto dir = fmt::format("{}/LT-VIDEO-{}-北京蓝天多维/", theApp.HDDPath, Global_TrainNum);
+        auto dir = fmt::format("{}:/LT-VIDEO-{}-北京蓝天多维/", theApp.HDDPath, Global_TrainNum);
         std::string cam_addr{};
         create_directory(dir);
 
@@ -237,13 +237,8 @@ BOOL CManageDlg::OnInitDialog()
     m_HDDStateList.SetBkColor(RGB(0, 0, 0));
     m_HDDStateList.SetTextColor(RGB(255, 255, 255));
 
-    httplib::Client cli{ "localhost:5000" };
-    auto res = cli.Get("/conf/Disk");
-    std::string ret;
-    if (res && res->status == 200) {
-        ret = res->body;
-    }
-    strcpy_s(theApp.HDDPath, ret.c_str());
+    std::string ret = http_get("/conf/Disk");
+    theApp.HDDPath = ret[0];
 
     InitList();
     SetList();
@@ -305,18 +300,6 @@ int CManageDlg::SetList()
         m_IPCStateList.SetItemText(i, 4, _T("未录像"));
         m_IPCStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
         m_IPCStateList.SetItemText(i, 5, _T("LTDW"));
-    }
-
-    // 获取IPC名称
-    for (int i = 0; i < 12; i++)
-    {
-        httplib::Client cli{ "localhost:5000" };
-        auto res = cli.Get(fmt::format("/conf/IPC{}", i+1).c_str());
-        std::string ret;
-        if (res && res->status == 200) {
-            ret = res->body;
-        }
-        strcpy_s(Global_IPCName[i], ret.c_str());
     }
 
     // 设置设备管理界面-通道名称

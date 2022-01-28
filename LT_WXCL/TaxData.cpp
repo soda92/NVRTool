@@ -169,7 +169,7 @@ int TaxNetInit(char* ip)
 	Addr.sin_port = htons(10010);
 	Addr.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(TaxSoc, (struct sockaddr*)&Addr, sizeof(sockaddr)) < 0)
+	if (::bind(TaxSoc, (struct sockaddr*)&Addr, sizeof(sockaddr)) < 0)
 		return -1;
 
 	memset(&TaxAddr, 0, sizeof(TaxAddr));

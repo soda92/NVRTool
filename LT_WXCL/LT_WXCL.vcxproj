@@ -159,12 +159,14 @@
     <ClInclude Include="VideoDlg.h" />
     <ClInclude Include="VideoPlayWnd.h" />
     <ClInclude Include="WaitDlg.h" />
+    <ClInclude Include="http_get.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Date.cpp" />
     <ClCompile Include="FireData.cpp" />
     <ClCompile Include="FireMsgView.cpp" />
     <ClCompile Include="HeaderCtrlCl.cpp" />
+    <ClCompile Include="http_get.cpp" />
     <ClCompile Include="ListCtrlCl.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="LogDlg.cpp" />

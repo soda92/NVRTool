@@ -12,7 +12,6 @@
 #include "util.h"
 #include "resource.h"
 
-#include <string>
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <boost/process.hpp>
@@ -20,7 +19,6 @@
 
 #include "config.h"
 #include <boost/json.hpp>
-#include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 #include "fmt/core.h"
 namespace fs = boost::filesystem;
 using namespace boost::json;
@@ -33,23 +31,12 @@ char Global_IPCName[12][50] = { 0 }; //保存通道名称
 
 namespace ManageView {
     void init() {
-        httplib::Client cli{ "localhost:5000" };
-        auto res = cli.Get("/conf/TrainNum");
-        std::string ret;
-        if (res && res->status == 200) {
-            ret = res->body;
-        }
+        std::string ret = http_get("/conf/TrainNum");
         strcpy_s(Global_TrainNum, ret.c_str());
 
         for (int i = 0; i < theApp.IPCNum; i++)
         {
-            res = cli.Get(fmt::format("/conf/IPC{}", i + 1).c_str());
-            if (res && res->status == 200) {
-                ret = res->body;
-            }
-            value jv = parse(ret);
-            auto ret2 = jv.at("result").as_string();
-
+            ret = http_get(fmt::format("/conf/IPC{}", i + 1));
             strcpy_s(Global_IPCName[i], ret.c_str());
         }
     }
@@ -92,8 +79,6 @@ int WINAPI Thread_URecord(LPVOID lpPara)
         AfxMessageBox("录像存储路径不正确，请修改配置文件中的路径。");
         return -1;
     }
-
-    httplib::Client cli("http://localhost:5000");
     std::string url;
 
     path = fmt::format("{}/LT-VIDEO-{}-北京蓝天多维/",
@@ -115,13 +100,7 @@ int WINAPI Thread_URecord(LPVOID lpPara)
                     auto ip_last = i;
                     auto port_number = (theApp.Local == 'A') ? i + 1 : i + 6 + 1;
 
-                    httplib::Client cli{ "localhost:5000" };
-                    auto res = cli.Get(fmt::format("/cam/{}", port_number).c_str());
-                    std::string ret;
-                    if (res && res->status == 200) {
-                        ret = res->body;
-                    }
-                    std::string cam_addr = ret;
+                    std::string cam_addr = http_get(fmt::format("/cam/{}", port_number));
 
                     auto IPCNum = (theApp.Local == 'A' ? i : i + 6);
                     auto IPCName = Global_IPCName[IPCNum];
@@ -183,18 +162,13 @@ int CManageDlg::StartURecord(char udisk)
         Sleep(1000);
     }
 
-    std::string url;
-    httplib::Client cli("http://localhost:5000");
-    url = fmt::format("/parse_channels/{}", udisk);
-    auto res = cli.Get(url.c_str());
+    std::string url = fmt::format("/parse_channels/{}", udisk);
+    auto res = http_get(url);
 
-    if (res && res->status == 200) {
-        printf("%d %s\n", res->status, res->body.c_str());
-        boost::json::value jv = boost::json::parse(res->body);
-        boost::json::array arr = jv.at("channels").as_array();
-        for (size_t i = 0; i < 6; i++) {
-            Global_UCFlag[i] = arr[i].as_bool();
-        }
+    boost::json::value jv = boost::json::parse(res);
+    boost::json::array arr = jv.at("channels").as_array();
+    for (size_t i = 0; i < 6; i++) {
+        Global_UCFlag[i] = arr[i].as_bool();
     }
 
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_URecord, this, 0, NULL);//开启录像线程
@@ -205,17 +179,12 @@ int WINAPI Thread_UDisk_Process(LPVOID lpPara)
 {
     CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)lpPara;
 
-    std::string url;
-    httplib::Client cli("http://localhost:5000");
-    url = fmt::format("/is_record/{}", dlg->m_ManageDlg.udisk_path[0]);
-    auto res = cli.Get(url.c_str());
+    std::string url = fmt::format("/is_record/{}", dlg->m_ManageDlg.udisk_path[0]);
+    auto res = http_get(url);
 
     bool is_record = true;
-    if (res && res->status == 200) {
-        printf("%d %s\n", res->status, res->body.c_str());
-        boost::json::value jv = boost::json::parse(res->body);
-        is_record = jv.at("record").as_bool();
-    }
+    boost::json::value jv = boost::json::parse(res);
+    is_record = jv.at("record").as_bool();
 
     if (is_record)
     {

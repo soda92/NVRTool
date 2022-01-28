@@ -3,7 +3,7 @@
 #include <thread>
 #include <boost/process.hpp>
 #include <boost/process/start_dir.hpp>
-#include <string>
+
 #include "config.h"
 #include "D:/src/vcpkg/installed/x86-windows/include/httplib.h"
 
