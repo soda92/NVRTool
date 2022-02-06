@@ -167,7 +167,7 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 	theApp.pMainDlg = this;
 
     std::string ret = http_get("/local");
-    theApp.Local= ret[0];
+    theApp.Local = ret[0];
 
 	///**************
 

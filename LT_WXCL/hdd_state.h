@@ -16,7 +16,7 @@ using namespace std;
 /// <returns>ÊÇ·ñ³É¹¦</returns>
 bool get_hdd_state(std::string ip, double &total, double& used, double& free) {
     // HTTP
-    auto ret = http_get("/size");
+    auto ret = http_get("/size", 5000, ip);
     if (ret == "") {
         return false;
     }

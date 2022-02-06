@@ -175,7 +175,7 @@ int CManageDlg::SetHDDState()
         auto ip = fmt::format("192.168.104.20{}", i);
         if ((theApp.Local == 'A' && i == 0) ||
             (theApp.Local == 'B' && i == 1)) {
-            ip = "localhost";
+            ip = "127.0.0.1";
         }
         double total{ 0 };
         double used{ 0 };
