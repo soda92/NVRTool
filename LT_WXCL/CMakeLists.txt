@@ -13,7 +13,6 @@ set(SRCS
 "HeaderCtrlCl.h"
 "http_get.cpp"
 "http_get.h"
-"JcgkDlg.cpp"
 "ListCtrlCl.cpp"
 "ListCtrlCl.h"
 "log.cpp"
@@ -55,5 +54,10 @@ set(SRCS
 "WaitDlg.cpp"
 "WaitDlg.h"
 )
+include_directories(include "D:/boost_1_78_0")
+link_directories(lib "D:/boost_1_78_0/stage/lib")
 
+find_package(fmt CONFIG REQUIRED)
 add_executable(FireVideo WIN32 ${SRCS})
+target_link_libraries(FireVideo PRIVATE fmt::fmt VideoPlay HCNetSDK)
+set_target_properties(FireVideo PROPERTIES COMPILE_FLAGS "/EHsc")
