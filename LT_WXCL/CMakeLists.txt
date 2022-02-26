@@ -61,3 +61,9 @@ find_package(fmt CONFIG REQUIRED)
 add_executable(FireVideo WIN32 ${SRCS})
 target_link_libraries(FireVideo PRIVATE fmt::fmt VideoPlay HCNetSDK)
 set_target_properties(FireVideo PROPERTIES COMPILE_FLAGS "/EHsc")
+
+add_custom_command(TARGET FireVideo POST_BUILD
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake_afterbuild.ps1 ${CMAKE_CURRENT_BINARY_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "copy dlls"
+)

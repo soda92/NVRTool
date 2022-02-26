@@ -8,7 +8,7 @@ else {
     cmake -B build -G "Ninja" `
         -DCMAKE_TOOLCHAIN_FILE="D:/src/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
-    if ($LASTEXITCODE = =0) {
+    if ($LASTEXITCODE -eq 0) {
         $global:foo = 1
     }
 }
