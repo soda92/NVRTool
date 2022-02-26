@@ -54,8 +54,8 @@ set(SRCS
 "WaitDlg.cpp"
 "WaitDlg.h"
 )
-include_directories(include "D:/boost_1_78_0")
-link_directories(lib "D:/boost_1_78_0/stage/lib")
+include_directories("include" "D:/boost_1_78_0")
+link_directories("lib" "D:/boost_1_78_0/stage/lib")
 
 find_package(fmt CONFIG REQUIRED)
 add_executable(FireVideo WIN32 ${SRCS})
