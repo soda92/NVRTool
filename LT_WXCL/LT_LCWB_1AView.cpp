@@ -12,6 +12,7 @@
 #include "LogView.h"
 #include <string>
 #include <sstream>
+#include <thread>
 #include "progress_bar.h"
 #include <fmt/core.h>
 #include <boost/filesystem.hpp>
@@ -373,19 +374,11 @@ int WINAPI Thread_Index(LPVOID lpPara)
 
     auto dir = fmt::format("{}:/LT-VIDEO-{}-北京蓝天多维", hddPath, TrainNum);
 
-    if (!fs::exists(dir)) {
-        fs::create_directory(dir);
-    }
-
     SYSTEMTIME Time, TimeBuf;
     GetLocalTime(&TimeBuf);
     std::string FilePath;
 
     FilePath = fmt::format("{}/{}-{:02d}-{:02d}/", dir, TimeBuf.wYear, TimeBuf.wMonth, TimeBuf.wDay);
-
-    if (!fs::exists(FilePath)) {
-        fs::create_directory(FilePath);
-    }
 
     GetLocalTime(&Time);
     std::string FileName;
@@ -394,7 +387,20 @@ int WINAPI Thread_Index(LPVOID lpPara)
 
     while (true)
     {
-        Sleep(1000);
+        std::this_thread::sleep_for(1000ms);
+        if (!fs::exists(dir)) {
+            try{
+                fs::create_directory(fs::path(dir)/"lost+found");
+                fs::remove(fs::path(dir)/"lost+found");
+                fs::create_directory(dir);
+            }catch(...){
+                continue;
+            }
+        }
+        if (!fs::exists(FilePath)) {
+            fs::create_directory(FilePath);
+        }
+
         TaxData = dlg->TaxData;
         GetLocalTime(&Time);
         if (Time.wYear != TimeBuf.wYear || Time.wMonth != TimeBuf.wMonth || Time.wDay != TimeBuf.wDay)

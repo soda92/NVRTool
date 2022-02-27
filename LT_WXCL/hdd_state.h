@@ -20,7 +20,13 @@ bool get_hdd_state(std::string ip, double &total, double& used, double& free) {
     if (ret == "") {
         return false;
     }
-    value jv = parse(ret);
+    value jv;
+    try {
+        jv = parse(ret);
+    }
+    catch(std::exception e){
+        return false;
+    }
     total = jv.at("total").as_double();
     used = jv.at("used").as_double();
     free = jv.at("free").as_double();

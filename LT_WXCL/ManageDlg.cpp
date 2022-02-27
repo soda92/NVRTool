@@ -97,12 +97,18 @@ int WINAPI Thread_Record(LPVOID lpPara)
         if (exists(p)) {
             remove_all(p);
         }
-        if (!create_directory(p))
-        {
-            dlg->MessageBox(TEXT("录像存储路径不正确，请修改配置文件中的路径。"));
-            return -1;
+        try{
+            create_directory(p);
+            remove(p);
         }
-        remove(p);
+        catch(std::exception &e){
+            continue;
+        }
+        // if (!)
+        // {
+        //     dlg->MessageBox(TEXT("录像存储路径不正确，请修改配置文件中的路径。"));
+        //     return -1;
+        // }
 
         auto dir = fmt::format("{}:/LT-VIDEO-{}-北京蓝天多维/", theApp.HDDPath, Global_TrainNum);
         std::string cam_addr{};
