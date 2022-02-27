@@ -1,9 +1,9 @@
 if (Get-Variable 'foo' -Scope 'Global' -ErrorAction 'Ignore') { 
 }
 elseif ($args[0] -eq '--skip-verify') {
+    ms22_32
 }
 else {
-    ms22_32
     if (Test-Path build) {
         Remove-Item -Path build -Recurse -Force
     }
