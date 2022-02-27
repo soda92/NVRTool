@@ -77,7 +77,7 @@ namespace Interactive {
             }
         }
 
-       
+
         // 最大化
         auto detector_num = 0;
         if (warVoice.GetAt(0) == 'A')
@@ -183,7 +183,7 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
             if (dlg->lUserID[user_id_index] >= 0)
             {
                 auto info_speed_mileage = fmt::format(
-                    "{}km/h {:.3lf}", dlg->TaxData.Speed, dlg->TaxData.Signpost / 1000.0
+                    "{}km/h {:.3f}", dlg->TaxData.Speed, dlg->TaxData.Signpost / 1000.0
                 );
                 auto info_trainNum_EngineNo = fmt::format(
                     "车次:{} 车号:{}", dlg->TaxData.TrainNum, dlg->TaxData.EngineNo
