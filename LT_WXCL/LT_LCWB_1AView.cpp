@@ -299,7 +299,7 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
     int addrLen = sizeof(addr);
     unsigned char RecBuf[1024] = "";
 
-    while (1)
+    for(;;)
     {
         int res = recvfrom(dlg->BRecUdp, (char*)RecBuf, sizeof(RecBuf), 0, (struct sockaddr*)&addr, &addrLen);
         if (res > 0)

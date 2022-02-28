@@ -13,6 +13,7 @@
 #include "LogView.h"
 
 #include <boost/filesystem.hpp>
+#include <thread>
 using namespace std;
 using namespace boost::filesystem;
 
@@ -66,7 +67,6 @@ int CManageDlg::SetIPCState()
             m_IPCStateList.SetItemText(i, 4, _T("Î´Â¼Ïñ"));
             m_IPCStateList.SetItemTextColor(4, i, RGB(255, 0, 0));
         }
-        Sleep(100);
     }
 
     return 0;
@@ -153,7 +153,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
             }
         }
 
-        Sleep(5 * 1000);
+        this_thread::sleep_for(3s);
     }
 
     return 0;
@@ -164,11 +164,11 @@ int WINAPI Thread_State(LPVOID lpPara)
     CManageDlg* dlg = (CManageDlg*)lpPara;
 
     //TRACE("ping = %d\n",dlg->DevPing.Ping(5,"192.168.101.1",NULL));
-    while (1)
+    for(;;)
     {
         dlg->SetIPCState();
         dlg->SetHDDState();
-        Sleep(5 * 1000);
+        this_thread::sleep_for(3s);
     }
 
     return 0;
