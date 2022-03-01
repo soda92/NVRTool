@@ -28,90 +28,86 @@
 #include <thread>
 using namespace std;
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
 
 // CLT_WXCLDlg 对话框
 
 extern char Global_IPCName[12][50];
 char FirstDriveFromMask(ULONG unitmask);
 
-
-CLT_LCWB_1ADlg::CLT_LCWB_1ADlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(CLT_LCWB_1ADlg::IDD, pParent)
+CLT_LCWB_1ADlg::CLT_LCWB_1ADlg(CWnd *pParent /*=NULL*/)
+    : CDialogEx(CLT_LCWB_1ADlg::IDD, pParent)
 {
-	//m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-	memset(lUserID, -1, sizeof(lUserID));
-	memset(lRealPlayHandle, -1, sizeof(lRealPlayHandle));
-	TaxStat = FALSE;
-	memset(&TaxData, 0, sizeof(TaxData));
-	OsdIndex = 0;
-	BRecUdp = -1;
+    // m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+    memset(lUserID, -1, sizeof(lUserID));
+    memset(lRealPlayHandle, -1, sizeof(lRealPlayHandle));
+    TaxStat = FALSE;
+    memset(&TaxData, 0, sizeof(TaxData));
+    OsdIndex = 0;
+    BRecUdp = -1;
 }
 
-void CLT_LCWB_1ADlg::DoDataExchange(CDataExchange* pDX)
+void CLT_LCWB_1ADlg::DoDataExchange(CDataExchange *pDX)
 {
-	CDialogEx::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_TAB1, m_TabCtrl);
+    CDialogEx::DoDataExchange(pDX);
+    DDX_Control(pDX, IDC_TAB1, m_TabCtrl);
     DDX_Control(pDX, IDC_BUTTON_STOPWARN, stop_warn);
 }
 
 BEGIN_MESSAGE_MAP(CLT_LCWB_1ADlg, CDialogEx)
-	ON_WM_PAINT()
-	ON_WM_QUERYDRAGICON()
-    ON_WM_DEVICECHANGE()
-	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CLT_LCWB_1ADlg::OnTcnSelchangeTab1)
-	ON_WM_TIMER()
-    ON_BN_CLICKED(IDC_BUTTON_STOPWARN, &CLT_LCWB_1ADlg::OnBnClickedStopWarn)
-	ON_WM_CTLCOLOR()
-	ON_WM_ERASEBKGND()
+ON_WM_PAINT()
+ON_WM_QUERYDRAGICON()
+ON_WM_DEVICECHANGE()
+ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CLT_LCWB_1ADlg::OnTcnSelchangeTab1)
+ON_WM_TIMER()
+ON_BN_CLICKED(IDC_BUTTON_STOPWARN, &CLT_LCWB_1ADlg::OnBnClickedStopWarn)
+ON_WM_CTLCOLOR()
+ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 // CLT_WXCLDlg 消息处理程序
 
-int __stdcall VideoStateCB(LONG nPort, char type, char* error)
+int __stdcall VideoStateCB(LONG nPort, char type, char *error)
 {
-	CLT_LCWB_1ADlg* dlg = (CLT_LCWB_1ADlg*)theApp.pMainDlg;
-	TRACE("port = %d,type = %d,error = %s\n", nPort, type, error);
-	//AfxMessageBox(error);
-	if (dlg != NULL)
-	{
-		if (type == 0) //replay
-		{
-			//dlg->m_ReplayDlg.ReplayCallBack(nPort,error);
-		}
-		else if (type == 2) //record
-		{
-			dlg->m_ManageDlg.m_RecordCallBack(nPort, error);
-		}
-	}
-	return 0;
+    CLT_LCWB_1ADlg *dlg = (CLT_LCWB_1ADlg *)theApp.pMainDlg;
+    TRACE("port = %d,type = %d,error = %s\n", nPort, type, error);
+    // AfxMessageBox(error);
+    if (dlg != NULL)
+    {
+        if (type == 0) // replay
+        {
+            // dlg->m_ReplayDlg.ReplayCallBack(nPort,error);
+        }
+        else if (type == 2) // record
+        {
+            dlg->m_ManageDlg.m_RecordCallBack(nPort, error);
+        }
+    }
+    return 0;
 }
-
 
 BOOL CLT_LCWB_1ADlg::OnInitDialog()
 {
-	CDialogEx::OnInitDialog();
+    CDialogEx::OnInitDialog();
     SetWindowText("太原机车视频监控");
 
     constexpr static GUID GUID_DEVINTERFACE_LIST[] =
-    {
-        // GUID_DEVINTERFACE_USB_DEVICE
-        { 0xA5DCBF10, 0x6530, 0x11D2, { 0x90, 0x1F, 0x00, 0xC0, 0x4F, 0xB9, 0x51, 0xED } },
+        {
+            // GUID_DEVINTERFACE_USB_DEVICE
+            {0xA5DCBF10, 0x6530, 0x11D2, {0x90, 0x1F, 0x00, 0xC0, 0x4F, 0xB9, 0x51, 0xED}},
 
-        // GUID_DEVINTERFACE_DISK
-        { 0x53f56307, 0xb6bf, 0x11d0, { 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b } },
+            // GUID_DEVINTERFACE_DISK
+            {0x53f56307, 0xb6bf, 0x11d0, {0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b}},
 
-        // GUID_DEVINTERFACE_HID,
-        { 0x4D1E55B2, 0xF16F, 0x11CF, { 0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30 } },
+            // GUID_DEVINTERFACE_HID,
+            {0x4D1E55B2, 0xF16F, 0x11CF, {0x88, 0xCB, 0x00, 0x11, 0x11, 0x00, 0x00, 0x30}},
 
-        // GUID_NDIS_LAN_CLASS
-        { 0xad498944, 0x762f, 0x11d0, { 0x8d, 0xcb, 0x00, 0xc0, 0x4f, 0xc3, 0x35, 0x8c } }
+            // GUID_NDIS_LAN_CLASS
+            {0xad498944, 0x762f, 0x11d0, {0x8d, 0xcb, 0x00, 0xc0, 0x4f, 0xc3, 0x35, 0x8c}}
 
-    };
+        };
     // Register DEVICE message
     HDEVNOTIFY hDevNotify;
     DEV_BROADCAST_DEVICEINTERFACE NotificationFilter;
@@ -131,27 +127,27 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
     boost::filesystem::path full_path(boost::filesystem::current_path());
 
     // 初始化PLOG
-	plog::init(plog::debug, "log.txt"); // Step2: initialize the logger
+    plog::init(plog::debug, "log.txt"); // Step2: initialize the logger
 
     // 故障记录列表
     logn::load();
 
-	// 设置此对话框的图标。当应用程序主窗口不是对话框时，框架将自动
-	//  执行此操作
-	SetIcon(m_hIcon, TRUE);	 // 设置大图标
-	SetIcon(m_hIcon, FALSE); // 设置小图标
+    // 设置此对话框的图标。当应用程序主窗口不是对话框时，框架将自动
+    //  执行此操作
+    SetIcon(m_hIcon, TRUE);  // 设置大图标
+    SetIcon(m_hIcon, FALSE); // 设置小图标
 
-	// TODO: 在此添加额外的初始化代码
-	m_brush.CreateSolidBrush(RGB(0, 0, 0));
-	newFont.CreatePointFont(200, "黑体");
+    // TODO: 在此添加额外的初始化代码
+    m_brush.CreateSolidBrush(RGB(0, 0, 0));
+    newFont.CreatePointFont(200, "黑体");
 
-	CArray<COLORREF, COLORREF> arColors;
+    CArray<COLORREF, COLORREF> arColors;
 
-	arColors.Add(RGB(121, 210, 231));
-	arColors.Add(RGB(190, 218, 153));
-	arColors.Add(RGB(255, 170, 100));
+    arColors.Add(RGB(121, 210, 231));
+    arColors.Add(RGB(190, 218, 153));
+    arColors.Add(RGB(255, 170, 100));
 
-	//******************************
+    //******************************
 
     // 停止报警 按钮
     stop_warn.SetBkColor(RGB(0, 0, 0));
@@ -161,24 +157,24 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
     stop_warn.SetFont(&font_150);
 
 #if !defined(_DEBUG)
-	CWaitDlg dlg;
-	dlg.DoModal();
+    CWaitDlg dlg;
+    dlg.DoModal();
 #endif
 
-	theApp.pMainDlg = this;
+    theApp.pMainDlg = this;
 
     std::string ret = http_get("/local");
     theApp.Local = ret[0];
 
-	///**************
+    ///**************
 
-	stop_warn.SetBkColor(RGB(0, 0, 0));
-	stop_warn.SetForeColor(RGB(255, 255, 255));
+    stop_warn.SetBkColor(RGB(0, 0, 0));
+    stop_warn.SetForeColor(RGB(255, 255, 255));
 
-	MoveWindow(0, 0, SCREEN_X, SCREEN_Y);
-	CenterWindow();
+    MoveWindow(0, 0, SCREEN_X, SCREEN_Y);
+    CenterWindow();
 
-	m_TabCtrl.SetItemSize(CSize(150, 40));
+    m_TabCtrl.SetItemSize(CSize(150, 40));
 
     m_TabCtrl.MoveWindow(-3, -3, SCREEN_X + 3, SCREEN_Y + 3);
     stop_warn.MoveWindow(SCREEN_X - 125, 3, 120, 35);
@@ -187,79 +183,78 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 
     logn::system_start();
     LogView::Update();
-	m_TabCtrl.InsertItem(0, _T("视频预览"));
-	m_VideoDlg.Create(IDD_DIALOG_VIDEO, GetDlgItem(IDC_TAB1));
-	m_TabCtrl.InsertItem(1, _T("设备管理"));
-	m_ManageDlg.Create(IDD_DIALOG_MANAGE, GetDlgItem(IDC_TAB1));
-	m_TabCtrl.InsertItem(2, _T("火警信息"));
-	m_FireMsgDlg.Create(IDD_DIALOG_FIRE, GetDlgItem(IDC_TAB1));
+    m_TabCtrl.InsertItem(0, _T("视频预览"));
+    m_VideoDlg.Create(IDD_DIALOG_VIDEO, GetDlgItem(IDC_TAB1));
+    m_TabCtrl.InsertItem(1, _T("设备管理"));
+    m_ManageDlg.Create(IDD_DIALOG_MANAGE, GetDlgItem(IDC_TAB1));
+    m_TabCtrl.InsertItem(2, _T("火警信息"));
+    m_FireMsgDlg.Create(IDD_DIALOG_FIRE, GetDlgItem(IDC_TAB1));
     m_TabCtrl.InsertItem(3, _T("事件记录"));
 
-	CRect rc; //标签页里的窗口大小
-	m_TabCtrl.GetClientRect(&rc);
-	ClientToScreen(rc);
-	m_TabCtrl.SetMinTabWidth(rc.Width() / 7);
+    CRect rc; //标签页里的窗口大小
+    m_TabCtrl.GetClientRect(&rc);
+    ClientToScreen(rc);
+    m_TabCtrl.SetMinTabWidth(rc.Width() / 7);
 
-	rc.top += 40;
+    rc.top += 40;
 
-	m_VideoDlg.MoveWindow(&rc);
-	m_ManageDlg.MoveWindow(&rc);
+    m_VideoDlg.MoveWindow(&rc);
+    m_ManageDlg.MoveWindow(&rc);
     m_FireMsgDlg.MoveWindow(&rc);
     m_logDlg.MoveWindow(&rc);
 
-	m_VideoDlg.ShowWindow(TRUE);
+    m_VideoDlg.ShowWindow(TRUE);
 
-	auto TaxCom = http_get("/conf/TaxCom").c_str();
+    auto TaxCom = http_get("/conf/TaxCom").c_str();
 
     ret = http_get("/conf/TaxParity");
     auto Parity = stoi(ret.substr(0, 1));
 
-	if (TaxCOMInit((char*)TaxCom, Parity) != -1)
-	{
-		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_TaxData, this, 0, NULL);
-		SetTimer(3, 20 * 1000, NULL);
-	}
-	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetIpcTime, this, 0, NULL); //校时 10min
+    if (TaxCOMInit((char *)TaxCom, Parity) != -1)
+    {
+        std::thread(Thread_TaxData, this).detach();
+        SetTimer(3, 20 * 1000, NULL);
+    }
+    std::thread(Thread_SetIpcTime, this).detach(); //校时 10min
 
-	auto PweCom = http_get("/conf/PweCom").c_str();
+    auto PweCom = http_get("/conf/PweCom").c_str();
 
     ret = http_get("/conf/PweParity");
     Parity = stoi(ret.substr(0, 1));
 
-	if (PweCOMInit((char*)PweCom, Parity) != -1)
-	{
-		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_PweData, this, 0, NULL);
-	}
+    if (PweCOMInit((char *)PweCom, Parity) != -1)
+    {
+        std::thread(Thread_PweData, this).detach();
+    }
 
-	//ffmpeg dll
-	Video_Init();
-	Video_SetStateCallBack(VideoStateCB);
+    // ffmpeg dll
+    Video_Init();
+    Video_SetStateCallBack(VideoStateCB);
 
-	//hk video
-	NET_DVR_Init();
-	//设置连接时间与重连时间
-	NET_DVR_SetConnectTime(2000, 1);
-	NET_DVR_SetReconnect(6000, true);
+    // hk video
+    NET_DVR_Init();
+    //设置连接时间与重连时间
+    NET_DVR_SetConnectTime(2000, 1);
+    NET_DVR_SetReconnect(6000, true);
 
-	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Play, this, 0, NULL); //开启视频线程
+    std::thread(Thread_Play, this).detach(); //开启视频线程
 
-	//////////////////////////////////////////////////////////////////////////
-	BROADCASTInit();
-	if (FireUdpInit() != -1)
-	{
-		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_UDPBroadcastRecv, this, 0, NULL);
-	}
+    //////////////////////////////////////////////////////////////////////////
+    BROADCASTInit();
+    if (FireUdpInit() != -1)
+    {
+        std::thread(Thread_UDPBroadcastRecv, this).detach();
+    }
 
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Voice, this, 0, NULL);
-
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_Index, this, 0, NULL); // 开启公共信息记录线程
+    std::thread(Thread_Voice, this).detach();
+    std::thread(Thread_Index, this).detach(); // 开启公共信息记录线程
 
     // 系统启动
     std::string url;
     url = fmt::format("/add/系统启动");
-    //cli.Get(url.c_str());
+    // cli.Get(url.c_str());
 
-	return TRUE; // 除非将焦点设置到控件，否则返回 TRUE
+    return TRUE; // 除非将焦点设置到控件，否则返回 TRUE
 }
 
 // 如果向对话框添加最小化按钮，则需要下面的代码
@@ -268,58 +263,58 @@ BOOL CLT_LCWB_1ADlg::OnInitDialog()
 
 void CLT_LCWB_1ADlg::OnPaint()
 {
-	if (IsIconic())
-	{
-		CPaintDC dc(this); // 用于绘制的设备上下文
+    if (IsIconic())
+    {
+        CPaintDC dc(this); // 用于绘制的设备上下文
 
-		dc.SelectObject(newFont);
+        dc.SelectObject(newFont);
 
-		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
+        SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// 使图标在工作区矩形中居中
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+        // 使图标在工作区矩形中居中
+        int cxIcon = GetSystemMetrics(SM_CXICON);
+        int cyIcon = GetSystemMetrics(SM_CYICON);
+        CRect rect;
+        GetClientRect(&rect);
+        int x = (rect.Width() - cxIcon + 1) / 2;
+        int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// 绘制图标
-		dc.DrawIcon(x, y, m_hIcon);
-	}
-	else
-	{
-		CDialogEx::OnPaint();
-	}
+        // 绘制图标
+        dc.DrawIcon(x, y, m_hIcon);
+    }
+    else
+    {
+        CDialogEx::OnPaint();
+    }
 }
 
 //当用户拖动最小化窗口时系统调用此函数取得光标
 //显示。
 HCURSOR CLT_LCWB_1ADlg::OnQueryDragIcon()
 {
-	return static_cast<HCURSOR>(m_hIcon);
+    return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
+void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
 {
-	// TODO: 在此添加控件通知处理程序代码
-	int CurSel = m_TabCtrl.GetCurSel();
+    // TODO: 在此添加控件通知处理程序代码
+    int CurSel = m_TabCtrl.GetCurSel();
 
-	m_VideoDlg.ShowWindow(false);
-	m_ManageDlg.ShowWindow(false);
+    m_VideoDlg.ShowWindow(false);
+    m_ManageDlg.ShowWindow(false);
     m_FireMsgDlg.ShowWindow(false);
     m_logDlg.ShowWindow(false);
 
-	switch (CurSel)
-	{
-	case 0:
-		m_VideoDlg.ShowWindow(true);
+    switch (CurSel)
+    {
+    case 0:
+        m_VideoDlg.ShowWindow(true);
         progress_bar::show();
-		break;
-	case 1:
-		m_ManageDlg.ShowWindow(true);
+        break;
+    case 1:
+        m_ManageDlg.ShowWindow(true);
         progress_bar::hide();
-		break;
+        break;
     case 2:
         m_FireMsgDlg.ShowWindow(true);
         progress_bar::hide();
@@ -328,23 +323,22 @@ void CLT_LCWB_1ADlg::OnTcnSelchangeTab1(NMHDR* pNMHDR, LRESULT* pResult)
         m_logDlg.ShowWindow(true);
         progress_bar::hide();
         break;
-	default:
-		break;
-	}
+    default:
+        break;
+    }
 
-	*pResult = 0;
-
+    *pResult = 0;
 }
 
 int CLT_LCWB_1ADlg::OSD_impl(
     long user_id,
-    string info_record_status, // 左上角
-    string info_speed_mileage, // 右上角
+    string info_record_status,     // 左上角
+    string info_speed_mileage,     // 右上角
     string info_trainNum_EngineNo, // 左下角
-    string info_position_driver) // 右下角
+    string info_position_driver)   // 右下角
 {
-	NET_DVR_SHOWSTRING_V30 struShowString = { 0 };
-	unsigned long dwReturned = 0;
+    NET_DVR_SHOWSTRING_V30 struShowString = {0};
+    unsigned long dwReturned = 0;
 
     struShowString.struStringInfo[0].wShowString = 1;
     struShowString.struStringInfo[0].wStringSize = static_cast<WORD>(strlen(info_record_status.c_str()));
@@ -370,48 +364,48 @@ int CLT_LCWB_1ADlg::OSD_impl(
     struShowString.struStringInfo[3].wShowStringTopLeftX = 360;
     struShowString.struStringInfo[3].wShowStringTopLeftY = 540;
 
-	struShowString.dwSize = sizeof(struShowString);
+    struShowString.dwSize = sizeof(struShowString);
 
-	if (!NET_DVR_SetDVRConfig(user_id, NET_DVR_SET_SHOWSTRING_V30, 1, &struShowString, sizeof(NET_DVR_SHOWSTRING_V30)))
-	{
-		return -1;
-	}
-	return 0;
+    if (!NET_DVR_SetDVRConfig(user_id, NET_DVR_SET_SHOWSTRING_V30, 1, &struShowString, sizeof(NET_DVR_SHOWSTRING_V30)))
+    {
+        return -1;
+    }
+    return 0;
 }
 
-int CLT_LCWB_1ADlg::VideoPlay(char* ip, long& user_id, long& handle, HWND hWnd)
+int CLT_LCWB_1ADlg::VideoPlay(char *ip, long &user_id, long &handle, HWND hWnd)
 {
-	//登录参数，包括设备地址、登录用户、密码等
-	NET_DVR_USER_LOGIN_INFO struLoginInfo = { 0 };
-	struLoginInfo.bUseAsynLogin = 0;			 //同步登录方式
-	strcpy_s(struLoginInfo.sDeviceAddress, ip);	 //设备IP地址
-	struLoginInfo.wPort = 8000;					 //设备服务端口
-	strcpy_s(struLoginInfo.sUserName, "admin");	 //设备登录用户名
-	strcpy_s(struLoginInfo.sPassword, "hk123456"); //设备登录密码
-	//strcpy(struLoginInfo.sPassword, "123456"); //设备登录密码
+    //登录参数，包括设备地址、登录用户、密码等
+    NET_DVR_USER_LOGIN_INFO struLoginInfo = {0};
+    struLoginInfo.bUseAsynLogin = 0;               //同步登录方式
+    strcpy_s(struLoginInfo.sDeviceAddress, ip);    //设备IP地址
+    struLoginInfo.wPort = 8000;                    //设备服务端口
+    strcpy_s(struLoginInfo.sUserName, "admin");    //设备登录用户名
+    strcpy_s(struLoginInfo.sPassword, "hk123456"); //设备登录密码
+    // strcpy(struLoginInfo.sPassword, "123456"); //设备登录密码
 
-	//设备信息, 输出参数
-	NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = { 0 };
+    //设备信息, 输出参数
+    NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = {0};
 
     // PLOGD << "window handle: " << (long)pHandle;
 
-	user_id = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
-	if (user_id < 0)
-	{
-		TRACE("Login failed, error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
-		return -1;
-	}
+    user_id = NET_DVR_Login_V40(&struLoginInfo, &struDeviceInfoV40);
+    if (user_id < 0)
+    {
+        TRACE("Login failed, error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
+        return -1;
+    }
 
-	//---------------------------------------
-	//启动预览并设置回调数据流
-	NET_DVR_PREVIEWINFO struPlayInfo = { 0 };
-	struPlayInfo.hPlayWnd = hWnd;  //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-	struPlayInfo.lChannel = 1;	   //预览通道号
+    //---------------------------------------
+    //启动预览并设置回调数据流
+    NET_DVR_PREVIEWINFO struPlayInfo = {0};
+    struPlayInfo.hPlayWnd = hWnd; //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
+    struPlayInfo.lChannel = 1;    //预览通道号
 
-	struPlayInfo.dwStreamType = 1; //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
-	struPlayInfo.dwLinkMode = 0;   //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
+    struPlayInfo.dwStreamType = 1; // 0-主码流，1-子码流，2-码流3，3-码流4，以此类推
+    struPlayInfo.dwLinkMode = 0;   // 0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
 
-	handle = NET_DVR_RealPlay_V40(user_id, &struPlayInfo, NULL, NULL);
+    handle = NET_DVR_RealPlay_V40(user_id, &struPlayInfo, NULL, NULL);
     if (handle < 0)
     {
         TRACE("NET_DVR_RealPlay_V40 error code: %d ip = %s\n", NET_DVR_GetLastError(), ip);
@@ -419,105 +413,105 @@ int CLT_LCWB_1ADlg::VideoPlay(char* ip, long& user_id, long& handle, HWND hWnd)
         return -1;
     }
 
-	return 0;
+    return 0;
 }
 
 void CLT_LCWB_1ADlg::OnTimer(UINT_PTR nIDEvent)
 {
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	if (nIDEvent == 3)
-	{
-		TaxStat = FALSE;
-		memset(&TaxData, 0, sizeof(TaxData));
-	}
-	CDialogEx::OnTimer(nIDEvent);
+    // TODO: 在此添加消息处理程序代码和/或调用默认值
+    if (nIDEvent == 3)
+    {
+        TaxStat = FALSE;
+        memset(&TaxData, 0, sizeof(TaxData));
+    }
+    CDialogEx::OnTimer(nIDEvent);
 }
 
 int CLT_LCWB_1ADlg::TimeCFG()
 {
-	SYSTEMTIME Time;
-	GetLocalTime(&Time);
-	NET_DVR_TIME NvrTime = {0};
+    SYSTEMTIME Time;
+    GetLocalTime(&Time);
+    NET_DVR_TIME NvrTime = {0};
 
-	NvrTime.dwYear = Time.wYear;
-	NvrTime.dwMonth = Time.wMonth;
-	NvrTime.dwDay = Time.wDay;
+    NvrTime.dwYear = Time.wYear;
+    NvrTime.dwMonth = Time.wMonth;
+    NvrTime.dwDay = Time.wDay;
 
-	NvrTime.dwHour = Time.wHour;
-	NvrTime.dwMinute = Time.wMinute;
-	NvrTime.dwSecond = Time.wSecond;
+    NvrTime.dwHour = Time.wHour;
+    NvrTime.dwMinute = Time.wMinute;
+    NvrTime.dwSecond = Time.wSecond;
 
-	int tmp = (theApp.Local == 'A' ? 0 : 8);
+    int tmp = (theApp.Local == 'A' ? 0 : 8);
 
-	for (int i = tmp; i < (8 + tmp); i++)
-	{
-		if (lUserID[i] >= 0)
-		{
+    for (int i = tmp; i < (8 + tmp); i++)
+    {
+        if (lUserID[i] >= 0)
+        {
 
-			bool res = NET_DVR_SetDVRConfig(lUserID[i], NET_DVR_SET_TIMECFG, 0, &NvrTime, sizeof(NvrTime));
-			if (!res)
-			{
-				TRACE("time set error \n");
-			}
-		}
-	}
+            bool res = NET_DVR_SetDVRConfig(lUserID[i], NET_DVR_SET_TIMECFG, 0, &NvrTime, sizeof(NvrTime));
+            if (!res)
+            {
+                TRACE("time set error \n");
+            }
+        }
+    }
 
-	TRACE("ipc time set\n");
-	return 0;
+    TRACE("ipc time set\n");
+    return 0;
 }
 
 int CLT_LCWB_1ADlg::BROADCASTInit()
 {
-	theApp.BSoc = -1;
-	if ((theApp.BSoc = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-	{
-		return -1;
-	}
-	int opt = -1;
-	int nb = 0;
-	nb = setsockopt(theApp.BSoc, SOL_SOCKET, SO_BROADCAST, (char*)&opt, sizeof(opt)); //设置套接字类型
-	if (nb == -1)
-	{
-		return -1;
-	}
+    theApp.BSoc = -1;
+    if ((theApp.BSoc = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
+    {
+        return -1;
+    }
+    int opt = -1;
+    int nb = 0;
+    nb = setsockopt(theApp.BSoc, SOL_SOCKET, SO_BROADCAST, (char *)&opt, sizeof(opt)); //设置套接字类型
+    if (nb == -1)
+    {
+        return -1;
+    }
 
-	return 0;
+    return 0;
 }
 
 int CLT_LCWB_1ADlg::FireUdpInit()
 {
-	//接收防火信息
-	BRecUdp = -1;
-	if ((BRecUdp = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-	{
-		TRACE("fire socket error!\n");
-		return -1;
-	}
+    //接收防火信息
+    BRecUdp = -1;
+    if ((BRecUdp = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    {
+        TRACE("fire socket error!\n");
+        return -1;
+    }
 
-	sockaddr_in Addr;
-	memset(&Addr, 0, sizeof(Addr));
-	Addr.sin_family = AF_INET;
-	Addr.sin_port = htons(8000);
-	Addr.sin_addr.s_addr = INADDR_ANY;
+    sockaddr_in Addr;
+    memset(&Addr, 0, sizeof(Addr));
+    Addr.sin_family = AF_INET;
+    Addr.sin_port = htons(8000);
+    Addr.sin_addr.s_addr = INADDR_ANY;
 
-	if (::bind(BRecUdp, (struct sockaddr*)&Addr, sizeof(sockaddr)) < 0)
-		return -1;
+    if (::bind(BRecUdp, (struct sockaddr *)&Addr, sizeof(sockaddr)) < 0)
+        return -1;
 
-	return 0;
+    return 0;
 }
 
 char FirstDriveFromMask(ULONG unitmask)
 {
-	char i;
+    char i;
 
-	for (i = 0; i < 26; ++i)
-	{
-		if (unitmask & 0x1)
-			break;
-		unitmask >>= 1;
-	}
+    for (i = 0; i < 26; ++i)
+    {
+        if (unitmask & 0x1)
+            break;
+        unitmask >>= 1;
+    }
 
-	return (i + 'A');
+    return (i + 'A');
 }
 
 char get_device_letter_from_mask(DWORD unitmask)
@@ -534,7 +528,7 @@ char get_device_letter_from_mask(DWORD unitmask)
 
 BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
 {
-    DEV_BROADCAST_VOLUME* pDevVolume = (DEV_BROADCAST_VOLUME*)dwData;
+    DEV_BROADCAST_VOLUME *pDevVolume = (DEV_BROADCAST_VOLUME *)dwData;
     if (nEventType != DBT_DEVICEARRIVAL)
         return TRUE;
 
@@ -552,45 +546,42 @@ BOOL CLT_LCWB_1ADlg::OnDeviceChange(UINT nEventType, DWORD_PTR dwData)
     m_ManageDlg.udisk_path = udisk;
 
     this->usb_flag = true;
-
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_UDisk_Process, this, 0, NULL);//开启下载线程
-
-	return TRUE;
+    std::thread(Thread_UDisk_Process, this).detach(); //开启下载线程
+    return TRUE;
 }
 
-HBRUSH CLT_LCWB_1ADlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+HBRUSH CLT_LCWB_1ADlg::OnCtlColor(CDC *pDC, CWnd *pWnd, UINT nCtlColor)
 {
-	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+    HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
 
-	// TODO:  在此更改 DC 的任何特性
-	if (nCtlColor == CTLCOLOR_DLG) //对话框颜色
-		return m_brush;
+    // TODO:  在此更改 DC 的任何特性
+    if (nCtlColor == CTLCOLOR_DLG) //对话框颜色
+        return m_brush;
 
-	if (nCtlColor == CTLCOLOR_STATIC)
-	{
-		pDC->SetTextColor(RGB(255, 255, 255));
-		pDC->SetBkMode(TRANSPARENT); //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合
-		hbr = (HBRUSH)m_brush;
-	}
+    if (nCtlColor == CTLCOLOR_STATIC)
+    {
+        pDC->SetTextColor(RGB(255, 255, 255));
+        pDC->SetBkMode(TRANSPARENT); //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合
+        hbr = (HBRUSH)m_brush;
+    }
 
-	if (nCtlColor == CTLCOLOR_BTN || nCtlColor == CTLCOLOR_LISTBOX || nCtlColor == CTLCOLOR_STATIC)
-	{
-		pDC->SetTextColor(RGB(255, 255, 255));
-		pDC->SetBkMode(TRANSPARENT); //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合
-		hbr = (HBRUSH)m_brush;
-	}
+    if (nCtlColor == CTLCOLOR_BTN || nCtlColor == CTLCOLOR_LISTBOX || nCtlColor == CTLCOLOR_STATIC)
+    {
+        pDC->SetTextColor(RGB(255, 255, 255));
+        pDC->SetBkMode(TRANSPARENT); //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合
+        hbr = (HBRUSH)m_brush;
+    }
 
-	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
-	return hbr;
+    // TODO:  如果默认的不是所需画笔，则返回另一个画笔
+    return hbr;
 }
 
-BOOL CLT_LCWB_1ADlg::OnEraseBkgnd(CDC* pDC)
+BOOL CLT_LCWB_1ADlg::OnEraseBkgnd(CDC *pDC)
 {
-	// TODO: 在此添加消息处理程序代码和/或调用默认值
+    // TODO: 在此添加消息处理程序代码和/或调用默认值
 
-	return CDialogEx::OnEraseBkgnd(pDC);
+    return CDialogEx::OnEraseBkgnd(pDC);
 }
-
 
 void CLT_LCWB_1ADlg::OnBnClickedStopWarn()
 {
@@ -598,8 +589,8 @@ void CLT_LCWB_1ADlg::OnBnClickedStopWarn()
     struct sockaddr_in BAddr;
     memset(&BAddr, 0, sizeof(struct sockaddr_in));
     BAddr.sin_family = AF_INET;
-    BAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);//套接字地址为广播地址
-    BAddr.sin_port = htons(8000);//套接字广播端口号为8000
+    BAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST); //套接字地址为广播地址
+    BAddr.sin_port = htons(8000);                    //套接字广播端口号为8000
 
     //加入报文帧头和 本车他车AB节标志
     unsigned char SendBuf[5] = "";
@@ -611,11 +602,10 @@ void CLT_LCWB_1ADlg::OnBnClickedStopWarn()
     {
         SendBuf[4] += SendBuf[i];
     }
-    //MessageBox("停止报警");
-    sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
+    // MessageBox("停止报警");
+    sendto(theApp.BSoc, (char *)SendBuf, sizeof(SendBuf), 0, (SOCKADDR *)&BAddr, sizeof(SOCKADDR));
     this_thread::sleep_for(1ms);
 }
-
 
 void CLT_LCWB_1ADlg::OnCancel()
 {
@@ -623,14 +613,13 @@ void CLT_LCWB_1ADlg::OnCancel()
 
     // 保存事件记录
     std::string url;
-    //httplib::Client cli("http://localhost:5000");
-    //url = fmt::format("/add/系统退出");
-    //cli.Get(url.c_str());
+    // httplib::Client cli("http://localhost:5000");
+    // url = fmt::format("/add/系统退出");
+    // cli.Get(url.c_str());
     LogView::Update();
     logn::system_exit();
     CDialogEx::OnCancel();
 }
-
 
 void CLT_LCWB_1ADlg::OnOK()
 {
@@ -638,9 +627,9 @@ void CLT_LCWB_1ADlg::OnOK()
     //
     // 保存事件记录
     std::string url;
-    //httplib::Client cli("http://localhost:5000");
-    //url = fmt::format("/add/系统退出");
-    //cli.Get(url.c_str());
+    // httplib::Client cli("http://localhost:5000");
+    // url = fmt::format("/add/系统退出");
+    // cli.Get(url.c_str());
     LogView::Update();
     logn::system_exit();
     CDialogEx::OnOK();

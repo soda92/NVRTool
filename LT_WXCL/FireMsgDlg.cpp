@@ -8,6 +8,8 @@
 
 #include "FireData.h"
 #include "FireMsgView.h"
+#include <thread>
+using namespace std;
 
 
 // CFireMsgDlg 对话框
@@ -72,7 +74,7 @@ BOOL CFireMsgDlg::OnInitDialog()
     if (FireComInit((char*)FireCom) != -1)
     {
         //向EF板卡发送TAX箱消息，然后接收EF板卡回复，并广播
-        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_FireData, this, 0, NULL);
+        std::thread(Thread_FireData, this).detach();
     }
 
     for (int i = 0; i < 4; i++)
@@ -118,7 +120,7 @@ int CFireMsgDlg::InitList()
 
     DWORD dwStyle = m_FireListB.GetExtendedStyle();
     dwStyle |= LVS_EX_FULLROWSELECT;//选中某行使整行高亮（只适用与report风格的listctrl）
-    dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）	
+    dwStyle |= LVS_EX_GRIDLINES;//网格线（只适用与report风格的listctrl）
     m_FireListB.SetExtendedStyle(dwStyle); //设置扩展风格
 
     m_FireListB.InsertColumn(0, "  设备名称", LVCFMT_LEFT, 200);
@@ -264,7 +266,7 @@ int CFireMsgDlg::FireDec(unsigned char* buf, int len, char pos)
                     case 4://报警
                         //m_FireList.SetItemText(i,3,"报警");
                         //m_FireList.SetItemState(i, LVIS_SELECTED, LVIS_SELECTED | LVIS_FOCUSED);
-                        //联动					
+                        //联动
                         if (pos < 2)
                         {
                             m_FireListB.SetItemText(i + (5 * pos), 2, "报警");
@@ -543,13 +545,13 @@ HBRUSH CFireMsgDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
     // TODO:  在此更改 DC 的任何特性
 
-    if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色  
+    if (nCtlColor == CTLCOLOR_DLG)      //对话框颜色
         return m_brush;
 
     if (nCtlColor == CTLCOLOR_STATIC)
     {
         pDC->SetTextColor(RGB(255, 255, 255));
-        pDC->SetBkMode(TRANSPARENT);    //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合  
+        pDC->SetBkMode(TRANSPARENT);    //模式设置透明的话，则忽略静态控件的背景颜色设置，与对话框颜色融合
         hbr = (HBRUSH)m_brush;
     }
     // TODO:  如果默认的不是所需画笔，则返回另一个画笔

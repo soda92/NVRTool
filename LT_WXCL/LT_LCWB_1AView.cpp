@@ -266,7 +266,7 @@ int WINAPI Thread_Play(LPVOID lpPara)
 
                 if (res >= 0)
                 {
-                    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_SetOsd, lpPara, 0, NULL); // osd叠加线程
+                    std::thread(Thread_SetOsd, lpPara).detach(); // osd叠加线程
                 }
                 else
                 {

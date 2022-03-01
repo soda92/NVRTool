@@ -76,17 +76,24 @@ int WINAPI Thread_URecord(LPVOID lpPara)
     path = fmt::format("{}lost+found", dlg->udisk_path);
     if (fs::exists(path))
     {
-        try{
+        try
+        {
             fs::remove_all(path);
-        }catch(...){
+        }
+        catch (...)
+        {
             return -1;
         }
     }
-    else{
-        try{
+    else
+    {
+        try
+        {
             fs::create_directory(path);
             fs::remove_all(path);
-        }catch(...){
+        }
+        catch (...)
+        {
             return -1;
         }
     }
@@ -183,7 +190,8 @@ int CManageDlg::StartURecord(char udisk)
         Global_UCFlag[i] = arr[i].as_bool();
     }
 
-    CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread_URecord, this, 0, NULL); //开启录像线程
+    std::thread(Thread_URecord, this).detach(); //开启录像线程
+
     return 0;
 }
 
