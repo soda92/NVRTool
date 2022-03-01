@@ -25,7 +25,8 @@
 #include "progress_bar.h"
 #include <string>
 #include "fmt/core.h"
-
+#include <thread>
+using namespace std;
 
 
 #ifdef _DEBUG
@@ -612,7 +613,7 @@ void CLT_LCWB_1ADlg::OnBnClickedStopWarn()
     }
     //MessageBox("停止报警");
     sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
-    Sleep(1);
+    this_thread::sleep_for(1ms);
 }
 
 

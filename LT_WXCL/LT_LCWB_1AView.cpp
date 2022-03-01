@@ -120,7 +120,7 @@ int WINAPI Thread_Voice(LPVOID lpPara)
         return -1;
     }
 
-    Sleep(3 * 1000);
+    this_thread::sleep_for(3s);
 
     HRESULT hr = E_FAIL;
     ISpVoice *pVoice = NULL; //初始化COM
@@ -161,7 +161,7 @@ int WINAPI Thread_Voice(LPVOID lpPara)
             Interactive::ShowFire(fWarVoice);
         }
 
-        Sleep(3 * 1000);
+        this_thread::sleep_for(3s);
     }
 
     pVoice->Release();
@@ -228,7 +228,7 @@ int WINAPI Thread_SetOsd(LPVOID lpPara)
                     info_position_driver);
             }
         }
-        Sleep(2 * 1000);
+        this_thread::sleep_for(2s);
     }
 
     return 0;
@@ -238,7 +238,7 @@ int WINAPI Thread_Play(LPVOID lpPara)
 {
     CLT_LCWB_1ADlg *dlg = (CLT_LCWB_1ADlg *)lpPara;
 
-    while (true)
+    for (;;)
     {
         for (int i = 0; i < 32; i++)
         {
@@ -274,10 +274,10 @@ int WINAPI Thread_Play(LPVOID lpPara)
                     dlg->lRealPlayHandle[i] = -1;
                 }
             }
-            Sleep(50);
+            this_thread::sleep_for(50ms);
         }
 
-        Sleep(5 * 1000);
+        this_thread::sleep_for(5s);
     }
 
     return 0;
@@ -287,9 +287,9 @@ int WINAPI Thread_SetIpcTime(LPVOID lpPara)
 {
     CLT_LCWB_1ADlg *dlg = (CLT_LCWB_1ADlg *)lpPara;
 
-    while (1)
+    for (;;)
     {
-        Sleep(10 * 60 * 1000);
+        this_thread::sleep_for(10min);
         dlg->TimeCFG();
     }
     return 0;
@@ -374,7 +374,8 @@ int WINAPI Thread_UDPBroadcastRecv(LPVOID lpPara)
 
 void Tax2Idx(TAXDATA TaxData, unsigned char *IdxBuf)
 {
-
+    SYSTEMTIME Time;
+    GetLocalTime(&Time);
     //////////////////////////////////////////////////////////////////////////
 
     // 参考文档： 6A系统视频深化统型方案 V1.2 （2014年4月）
@@ -403,6 +404,7 @@ void Tax2Idx(TAXDATA TaxData, unsigned char *IdxBuf)
     （例如：HXD3C0001[空格][空格][空格][空格][空格][空格][空格]）
     */
     char CheHao[16 + 1]{};
+    std::string TrainNum = http_get("/conf/TrainNum");
     // https://stackoverflow.com/a/276869/12291425
     sprintf_s(CheHao, "%-16s", TrainNum.c_str());
 
@@ -632,9 +634,9 @@ int WINAPI Thread_Index(LPVOID lpPara)
 
     TAXDATA TaxData{};
 
-    while (true)
+    for (;;)
     {
-        std::this_thread::sleep_for(1000ms);
+        std::this_thread::sleep_for(1s);
         if (!fs::exists(dir))
         {
             try

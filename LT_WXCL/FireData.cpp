@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <iomanip>
+#include <thread>
+using namespace std;
 
 template <typename T>
 std::string HexToString(T uval)
@@ -81,7 +83,7 @@ UINT Thread_FireData(LPVOID lParam)
 {
 	CFireMsgDlg* dlg = (CFireMsgDlg*)lParam;
 
-	Sleep(1000);
+	this_thread::sleep_for(1s);
 	DWORD dwRet = 0;
 	unsigned char RecBuf[256] = "";
 
@@ -128,7 +130,7 @@ UINT Thread_FireData(LPVOID lParam)
 			sendto(theApp.BSoc, (char*)SendBuf, sizeof(SendBuf), 0, (SOCKADDR*)&BAddr, sizeof(SOCKADDR));
 		}
 		dwRet = 0;
-		Sleep(1 * 1000);
+		this_thread::sleep_for(1s);
 	}
 
 	return 0;

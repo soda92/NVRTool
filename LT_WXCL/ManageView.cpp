@@ -144,11 +144,11 @@ int WINAPI Thread_URecord(LPVOID lpPara)
                     }
 
                     // 必须等待一会, 否则会出现录像文件存到下一个文件夹的问题。
-                    Sleep(50);
+                    this_thread::sleep_for(50ms);
                 }
             }
         }
-        Sleep(5 * 1000);
+        this_thread::sleep_for(5s);
     }
     for (int i = 0; i < 6; i++)
     {
@@ -163,14 +163,14 @@ int CManageDlg::StartURecord(char udisk)
     if (URecordFlag)
     {
         URecordFlag = false;
-        Sleep(12 * 1000); // wait 12s
+        this_thread::sleep_for(12s); // wait 12s
         for (int i = 0; i < 6; i++)
         {
             //               任务ID
             Video_StopRecord(12 + i + 1);
             URecordStatus[i] = false;
         }
-        Sleep(1000);
+        this_thread::sleep_for(1s);
     }
 
     std::string url = fmt::format("/parse_channels/{}", udisk);

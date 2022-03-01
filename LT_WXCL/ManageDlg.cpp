@@ -149,7 +149,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
                 }
 
                 // 必须等待一会。否则会出现录像文件存到下一个文件夹的问题。
-                Sleep(50);
+                this_thread::sleep_for(50ms);
             }
         }
 
