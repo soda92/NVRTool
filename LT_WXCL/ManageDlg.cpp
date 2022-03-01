@@ -90,7 +90,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
 {
     CManageDlg* dlg = (CManageDlg*)lpPara;
 
-    while (true)
+    for(;;)
     {
         auto test_path = fmt::format("{}:/lost+found", theApp.HDDPath);
         path p{ test_path };
@@ -102,6 +102,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
             remove(p);
         }
         catch(std::exception &e){
+            std::this_thread::sleep_for(3s);
             continue;
         }
         // if (!)
@@ -153,7 +154,7 @@ int WINAPI Thread_Record(LPVOID lpPara)
             }
         }
 
-        this_thread::sleep_for(3s);
+        this_thread::sleep_for(500ms);
     }
 
     return 0;
