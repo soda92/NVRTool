@@ -53,13 +53,43 @@ set(SRCS
 "VideoPlayWnd.h"
 "WaitDlg.cpp"
 "WaitDlg.h"
+"VideoPlay.h"
+"VideoPlay.cpp"
 )
-include_directories("include" "D:/boost_1_78_0")
-link_directories("lib" "D:/boost_1_78_0/stage/lib")
+include_directories("include" "D:/boost_1_78_0" "D:\\HCNetSDK\\include")
+link_directories("D:\\HCNetSDK\\lib" "D:/boost_1_78_0/stage/lib")
+
+include_directories("D:/src/vcpkg/installed/x64-windows-static/include/")
+link_directories("D:/src/vcpkg/installed/x64-windows-static/lib/")
+
+set(libav_libs 
+avcodec.lib avdevice.lib avfilter.lib avutil.lib avformat.lib swresample.lib swscale.lib)
+
+set(additional_dependencies
+dxva2.lib
+evr.lib
+mf.lib
+mfplat.lib
+mfplay.lib
+mfreadwrite.lib
+mfuuid.lib
+bcrypt.lib
+ws2_32.lib
+Secur32.lib
+Strmiids.lib)
+
+find_package(SDL2 CONFIG REQUIRED)
+set(SDL_libs
+SDL2::SDL2)
 
 find_package(fmt CONFIG REQUIRED)
 add_executable(FireVideo WIN32 ${SRCS})
-target_link_libraries(FireVideo PRIVATE fmt::fmt VideoPlay HCNetSDK)
+target_link_libraries(FireVideo PRIVATE fmt::fmt HCNetSDK)
+
+target_link_libraries(FireVideo PRIVATE ${libav_libs})
+target_link_libraries(FireVideo PRIVATE ${additional_dependencies})
+target_link_libraries(FireVideo PRIVATE ${SDL_libs})
+
 set_target_properties(FireVideo PROPERTIES COMPILE_FLAGS "/EHsc")
 
 add_custom_command(TARGET FireVideo POST_BUILD
