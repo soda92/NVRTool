@@ -8,6 +8,9 @@ PyQt5
 pywin32
 pywinauto
 Flask
+requests
+netifaces
+
 
 # doc
 sphinx
