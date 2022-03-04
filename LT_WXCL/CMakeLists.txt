@@ -1,7 +1,5 @@
 set(SRCS
 "config.h"
-"Date.cpp"
-"Date.h"
 "FireData.cpp"
 "FireData.h"
 "FireMsgDlg.cpp"
@@ -27,7 +25,6 @@ set(SRCS
 "LT_LCWB_1ADlg.h"
 "LT_LCWB_1AView.cpp"
 "LT_LCWB_1AView.h"
-"LT_WXCL.APS"
 "LT_WXCL.rc"
 "ManageDlg.cpp"
 "ManageDlg.h"
