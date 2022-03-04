@@ -6,4 +6,4 @@ find_package(fmt CONFIG REQUIRED)
 add_definitions(-D_AFXDLL)
 set(CMAKE_MFC_FLAG 2)
 
-add_subdirectory(LT_WXCL)
+add_subdirectory(src)
