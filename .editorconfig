@@ -4,3 +4,14 @@ insert_final_newline = true
 tab_width = 4
 indent_size = 4
 indent_style = space
+
+[*.{cpp,h}]
+end_of_line = crlf
+insert_final_newline = true
+tab_width = 4
+indent_size = 4
+indent_style = space
+trim_trailing_whitespace = true
+
+[.editorconfig]
+insert_final_newline = true
