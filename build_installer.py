@@ -1,10 +1,20 @@
-from invoke import task
+import subprocess
+import re
 import shutil
 import os
 import glob
-from get_version import get_version
 import win32api
 import win32file
+
+
+def get_version():
+    line = ""
+    with open("LT_WXCL/CHANGELOG.md", mode="r", encoding="gbk") as f:
+        lines = f.readlines()
+        lines = list(filter(lambda line: "v" in line, lines))
+        line = lines[-1]
+    version = re.findall(r"v[0-9\.]+[0-9]", line)[0]
+    return version
 
 
 def get_udisk():
@@ -26,8 +36,8 @@ def copy_dist_to_udisk():
     else:
         print("cannot find udisk.")
 
-@task
-def build(c):
+
+def build():
     """build"""
     print("current dir: ", os.getcwd())
     print("copying file...")
@@ -44,19 +54,27 @@ def build(c):
             else:
                 shutil.copy(file, dirname)
 
-
     # additional files
     for file in glob.glob("ExtraFiles/*"):
         shutil.copy(file, dirname)
 
     print("generating script...")
-    c.run("py gen_installer_script.py")
+    lines = []
+    with open("installer.pre.nsi", mode="r", encoding="utf-8-sig") as f:
+        lines = f.readlines()
+    version = get_version()
+
+    for i in range(len(lines)):
+        lines[i] = lines[i].replace("{version}", version)
+
+    with open("installer.out.nsi", mode="w", encoding="utf-8-sig") as f:
+        for line in lines:
+            f.write(line)
+
     print("building...")
-    c.run("makensis installer.out.nsi")
+    subprocess.run("makensis installer.out.nsi")
     copy_dist_to_udisk()
 
 
-# copy built file
-@task
-def copy(c):
-    copy_dist_to_udisk()
+if __name__ == "__main__":
+    build()

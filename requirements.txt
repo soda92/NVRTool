@@ -1,0 +1,14 @@
+# tooling
+wheel
+pyinstaller
+black
+
+# depndencies
+PyQt5
+pywin32
+pywinauto
+Flask
+
+# doc
+sphinx
+sphinx-qt-documentation

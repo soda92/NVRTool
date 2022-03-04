@@ -25,3 +25,35 @@ log.txt
 
 # Python
 __pycache__
+
+
+# python cache
+__pycache__
+
+# old deps
+core
+packages
+
+# deps
+
+req_pack
+
+# generated window
+*window.py
+
+# virtualenv
+venv*
+
+# pyinstaller
+*.spec
+build
+dist
+
+# config hash
+/config-hash.txt
+
+# db
+*.sqlite3
+
+# Visual Studio 文件
+.vs

@@ -14,7 +14,15 @@
             "stopAtEntry": false,
             "environment": [],
             "console": "externalTerminal",
-            "preLaunchTask": "build"
+            "preLaunchTask": "quickbuild"
+        },
+        {
+            "name": "py-TaiYuan launcher",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\pysrc\\launcher.py",
+            "cwd": "${workspaceFolder}\\src",
+            "console": "integratedTerminal"
         }
     ]
 }

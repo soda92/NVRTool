@@ -7,6 +7,11 @@
             "label": "build",
             "type": "shell",
             "command": "${workspaceFolder}\\vscode_build.ps1",
+        },
+        {
+            "label": "quickbuild",
+            "type": "shell",
+            "command": "${workspaceFolder}\\vscode_build.ps1 --quick",
         }
     ]
 }
