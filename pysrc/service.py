@@ -608,6 +608,58 @@ def serve(q: multiprocessing.Queue) -> None:
     server()
 
 
+import subprocess
+import psutil
+import logging
+import time
+import os
+
+class RecordService:
+    def __init__(self, ip) -> None:
+        self.ip = ip
+        directory = ""
+        train_num = ""
+        self.name = "本机"
+        args = f"ffmpeg -i rtsp://admin:hk123456@{self.ip}:554/Streaming/Channels/101 -c copy -map 0:v:0 -map 0:a:0 -segment_time 00:15:00 -f segment -strftime 1 {directory}%Y%m%d_%H%M%S_{train_num}_{self.name}.mp4"
+        self.process = subprocess.Popen(
+            args.split(), stdin = subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        self.pid = self.process.pid
+        self.process2 = psutil.Process(self.pid)
+
+    def is_alive(self):
+        return self.process2.is_running()
+
+    def terminate(self):
+        self.process2.terminate()
+
+    def get_output(self):
+        output, error = self.process.communicate()
+        return output, error
+
+    def end(self):
+        self.process.stdin.write(b"q\n")
+        output, error = self.process.communicate()
+        return output, error
+
+
+def test_record():
+    r = RecordService("192.168.104.70")
+    logging.info(r.is_alive())
+    time.sleep(30)
+    output, err = r.end()
+
+    time.sleep(1)
+    logging.info(r.is_alive())
+
+    print(err.decode())
+    if r.is_alive():
+        r.terminate()
+    time.sleep(1)
+    logging.info(r.is_alive())
+
+
+
 def all_launcher():
     logging.basicConfig(
         level=logging.DEBUG,
