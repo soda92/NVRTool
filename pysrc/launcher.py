@@ -1,12 +1,7 @@
 import subprocess
 import os
 import logging
-from time import sleep
 import sys
-
-src_dir = os.path.dirname(os.path.dirname(__file__))
-sys.path.append(src_dir)
-
 import os
 
 import socket
@@ -16,11 +11,6 @@ is_test_env = False
 if hostname != "user-PC":
     is_test_env = True
 
-if is_test_env:
-    os.chdir("D:/src/TaiYuan/build/bin")
-
-
-import os
 from typing import Tuple
 
 """
@@ -140,7 +130,6 @@ def get_hdd():
         if win32file.GetDriveType(i) == win32file.DRIVE_FIXED:
             return i[0] + ":"
     raise SystemError("Cannot find HDD")
-
 
 
 import shutil
@@ -345,6 +334,9 @@ def delete_some(folder, size):
     return deleted_size / (2 ** 30)
 
 
+global_exit = False
+
+
 def delete_file():
     size = 5
     import sys
@@ -353,6 +345,8 @@ def delete_file():
         size = int(sys.argv[1])
 
     while True:
+        if global_exit:
+            break
         try:
             disk = get_conf("Disk")
             folder = get_unused_folder()
@@ -364,254 +358,246 @@ def delete_file():
             time.sleep(1)
             continue
 
-"""
-相关服务
 
-提供：
-
-配置服务
-日志服务（未使用）
-磁盘信息服务
-
-"""
+import multiprocessing
 
 
-# from: https://stackoverflow.com/questions/49586657/how-to-return-json-from-sqlite-in-flask-builtins-typeerror
-import datetime
-from flask import (
-    Flask,
-    g,
-    jsonify,
-)
-import sqlite3
+def serve(q: multiprocessing.Queue) -> None:
+    """
+    相关服务
 
+    提供：
 
-app = Flask(__name__)
+    配置服务
+    日志服务（未使用）
+    磁盘信息服务
 
+    """
 
-DATABASE = "log.sqlite3"
-
-
-def get_db():
-    """打开数据库"""
-    db = getattr(g, "_database", None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-        db.row_factory = sqlite3.Row
-    return db
-
-
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, "_database", None)
-    if db is not None:
-        db.close()
-
-
-@app.route("/add/<message>/")
-def add_message(message):
-    """添加日志"""
-    db = get_db()
-    c = db.cursor()
-    c.execute(
-        "INSERT INTO log (level, message, time) values (?, ?, ?);",
-        (1, message, datetime.datetime.now()),
+    # from: https://stackoverflow.com/questions/49586657/how-to-return-json-from-sqlite-in-flask-builtins-typeerror
+    import datetime
+    from flask import (
+        Flask,
+        g,
+        jsonify,
     )
-    db.commit()
-    return jsonify({"result": "success"})
+    import sqlite3
 
+    app = Flask(__name__)
 
-@app.route("/pages")
-def get_pages():
-    """页面数量"""
-    db = get_db()
-    c = db.cursor()
-    r = c.execute("SELECT COUNT(*) from log;").fetchall()
-    result = r[0][0]
-    result = result // 10 + 1
-    return jsonify({"result": result})
+    DATABASE = "log.sqlite3"
+    _conf = None
+    _addrs = None
 
+    def get_db():
+        """打开数据库"""
+        db = getattr(g, "_database", None)
+        if db is None:
+            db = g._database = sqlite3.connect(DATABASE)
+            db.row_factory = sqlite3.Row
+        return db
 
-@app.route("/page/<pagenum>")
-def get_page(pagenum):
-    """某一页"""
-    offset = (int(pagenum) - 1) * 10
-    db = get_db()
-    c = db.cursor()
-    r = c.execute(
-        "SELECT id, level, message, time from log limit 10 offset ?;", [offset]
-    )
-    data = r.fetchall()
-    data_array = []
-    for row in data:
-        obj = dict()
-        obj["id"] = row[0]
-        obj["level"] = row[1]
-        obj["message"] = row[2]
-        obj["time"] = row[3]
-        data_array.append(obj)
-    return jsonify(data_array)
+    @app.teardown_appcontext
+    def close_connection(exception):
+        db = getattr(g, "_database", None)
+        if db is not None:
+            db.close()
 
-
-import os
-
-@app.route("/is_record/<disk>")
-def parse_config(disk):
-    """判断U盘中的配置是否为录像配置"""
-    data = dict()
-    data["record"] = False
-    p = os.path.join(f"{disk}:/", "license.txt")
-    if not os.path.exists(p):
-        return jsonify(data)
-
-    content = ""
-    with open(p, encoding='gbk') as f:
-        content = f.read()
-
-    if "TimeFrom" in content:
-        data["record"] = False
-    else:
-        data["record"] = True
-    return jsonify(data)
-
-
-@app.route("/parse_channels/<disk>")
-def parse_channels(disk):
-    """解析U盘录像通道, 支持6个, 00代表0-6"""
-    data = dict()
-    channels = [False for i in range(6)]
-    p = os.path.join(f"{disk}:/", "license.txt")
-    if not os.path.exists(p):
-        return jsonify(data)
-
-    content = ""
-    with open(p, encoding='gbk') as f:
-        content = f.read()
-
-    line = ""
-    for i in content.split("\n"):
-        if "Channel" in i:
-            line = i
-    channel_str = line.split("=")[1].strip().split()[0][1:-1]
-    if channel_str == "00":
-        channels = [True for i in range(6)]
-    else:
-        for i in channel_str.split(","):
-            channels[int(i) - 1] = True
-
-    data["channels"] = channels
-    return jsonify(data)
-
-
-def get_size_info():
-    """获取磁盘详细信息"""
-    import shutil
-
-    disk = get_conf("Disk")
-
-    tup = (total, used, free) = shutil.disk_usage(disk+":")
-    return tuple(map(lambda x: x / (2 ** 30), tup))
-
-
-@app.route("/size")
-def disk_size():
-    """可用空间"""
-    total, used, free = get_size_info()
-    data = {"total": total, "used": used, "free": free}
-    return jsonify(data)
-
-
-@app.route("/conf/<key>")
-def get_conf(key):
-    global _conf
-    return str(_conf[key])
-
-
-import netifaces
-
-# TODO 通过配置修改IP
-@app.route("/local")
-def get_local():
-    global _conf, _addrs
-    for i in _addrs:
-        if i == "192.168.104.200":
-            return "A"
-        if i == "192.168.104.201":
-            return "B"
-    return _conf["Local"]
-
-
-@app.route("/folder")
-def get_folder():
-    """程序录像路径"""
-    global _conf
-    disk = _conf["Disk"]
-    train_num = _conf["TrainNum"]
-    return f"{disk}:/LT-VIDEO-{train_num}-北京蓝天多维"
-
-
-@app.route("/cam/<ipcnum>")
-def get_addr(ipcnum):
-    ipcnum = int(ipcnum)
-    env_addr = os.environ.get(f"ipc{ipcnum}")
-    if env_addr is not None and env_addr != "":
-        return env_addr
-    if 1 <= ipcnum <= 6:
-        return (
-            f"rtsp://admin:hk123456@192.168.104.7{ipcnum-1}:554/Streaming/Channels/101"
-        )
-    if 7 <= ipcnum <= 12:
-        return (
-            f"rtsp://admin:hk123456@192.168.104.8{ipcnum-7}:554/Streaming/Channels/101"
-        )
-    return ""
-
-
-@app.route("/test")
-def result_test():
-    return "test"
-
-
-@app.route("/test/zh_hans")
-def test_gbk():
-    return "中文"
-
-
-def server():
-    global app, _conf, _addrs
-    with app.app_context():
+    @app.route("/add/<message>/")
+    def add_message(message):
+        """添加日志"""
         db = get_db()
         c = db.cursor()
-        c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='log';")
-        result = c.fetchall()
-        if len(result) != 0:
-            # print('Table exists.')
-            pass
-        else:
-            c.execute(
-                "CREATE TABLE log(id INTEGER PRIMARY KEY AUTOINCREMENT, level int, message varchar(100), time timestamp);"
-            )
-        data = ""
+        c.execute(
+            "INSERT INTO log (level, message, time) values (?, ?, ?);",
+            (1, message, datetime.datetime.now()),
+        )
+        db.commit()
+        return jsonify({"result": "success"})
 
-        import configparser
-        config = configparser.ConfigParser()
-        if is_test_env:
-            config.read("D:\\src\\py-TaiYuan\\src\\Default.ini")
-            config.read("D:\\src\\py-TaiYuan\\src\\程序配置.ini")
+    @app.route("/pages")
+    def get_pages():
+        """页面数量"""
+        db = get_db()
+        c = db.cursor()
+        r = c.execute("SELECT COUNT(*) from log;").fetchall()
+        result = r[0][0]
+        result = result // 10 + 1
+        return jsonify({"result": result})
+
+    @app.route("/page/<pagenum>")
+    def get_page(pagenum):
+        """某一页"""
+        offset = (int(pagenum) - 1) * 10
+        db = get_db()
+        c = db.cursor()
+        r = c.execute(
+            "SELECT id, level, message, time from log limit 10 offset ?;", [offset]
+        )
+        data = r.fetchall()
+        data_array = []
+        for row in data:
+            obj = dict()
+            obj["id"] = row[0]
+            obj["level"] = row[1]
+            obj["message"] = row[2]
+            obj["time"] = row[3]
+            data_array.append(obj)
+        return jsonify(data_array)
+
+    import os
+
+    @app.route("/is_record/<disk>")
+    def parse_config(disk):
+        """判断U盘中的配置是否为录像配置"""
+        data = dict()
+        data["record"] = False
+        p = os.path.join(f"{disk}:/", "license.txt")
+        if not os.path.exists(p):
+            return jsonify(data)
+
+        content = ""
+        with open(p, encoding="gbk") as f:
+            content = f.read()
+
+        if "TimeFrom" in content:
+            data["record"] = False
         else:
+            data["record"] = True
+        return jsonify(data)
+
+    @app.route("/parse_channels/<disk>")
+    def parse_channels(disk):
+        """解析U盘录像通道, 支持6个, 00代表0-6"""
+        data = dict()
+        channels = [False for i in range(6)]
+        p = os.path.join(f"{disk}:/", "license.txt")
+        if not os.path.exists(p):
+            return jsonify(data)
+
+        content = ""
+        with open(p, encoding="gbk") as f:
+            content = f.read()
+
+        line = ""
+        for i in content.split("\n"):
+            if "Channel" in i:
+                line = i
+        channel_str = line.split("=")[1].strip().split()[0][1:-1]
+        if channel_str == "00":
+            channels = [True for i in range(6)]
+        else:
+            for i in channel_str.split(","):
+                channels[int(i) - 1] = True
+
+        data["channels"] = channels
+        return jsonify(data)
+
+    def get_size_info():
+        """获取磁盘详细信息"""
+        import shutil
+
+        disk = get_conf("Disk")
+
+        tup = (total, used, free) = shutil.disk_usage(disk + ":")
+        return tuple(map(lambda x: x / (2 ** 30), tup))
+
+    @app.route("/size")
+    def disk_size():
+        """可用空间"""
+        total, used, free = get_size_info()
+        data = {"total": total, "used": used, "free": free}
+        return jsonify(data)
+
+    @app.route("/conf/<key>")
+    def get_conf(key):
+        nonlocal _conf
+        return str(_conf[key])
+
+    import netifaces
+
+    # TODO 通过配置修改IP
+    @app.route("/local")
+    def get_local():
+        nonlocal _conf, _addrs
+        # for i in _addrs:
+        #     if i == "192.168.104.200":
+        #         return "A"
+        #     if i == "192.168.104.201":
+        #         return "B"
+        return _conf["Local"]
+
+    @app.route("/folder")
+    def get_folder():
+        """程序录像路径"""
+        global _conf
+        disk = _conf["Disk"]
+        train_num = _conf["TrainNum"]
+        return f"{disk}:/LT-VIDEO-{train_num}-北京蓝天多维"
+
+    @app.route("/cam/<ipcnum>")
+    def get_addr(ipcnum):
+        ipcnum = int(ipcnum)
+        env_addr = os.environ.get(f"ipc{ipcnum}")
+        if env_addr is not None and env_addr != "":
+            return env_addr
+        if 1 <= ipcnum <= 6:
+            return f"rtsp://admin:hk123456@192.168.104.7{ipcnum-1}:554/Streaming/Channels/101"
+        if 7 <= ipcnum <= 12:
+            return f"rtsp://admin:hk123456@192.168.104.8{ipcnum-7}:554/Streaming/Channels/101"
+        return ""
+
+    @app.route("/test")
+    def result_test():
+        return "test"
+
+    @app.route("/test/zh_hans")
+    def test_gbk():
+        return "中文"
+
+    def shutdown_server():
+        q.put("yes")
+
+    @app.get("/shutdown")
+    def shutdown():
+        shutdown_server()
+        return "Server shutting down..."
+
+    def server():
+        nonlocal app, _conf, _addrs
+        with app.app_context():
+            db = get_db()
+            c = db.cursor()
+            c.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='log';"
+            )
+            result = c.fetchall()
+            if len(result) != 0:
+                # print('Table exists.')
+                pass
+            else:
+                c.execute(
+                    "CREATE TABLE log(id INTEGER PRIMARY KEY AUTOINCREMENT, level int, message varchar(100), time timestamp);"
+                )
+            data = ""
+
+            import configparser
+
+            config = configparser.ConfigParser()
+
             config.read("Default.ini")
             config.read("程序配置.ini")
-        _conf = config['Core']
-        addrs = []
-        for i in netifaces.interfaces():
-            try:
-                addrs.append(netifaces.ifaddresses(i)[netifaces.AF_INET][0]["addr"])
-            except KeyError:
-                pass
-        _addrs = addrs
-    app.run()
+            _conf = config["Core"]
+            addrs = []
+            for i in netifaces.interfaces():
+                try:
+                    addrs.append(netifaces.ifaddresses(i)[netifaces.AF_INET][0]["addr"])
+                except KeyError:
+                    pass
+            _addrs = addrs
+        app.run()
 
-
+    server()
 
 
 if __name__ == "__main__":
@@ -626,22 +612,26 @@ if __name__ == "__main__":
     if not is_test_env:
         if not os.path.exists("程序配置.ini"):
             update_profile()
-    
+
     import threading
+    import multiprocessing
 
-    t = threading.Thread(target=server)
-    t.start()
-    import time
+    q = multiprocessing.Queue()
+    server_process = multiprocessing.Process(target=serve, args=(q,))
+    server_process.start()
 
-    time.sleep(2)
+    t2 = threading.Thread(target=delete_file)
+    t2.start()
 
-    t = threading.Thread(target=delete_file)
-    t.start()
+    def wait_exit():
+        print("waiting")
+        q.get(block=True)
+        server_process.terminate()
+        global global_exit
+        global_exit = True
 
     if is_test_env:
-        while True:
-            # subprocess.run("FireVideo.exe")
-            sleep(1)
+        wait_exit()
     else:
         import ctypes, sys
 
@@ -658,6 +648,4 @@ if __name__ == "__main__":
             )
         else:
             subprocess.run("FireVideo.exe")
-            # while True:
-                # subprocess.run("FireVideo.exe")
-                # sleep(1)
+            wait_exit()

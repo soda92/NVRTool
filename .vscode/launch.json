@@ -21,7 +21,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}\\pysrc\\launcher.py",
-            "cwd": "${workspaceFolder}\\src",
+            "cwd": "${workspaceFolder}\\build\\bin",
             "console": "integratedTerminal"
         }
     ]
