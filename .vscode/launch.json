@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "TaiYuan launcher",
+            "name": "bin-launcher",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}\\build\\bin\\FireVideo.exe",
@@ -17,10 +17,18 @@
             "preLaunchTask": "quickbuild"
         },
         {
-            "name": "py-TaiYuan launcher",
+            "name": "py-launcher",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\pysrc\\launcher.py",
+            "program": "${workspaceFolder}\\pysrc\\service.py",
+            "cwd": "${workspaceFolder}\\build\\bin",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "staging-debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\build\\bin\\service.py",
             "cwd": "${workspaceFolder}\\build\\bin",
             "console": "integratedTerminal"
         }

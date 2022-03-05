@@ -2,7 +2,14 @@ import os
 import datetime
 import shutil
 
-from delete_file import delete_some
+import sys
+import pathlib
+p = pathlib.Path(__file__).resolve().parent
+p = p.parent.joinpath("pysrc")
+
+sys.path.insert(0, str(p))
+
+from service import delete_some
 
 """删除文件测试"""
 
@@ -14,7 +21,7 @@ dst_folder = f"{disk}LT-VIDEO-SS91456-北京蓝天多维"
 def get_free():
     """剩余空间"""
     free = shutil.disk_usage(disk).free
-    return free / (2 ** 30)
+    return free / (2**30)
 
 
 def setup():
@@ -37,16 +44,16 @@ def setup():
         date_str = datetime.datetime.strftime(date, "%Y-%m-%d")
 
 
-from delete_file import delete_some, remove_empty_dirs
+from service import delete_some, remove_empty_dirs
 
 
-def test_delete_some():
+def t_delete_some():
     """测试删除文件"""
     setup()
     free1 = shutil.disk_usage(disk).free
     delete_some(dst_folder, 4)
     free2 = shutil.disk_usage(disk).free
-    size_deleted = (free2 - free1) / (2 ** 30)
+    size_deleted = (free2 - free1) / (2**30)
     assert 5 > size_deleted > 4
 
 

@@ -1,20 +1,11 @@
 import sys
 
-# sys.path.append("packages")
-# sys.path.append(".")
-
 import shutil
-from launcher import get_udisk, get_raw_conf
+from service import get_udisk, get_raw_conf
 import os
 import datetime
 import time
 import pdb
-
-import datetime
-
-
-import datetime
-import os
 
 
 def get_files():

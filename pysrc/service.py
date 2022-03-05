@@ -107,9 +107,9 @@ import win32file
 def print_disk(path):
     total, used, free = shutil.disk_usage(path)
 
-    print("Total: %d GiB" % (total // (2 ** 30)))
-    print("Used: %d GiB" % (used // (2 ** 30)))
-    print("Free: %d GiB" % (free // (2 ** 30)))
+    print("Total: %d GiB" % (total // (2**30)))
+    print("Used: %d GiB" % (used // (2**30)))
+    print("Free: %d GiB" % (free // (2**30)))
 
 
 def get_udisk():
@@ -273,7 +273,7 @@ def get_unused_folder():
 def get_disk_free(disk):
     """获取磁盘剩余空间"""
     free = shutil.disk_usage(f"{disk}:/").free
-    free = free / 2 ** 30
+    free = free / 2**30
     return free
 
 
@@ -316,7 +316,7 @@ def delete_some(folder, size):
     cannot_delete_files = 0
     while True:
         if (
-            deleted_size > (size * (2 ** 30))
+            deleted_size > (size * (2**30))
             or len(get_old_files(folder, 10)) == cannot_delete_files
         ):
             break
@@ -329,9 +329,9 @@ def delete_some(folder, size):
                 cannot_delete_files += 1
                 continue
 
-            if deleted_size > (size * (2 ** 30)):
+            if deleted_size > (size * (2**30)):
                 break
-    return deleted_size / (2 ** 30)
+    return deleted_size / (2**30)
 
 
 global_exit = False
@@ -500,7 +500,7 @@ def serve(q: multiprocessing.Queue) -> None:
         disk = get_conf("Disk")
 
         tup = (total, used, free) = shutil.disk_usage(disk + ":")
-        return tuple(map(lambda x: x / (2 ** 30), tup))
+        return tuple(map(lambda x: x / (2**30), tup))
 
     @app.route("/size")
     def disk_size():
@@ -563,6 +563,17 @@ def serve(q: multiprocessing.Queue) -> None:
         shutdown_server()
         return "Server shutting down..."
 
+    import configparser
+
+    @app.get("/reload")
+    def reload_conf():
+        nonlocal _conf
+        config = configparser.ConfigParser()
+        config.read("Default.ini")
+        config.read("程序配置.ini")
+        _conf = config["Core"]
+        return "success"
+
     def server():
         nonlocal app, _conf, _addrs
         with app.app_context():
@@ -579,9 +590,6 @@ def serve(q: multiprocessing.Queue) -> None:
                 c.execute(
                     "CREATE TABLE log(id INTEGER PRIMARY KEY AUTOINCREMENT, level int, message varchar(100), time timestamp);"
                 )
-            data = ""
-
-            import configparser
 
             config = configparser.ConfigParser()
 
@@ -600,7 +608,7 @@ def serve(q: multiprocessing.Queue) -> None:
     server()
 
 
-if __name__ == "__main__":
+def all_launcher():
     logging.basicConfig(
         level=logging.DEBUG,
         format="%(asctime)s: %(levelname)7s: [%(name)s]: %(message)s",
@@ -649,3 +657,7 @@ if __name__ == "__main__":
         else:
             subprocess.run("FireVideo.exe")
             wait_exit()
+
+
+if __name__ == "__main__":
+    all_launcher()
