@@ -17,10 +17,16 @@ jobs:
       uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: ilammy/msvc-dev-cmd@v1
 
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.8.10'
+        architecture: 'x64'
+
     - name: Install dependencies
       run: |
         Push-Location C:/vcpkg
-        .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem boost-process --triplet x64-windows
+        .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem `
+          boost-process boost-python --triplet x64-windows
         Pop-Location
 
     - name: cmake configure
@@ -30,7 +36,6 @@ jobs:
 
     - name: cmake build
       run: |
-        chcp 936
         cmake --build build
 
     - name: copy dependencies
