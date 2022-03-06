@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         Push-Location C:/vcpkg
-        .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem --triplet x64-windows
+        .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem boost-process --triplet x64-windows
         Pop-Location
 
     - name: cmake configure

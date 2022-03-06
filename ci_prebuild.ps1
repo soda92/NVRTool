@@ -10,4 +10,4 @@ if(Test-Path -Path vcpkg){
 
 Set-Location vcpkg
 
-.\vcpkg install fmt boost-json boost-asio boost-filesystem boost-beast --triplet x64-windows
+.\vcpkg install fmt boost-json boost-asio boost-filesystem boost-beast boost-process --triplet x64-windows
