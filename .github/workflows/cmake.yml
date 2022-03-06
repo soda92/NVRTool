@@ -1,0 +1,17 @@
+name: CMake
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: ci_prebuild.ps1
+    - run: cmake_build.ps1
+    - run: cmake_afterbuild.ps1 
