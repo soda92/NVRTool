@@ -29,7 +29,9 @@ jobs:
           -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
     - name: cmake build
-      run: cmake --build build
+      run: |
+        chcp 936
+        cmake --build build
 
     - name: copy dependencies
       run: pwsh cmake_afterbuild.ps1
