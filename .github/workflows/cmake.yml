@@ -17,18 +17,24 @@ jobs:
       uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: ilammy/msvc-dev-cmd@v1
 
-    - run: |
+    - name: Install dependencies
+      run: |
         Push-Location C:/vcpkg
-        .\vcpkg install fmt boost-json boost-asio boost-filesystem --triplet x64-windows
+        .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem --triplet x64-windows
         Pop-Location
 
-    - run: |
+    - name: cmake configure
+      run: |
         cmake -B build -G "Ninja" `
           -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
-    - run: cmake --build build
+    - name: cmake build
+      run: |
+        chcp 65001
+        cmake --build build
 
-    - run: |
+    - name: copy dependencies
+      run: |
         $dest = "$PSSCriptRoot/bin"
         Write-Host "copying to $dest"
 
@@ -44,9 +50,14 @@ jobs:
         Copy-Item -Path $PSScriptRoot/HCNetSDK/lib/*.dll -Destination $dest -Recurse -Force
         Copy-Item -Path $PSScriptRoot/HCNetSDK/lib/HCNetSDKCom -Destination $dest -Recurse -Force
 
-        Copy-Item -Path C:/WINDOWS/SYSTEM32/mfc140d.dll -Destination $dest
+        Copy-Item -Path C:/Windows/System32/mfc140d.dll -Destination $dest
 
         Copy-Item -Path $PSScriptRoot/service.py -Destination $dest
         Copy-Item -Path $PSScriptRoot/Default.ini -Destination $dest
         Copy-Item -Path $PSScriptRoot/程序配置.ini -Destination $dest
 
+    - name: Upload binaries
+      uses: actions/upload-artifact@v2
+      with:
+        name: binary
+        path: bin
