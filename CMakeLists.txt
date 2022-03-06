@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION "3.12")
 project("TaiYuan")
 
-find_package(fmt CONFIG REQUIRED)
-
 add_definitions(-D_AFXDLL)
 set(CMAKE_MFC_FLAG 2)
 
@@ -62,22 +60,16 @@ set(SRCS
 
 find_package(Boost COMPONENTS filesystem json REQUIRED)
 if (Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    link_directories(${Boost_LIBRARY_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 endif()
-
-include_directories("HCNetSDK\\include" "include")
-link_directories("HCNetSDK\\lib")
-
 find_package(fmt CONFIG REQUIRED)
-add_executable(FireVideo WIN32 ${SRCS})
-target_link_libraries(FireVideo PRIVATE fmt::fmt HCNetSDK)
 
-target_link_libraries(FireVideo PRIVATE Boost::boost Boost::json Boost::filesystem)
+include_directories("HCNetSDK/include" "include")
+link_directories("HCNetSDK/lib")
+
+add_executable(FireVideo WIN32 ${SRCS})
 set_target_properties(FireVideo PROPERTIES COMPILE_FLAGS "/EHsc /wd4566")
 
-add_custom_command(TARGET FireVideo POST_BUILD
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake_afterbuild.ps1
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "copy dlls"
-)
+target_link_libraries(FireVideo PRIVATE fmt::fmt HCNetSDK)
+target_link_libraries(FireVideo PRIVATE Boost::boost Boost::json Boost::filesystem)
