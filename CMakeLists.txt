@@ -74,7 +74,7 @@ add_executable(FireVideo WIN32 ${SRCS})
 target_link_libraries(FireVideo PRIVATE fmt::fmt HCNetSDK)
 
 target_link_libraries(FireVideo PRIVATE Boost::boost Boost::json Boost::filesystem)
-set_target_properties(FireVideo PROPERTIES COMPILE_FLAGS "/EHsc")
+set_target_properties(FireVideo PROPERTIES COMPILE_FLAGS "/EHsc /wd4566")
 
 add_custom_command(TARGET FireVideo POST_BUILD
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake_afterbuild.ps1

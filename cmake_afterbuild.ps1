@@ -6,8 +6,10 @@ if (Test-Path -Path $dest) {
 }
 
 New-Item -ItemType Directory -Path $dest -Force
-Copy-Item -Path ./*.exe $dest
-Copy-Item -Path ./*.dll $dest
+
+Copy-Item -Path $PSSCriptRoot/build/*.exe $dest
+Copy-Item -Path $PSSCriptRoot/build/*.dll $dest
+
 Copy-Item -Path $PSScriptRoot/CHANGELOG.md $dest
 
 Copy-Item -Path $PSScriptRoot/HCNetSDK/lib/*.dll -Destination $dest -Recurse -Force
