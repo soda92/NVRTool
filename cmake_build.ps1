@@ -28,7 +28,7 @@ else {
         Remove-Item -Path build -Recurse -Force
     }
     cmake -B build -G "Ninja" `
-        -DCMAKE_TOOLCHAIN_FILE="D:/src/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
     if ($LastExitCode -eq 0) {
         $global:foo = 1
