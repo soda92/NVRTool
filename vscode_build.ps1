@@ -3,6 +3,6 @@ if($args[0] -eq "--quick"){
 }else{
     pwsh $PSScriptRoot/build.ps1
 }
-Push-Location $PSScriptRoot/build/src
-pwsh $PSScriptRoot/src/cmake_afterbuild.ps1
+Push-Location $PSScriptRoot/build
+pwsh $PSScriptRoot/cmake_afterbuild.ps1
 Pop-Location

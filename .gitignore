@@ -18,6 +18,7 @@ installer.out.nsi
 
 # 生成目录
 build
+bin
 
 # 日志文件
 systemlog.txt
