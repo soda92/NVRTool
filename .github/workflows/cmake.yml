@@ -12,6 +12,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - run: ci_prebuild.ps1
-    - run: cmake_build.ps1
-    - run: cmake_afterbuild.ps1 
+    - run: pwsh ci_prebuild.ps1
+    - run: pwsh cmake_build.ps1
+    - run: pwsh cmake_afterbuild.ps1 
