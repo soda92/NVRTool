@@ -1,5 +1,12 @@
 function ms22 {
-    Push-Location "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build"
+    $community = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build"
+    if (Test-Path $community){
+        Push-Location $community
+    }
+    $enterprise = "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build"
+    if (Test-Path $enterprise){
+        Push-Location $enterprise
+    }
     cmd /c "vcvars64.bat & set" |
     ForEach-Object {
         if ($_ -match "=") {
