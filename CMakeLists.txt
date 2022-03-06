@@ -58,11 +58,9 @@ set(SRCS
 "VideoPlayWnd.h"
 "WaitDlg.cpp"
 "WaitDlg.h"
-"VideoPlay.h"
-"VideoPlay.cpp"
 )
 
-find_package(Boost COMPONENTS filesystem iostreams json REQUIRED)
+find_package(Boost COMPONENTS filesystem json REQUIRED)
 if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     link_directories(${Boost_LIBRARY_DIRS})
@@ -71,41 +69,15 @@ endif()
 include_directories("HCNetSDK\\include" "include")
 link_directories("HCNetSDK\\lib")
 
-include_directories("D:/src/vcpkg/installed/x64-windows-static/include/")
-link_directories("D:/src/vcpkg/installed/x64-windows-static/lib/")
-
-set(libav_libs 
-avcodec.lib avdevice.lib avfilter.lib avutil.lib avformat.lib swresample.lib swscale.lib)
-
-set(additional_dependencies
-dxva2.lib
-evr.lib
-mf.lib
-mfplat.lib
-mfplay.lib
-mfreadwrite.lib
-mfuuid.lib
-bcrypt.lib
-ws2_32.lib
-Secur32.lib
-Strmiids.lib)
-
-find_package(SDL2 CONFIG REQUIRED)
-set(SDL_libs
-SDL2::SDL2)
-
 find_package(fmt CONFIG REQUIRED)
 add_executable(FireVideo WIN32 ${SRCS})
 target_link_libraries(FireVideo PRIVATE fmt::fmt HCNetSDK)
 
-target_link_libraries(FireVideo PRIVATE ${libav_libs})
-target_link_libraries(FireVideo PRIVATE ${additional_dependencies})
-target_link_libraries(FireVideo PRIVATE ${SDL_libs})
 target_link_libraries(FireVideo PRIVATE Boost::boost Boost::json Boost::filesystem)
 set_target_properties(FireVideo PROPERTIES COMPILE_FLAGS "/EHsc")
 
 add_custom_command(TARGET FireVideo POST_BUILD
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake_afterbuild.ps1 ${CMAKE_CURRENT_BINARY_DIR}
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cmake_afterbuild.ps1
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "copy dlls"
 )

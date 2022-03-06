@@ -3,9 +3,8 @@ import pytest
 import requests
 import pathlib
 
-p1 = pathlib.Path(__file__).resolve().parent
-service_dir = p1.parent.joinpath("pysrc")
-binary_dir = p1.parent.joinpath("build").joinpath("bin")
+project_dir = pathlib.Path(__file__).resolve().parent.parent
+bin_dir = project_dir.joinpath("bin")
 
 
 def get(key: str) -> str:
@@ -20,10 +19,11 @@ import os
 
 import time
 
+
 @pytest.fixture(autouse=True, scope="session")
 def server():
-    os.chdir(str(binary_dir))
-    subprocess.Popen("py service.py".split())
+    os.chdir(str(bin_dir))
+    subprocess.Popen("py ../service.py".split())
     time.sleep(7)
     yield
     get("shutdown")

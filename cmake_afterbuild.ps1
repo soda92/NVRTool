@@ -1,7 +1,5 @@
-$a = Get-Location
-$dest = "../bin"
-Write-Host "copying to $a/$dest"
-
+$dest = "$PSSCriptRoot/bin"
+Write-Host "copying to $dest"
 
 if (Test-Path -Path $dest) {
     Remove-Item -Path $dest/* -Recurse
