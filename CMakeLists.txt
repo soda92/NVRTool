@@ -62,8 +62,14 @@ set(SRCS
 "VideoPlay.cpp"
 )
 
-include_directories("include" "D:/boost_1_78_0" "D:\\HCNetSDK\\include")
-link_directories("D:\\HCNetSDK\\lib" "D:/boost_1_78_0/stage/lib")
+find_package(Boost COMPONENTS filesystem iostreams json REQUIRED)
+if (Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    link_directories(${Boost_LIBRARY_DIRS})
+endif()
+
+include_directories("HCNetSDK\\include" "include")
+link_directories("HCNetSDK\\lib")
 
 include_directories("D:/src/vcpkg/installed/x64-windows-static/include/")
 link_directories("D:/src/vcpkg/installed/x64-windows-static/lib/")
@@ -95,7 +101,7 @@ target_link_libraries(FireVideo PRIVATE fmt::fmt HCNetSDK)
 target_link_libraries(FireVideo PRIVATE ${libav_libs})
 target_link_libraries(FireVideo PRIVATE ${additional_dependencies})
 target_link_libraries(FireVideo PRIVATE ${SDL_libs})
-
+target_link_libraries(FireVideo PRIVATE Boost::boost Boost::json Boost::filesystem)
 set_target_properties(FireVideo PROPERTIES COMPILE_FLAGS "/EHsc")
 
 add_custom_command(TARGET FireVideo POST_BUILD

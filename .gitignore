@@ -1,11 +1,10 @@
-# 生成的文件
-*.dll
-*.lib
+# 生成目录
+build
+bin
 
-*.she
-*.exe
-*.lib
-*.obj
+# 日志文件
+systemlog.txt
+log.txt
 
 # NSIS
 nsis-build
@@ -15,14 +14,6 @@ installer.out.nsi
 *-old
 *.zip
 *.bak
-
-# 生成目录
-build
-bin
-
-# 日志文件
-systemlog.txt
-log.txt
 
 # Python
 __pycache__
