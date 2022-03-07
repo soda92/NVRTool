@@ -58,7 +58,7 @@ set(SRCS
 "WaitDlg.h"
 )
 
-find_package(Boost REQUIRED COMPONENTS filesystem json python38)
+find_package(Boost REQUIRED COMPONENTS filesystem json python310)
 if (Boost_FOUND)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
@@ -77,4 +77,4 @@ target_link_libraries(FireVideo PRIVATE Boost::boost Boost::json Boost::filesyst
 # include_directories("C:\\Users\\18463\\AppData\\Local\\Programs\\Python\\Python38\\include")
 # link_directories("C:\\Users\\18463\\AppData\\Local\\Programs\\Python\\Python38\\libs")
 add_library(stream_lib SHARED stream_lib.cpp)
-target_link_libraries(stream_lib PRIVATE HCNetSDK Boost::boost Boost::python38)
+target_link_libraries(stream_lib PRIVATE HCNetSDK Boost::boost Boost::python310)
