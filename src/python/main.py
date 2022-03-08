@@ -1,12 +1,10 @@
 from tabs.MainWindow import MainWindow
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
+import sys
 
 
 if __name__ == "__main__":
-    import sys
-
     app = QtWidgets.QApplication(sys.argv)
-
     window = MainWindow()
     window.show()
     app.exec()

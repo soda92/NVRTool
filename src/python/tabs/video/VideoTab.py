@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 from .VideoGrid import VideoGrid
 from .Color import Color
 from .VideoFrame import VideoFrame

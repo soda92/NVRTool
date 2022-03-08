@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 class SensorTab(QtWidgets.QWidget):
     def __init__(self):

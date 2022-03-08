@@ -7,8 +7,8 @@ if not os.path.exists("serial_lib.pyd"):
     sys.path.insert(0, str(bin_path))
 
 import sys
-from PyQt5.QtCore import QSize
-from PyQt5.QtWidgets import (
+from PyQt6.QtCore import QSize
+from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
     QPushButton,
@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QFrame,
 )
-from PyQt5.QtGui import QPalette, QColor
+from PyQt6.QtGui import QPalette, QColor
 
 import stream_lib
 
