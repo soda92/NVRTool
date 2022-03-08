@@ -13,6 +13,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Cache build
+      id: cache-build
+      uses: actions/cache@v2
+      with:
+        path: |
+          C:/vcpkg/
+          !C:/vcpkg/buildtrees
+        key: ${{ runner.os }}-cache
+
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: ilammy/msvc-dev-cmd@v1
