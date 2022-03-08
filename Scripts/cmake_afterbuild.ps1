@@ -1,5 +1,5 @@
 Push-Location $PSSCriptRoot/../
-$dest = "bin"
+$dest = "$PSScriptRoot/../bin"
 Write-Host "copying to $dest"
 
 if (Test-Path -Path $dest) {
@@ -16,8 +16,17 @@ Copy-Item -Path CHANGELOG.md $dest
 Copy-Item -Path HCNetSDK/lib_win64/*.dll -Destination $dest -Recurse -Force
 Copy-Item -Path HCNetSDK/lib_win64/HCNetSDKCom -Destination $dest -Recurse -Force
 
-Copy-Item -Path C:/Windows/System32/mfc140d.dll -Destination $dest
+Push-Location C:/Windows/System32/
+Copy-Item -Path `
+    mfc140d.dll, msvcp140d.dll, VCRUNTIME140D.dll, VCRUNTIME140_1D.dll, ucrtbased.dll `
+    -Destination $dest
 
-Copy-Item -Path service.py -Destination $dest
-Copy-Item -Path Default.ini -Destination $dest
-Copy-Item -Path 程序配置.ini -Destination $dest
+Pop-Location
+Copy-Item -Path service.py,Default.ini,程序配置.ini -Destination $dest
+# Copy-Item -Path .\test_stream.py,.\test_tax.py,.\test_serial.py -Destination $dest
+
+Push-Location $dest
+Rename-Item stream_lib.dll stream_lib.pyd
+Rename-Item serial_lib.dll serial_lib.pyd
+Rename-Item tax_lib.dll tax_lib.pyd
+Pop-Location

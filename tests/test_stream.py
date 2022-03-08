@@ -1,6 +1,20 @@
+import os, sys
+import socket
+
+hostname = socket.gethostname()
+is_test_env = False
+if hostname != "user-PC":
+    is_test_env = True
+
+import pathlib
+
+bin_path = pathlib.Path(__file__).resolve().parent.parent.joinpath("bin")
+if is_test_env:
+    os.add_dll_directory(str(bin_path))
+    sys.path.insert(0, str(bin_path))
+
 import sys
-from threading import Thread
-from PyQt5.QtCore import QSize, Qt, QTimer
+from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -10,27 +24,8 @@ from PyQt5.QtWidgets import (
     QFrame,
 )
 from PyQt5.QtGui import QPalette, QColor
-import os
-import shutil
-import pathlib
 
-bin_path = pathlib.Path(__file__).resolve().parent
-bin_path = bin_path.joinpath("bin")
-os.add_dll_directory(str(bin_path))
-# import platform
-
-# if platform.system() == "Windows":
-#     os.add_dll_directory("HCNetSDK/lib_win64")
-# if platform.system() == "Linux":
-#     os.add_dll_directory("HCNetSDK/lib_linux64")
-
-shutil.copy("build/stream_lib.dll", "./stream_lib.pyd")
-# import sys
-
-# sys.path.append("build")
 import stream_lib
-import threading
-import functools
 
 
 class Color(QWidget):

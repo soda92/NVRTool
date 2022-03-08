@@ -1,3 +1,3 @@
-Push-Location $PSScriptRoot/../build/src
+Push-Location $PSScriptRoot/../build/
 pwsh $PSScriptRoot/cmake_afterbuild.ps1
 Pop-Location

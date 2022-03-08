@@ -19,7 +19,8 @@ public:
     string ip;
     Client(long hwnd, string ip) : hwnd(hwnd), ip(ip) {}
 
-    void set_main(){
+    void set_main()
+    {
         main = true;
     }
 
@@ -52,12 +53,15 @@ public:
         NET_DVR_PREVIEWINFO struPlayInfo = {0};
         struPlayInfo.hPlayWnd = reinterpret_cast<HWND>(hwnd); //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
         struPlayInfo.lChannel = 1;                            //预览通道号
-        if(this->main){
+        if (this->main)
+        {
             struPlayInfo.dwStreamType = 0; // 0-主码流，1-子码流，2-码流3，3-码流4，以此类推
-        }else{
+        }
+        else
+        {
             struPlayInfo.dwStreamType = 1;
         }
-        struPlayInfo.dwLinkMode = 0;   // 0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
+        struPlayInfo.dwLinkMode = 0; // 0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
 
         realplay_handle = NET_DVR_RealPlay_V40(user_id, &struPlayInfo, NULL, NULL);
 
@@ -69,18 +73,21 @@ public:
         return NET_DVR_NOERROR;
     }
 
-    void stream(){
-        std::thread([this]{
+    void stream()
+    {
+        std::thread([this]
+                    {
                 auto ret = realplay();
                 while(ret!=NET_DVR_NOERROR){
                     std::this_thread::sleep_for(3s);
                     ret = realplay();
-                }
-            }).detach();
+                } })
+            .detach();
     }
 
-    bool is_streaming(){
-        return realplay_handle>=0;
+    bool is_streaming()
+    {
+        return realplay_handle >= 0;
     }
 };
 
