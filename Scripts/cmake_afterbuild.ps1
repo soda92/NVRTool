@@ -22,7 +22,9 @@ Copy-Item -Path `
     -Destination $dest
 
 Pop-Location
-Copy-Item -Path service.py,Default.ini,程序配置.ini -Destination $dest
+Copy-Item `
+    -Path src/python/service.py, src/configurations/Default.ini, src/configurations/程序配置.ini `
+    -Destination $dest
 # Copy-Item -Path .\test_stream.py,.\test_tax.py,.\test_serial.py -Destination $dest
 
 Push-Location $dest

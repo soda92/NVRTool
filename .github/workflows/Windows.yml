@@ -40,8 +40,10 @@ jobs:
 
     - name: cmake configure
       run: |
-        cmake -B build -G "Ninja" `
+        Push-Location src/cpp
+        cmake -B ../../build -G "Ninja" `
           -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        Pop-Location
 
     - name: cmake build
       run: |

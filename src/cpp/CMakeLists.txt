@@ -5,15 +5,15 @@ project(python_ext)
 set(CXX_STANDARD 14)
 set(CXX_STANDARD_REQUIRED True)
 
-include_directories("HCNetSDK/include")
+include_directories("../../HCNetSDK/include")
 
 # https://stackoverflow.com/questions/9160335/os-specific-instructions-in-cmake-how-to
 if (WIN32)
-    link_directories("HCNetSDK/lib_win64")
+    link_directories("../../HCNetSDK/lib_win64")
 endif (WIN32)
 
 if (UNIX)
-    link_directories("HCNetSDK/lib_linux64")
+    link_directories("../../HCNetSDK/lib_linux64")
 endif (UNIX)
 
 find_package(Python3 COMPONENTS Development REQUIRED)

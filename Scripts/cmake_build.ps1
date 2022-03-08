@@ -29,14 +29,19 @@ else {
     if (Test-Path build) {
         Remove-Item -Path build -Recurse -Force
     }
-    cmake -B build -G "Ninja" `
+    Push-Location $PSSCriptRoot/../src/cpp
+
+    cmake -B ../../build -G "Ninja" -Wno-dev `
         -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
     if ($LastExitCode -eq 0) {
         $global:foo = 1
     }
+    Pop-Location
 }
 
 if($LastExitCode -eq 0){
     cmake --build build
 }
+
+Pop-Location

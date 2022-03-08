@@ -1,11 +1,4 @@
-﻿[*.(cpp,h)]
-end_of_line = lf
-insert_final_newline = true
-tab_width = 4
-indent_size = 4
-indent_style = space
-
-[*.{cpp,h}]
+﻿[*.{cpp,h}]
 end_of_line = crlf
 insert_final_newline = true
 tab_width = 4
