@@ -18,6 +18,7 @@ class VideoFrame(QtWidgets.QWidget):
     def __init__(self, name, ip) -> None:
         super(VideoFrame, self).__init__()
         layout = QtWidgets.QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
         self.frame = QtWidgets.QFrame()
         layout.addWidget(self.frame)
         self.setLayout(layout)
