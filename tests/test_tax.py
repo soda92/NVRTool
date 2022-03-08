@@ -1,15 +1,8 @@
 import os, sys
-import socket
-
-hostname = socket.gethostname()
-is_test_env = False
-if hostname != "user-PC":
-    is_test_env = True
-
 import pathlib
 
-bin_path = pathlib.Path(__file__).resolve().parent.parent.joinpath("bin")
-if is_test_env:
+if not os.path.exists("serial_lib.pyd"):
+    bin_path = pathlib.Path(__file__).resolve().parent.parent.joinpath("bin")
     os.add_dll_directory(str(bin_path))
     sys.path.insert(0, str(bin_path))
 
@@ -40,12 +33,14 @@ class Status(QtWidgets.QWidget):
         self.label.setMinimumWidth(80)
         self.layout.addWidget(self.label)
         self.value = QtWidgets.QLabel()
-        self.value.setStyleSheet("""
+        self.value.setStyleSheet(
+            """
             QLabel{
                 border: 1px dotted gray;
                 qproperty-alignment: AlignCenter;
             }
-        """)
+        """
+        )
         self.value.setMinimumWidth(150)
         # self.value.setDisabled(True)
         self.layout.addWidget(self.value)
