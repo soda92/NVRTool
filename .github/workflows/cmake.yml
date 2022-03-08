@@ -39,7 +39,7 @@ jobs:
         cmake --build build
 
     - name: copy dependencies
-      run: pwsh cmake_afterbuild.ps1
+      run: pwsh Scripts/cmake_afterbuild.ps1
 
     - name: Upload binaries
       uses: actions/upload-artifact@v2

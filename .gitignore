@@ -2,6 +2,9 @@
 build
 bin
 
+# 生成文件
+*.pyd
+
 # 日志文件
 systemlog.txt
 log.txt

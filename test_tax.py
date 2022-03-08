@@ -1,7 +1,7 @@
 import json
 import os
 
-os.add_dll_directory("D:\\boost_1_78_0\\stage\\lib")
+os.add_dll_directory("bin")
 
 import shutil
 

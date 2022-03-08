@@ -17,6 +17,8 @@ function ms22 {
     Write-Host "Visual Studio 2022 amd64 Command Prompt variables set." -ForegroundColor Green
 }
 
+Push-Location $PSSCriptRoot/../
+
 if (Get-Variable 'foo' -Scope 'Global' -ErrorAction 'Ignore') { 
 }
 elseif ($args[0] -eq '--skip-verify') {

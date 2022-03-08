@@ -6,12 +6,12 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "${workspaceFolder}\\vscode_build.ps1",
+            "command": "${workspaceFolder}\\Scripts\\vscode_build.ps1",
         },
         {
             "label": "quickbuild",
             "type": "shell",
-            "command": "${workspaceFolder}\\vscode_build.ps1 --quick",
+            "command": "${workspaceFolder}\\Scripts\\vscode_build.ps1 --quick",
         }
     ]
 }

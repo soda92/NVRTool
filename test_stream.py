@@ -12,14 +12,17 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QPalette, QColor
 import os
 import shutil
+import pathlib
 
-os.add_dll_directory("build")
-import platform
+bin_path = pathlib.Path(__file__).resolve().parent
+bin_path = bin_path.joinpath("bin")
+os.add_dll_directory(str(bin_path))
+# import platform
 
-if platform.system() == "Windows":
-    os.add_dll_directory("D:/HCNetSDK/lib_win64")
-if platform.system() == "Linux":
-    os.add_dll_directory("D:/HCNetSDK/lib_linux64")
+# if platform.system() == "Windows":
+#     os.add_dll_directory("HCNetSDK/lib_win64")
+# if platform.system() == "Linux":
+#     os.add_dll_directory("HCNetSDK/lib_linux64")
 
 shutil.copy("build/stream_lib.dll", "./stream_lib.pyd")
 # import sys
