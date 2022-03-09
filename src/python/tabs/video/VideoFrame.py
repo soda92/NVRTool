@@ -13,8 +13,14 @@ if not os.path.exists("serial_lib.pyd"):
 
 import stream_lib
 
+from PyQt6.QtCore import pyqtSignal
+
 
 class VideoFrame(QtWidgets.QWidget):
+    double_click_signal = pyqtSignal(int)
+    number: int = -1
+    maxmized: bool = False
+
     def __init__(self, name, ip) -> None:
         super(VideoFrame, self).__init__()
         layout = QtWidgets.QVBoxLayout()
@@ -37,3 +43,6 @@ class VideoFrame(QtWidgets.QWidget):
         if poll is None:
             return True
         return False
+
+    def mouseDoubleClickEvent(self, event) -> None:
+        self.double_click_signal.emit(self.number)
