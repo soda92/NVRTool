@@ -5,6 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Qt",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\src\\python\\main.py",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": true
+        },
+        {
             "name": "bin-launcher",
             "type": "cppvsdbg",
             "request": "launch",

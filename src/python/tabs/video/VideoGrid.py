@@ -6,6 +6,7 @@ from .VideoFrame import VideoFrame
 class VideoGrid(QtWidgets.QGridLayout):
     def __init__(self, max_count) -> None:
         super(VideoGrid, self).__init__()
+        self.setSpacing(0)
         self.max_count = max_count
         self.numbers = 0
         self.current_row = 0
