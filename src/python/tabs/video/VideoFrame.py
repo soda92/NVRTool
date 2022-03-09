@@ -27,19 +27,19 @@ class VideoFrame(QtWidgets.QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.setStyleSheet("border: 1px solid white;")
         self.frame = QtWidgets.QFrame()
-        text = QtWidgets.QLabel()
-        text.setParent(self)
-        text.setGeometry(0, 0, 0, 0)
-        text.raise_()
+        self.text = QtWidgets.QLabel()
+        self.text.setParent(self)
+        self.text.setGeometry(0, 0, 0, 0)
+        self.text.raise_()
         # text.hide()
 
-        text.setStyleSheet("color: white; border: none;")
-        text.setText("无信号")
+        self.text.setStyleSheet("color: white; border: none;")
         layout.addWidget(self.frame)
         self.setLayout(layout)
         hwnd = int(self.frame.winId())
         self.name = name
         self.ip = ip
+        self.text.setText(f"无信号\n{self.ip}")
         self.client = stream_lib.Client(hwnd, ip)
         self.client.stream()
 

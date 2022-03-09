@@ -2,58 +2,68 @@ name: CMake
 
 on:
   push:
-    branches: [ main, dev ]
+    paths:
+      - "**.cpp"
+      - "**.hpp"
+      - "**.h"
+      - "**/CMakeLists.txt"
+      - ".github/workflows/Windows.yml"
   pull_request:
-    branches: [ main ]
+    paths:
+      - "**.cpp"
+      - "**.hpp"
+      - "**.h"
+      - "**/CMakeLists.txt"
+      - ".github/workflows/Windows.yml"
 
 jobs:
   build:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Cache build
-      id: cache-build
-      uses: actions/cache@v2
-      with:
-        path: |
-          C:/vcpkg/
-          !C:/vcpkg/buildtrees
-        key: ${{ runner.os }}-cache
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v2
+        with:
+          path: |
+            C:/vcpkg/
+            !C:/vcpkg/buildtrees
+          key: ${{ runner.os }}-cache
 
-    - name: Install ninja-build tool
-      uses: seanmiddleditch/gha-setup-ninja@v3
-    - uses: ilammy/msvc-dev-cmd@v1
+      - name: Install ninja-build tool
+        uses: seanmiddleditch/gha-setup-ninja@v3
+      - uses: ilammy/msvc-dev-cmd@v1
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.8.10'
-        architecture: 'x64'
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8.10"
+          architecture: "x64"
 
-    - name: Install dependencies
-      run: |
-        Push-Location C:/vcpkg
-        .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem `
-          boost-process boost-python --triplet x64-windows
-        Pop-Location
+      - name: Install dependencies
+        run: |
+          Push-Location C:/vcpkg
+          .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem `
+            boost-process boost-python --triplet x64-windows
+          Pop-Location
 
-    - name: cmake configure
-      run: |
-        Push-Location src/cpp
-        cmake -B ../../build -G "Ninja" `
-          -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        Pop-Location
+      - name: cmake configure
+        run: |
+          Push-Location src/cpp
+          cmake -B ../../build -G "Ninja" `
+            -DCMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          Pop-Location
 
-    - name: cmake build
-      run: |
-        cmake --build build
+      - name: cmake build
+        run: |
+          cmake --build build
 
-    - name: copy dependencies
-      run: pwsh Scripts/cmake_afterbuild.ps1
+      - name: copy dependencies
+        run: pwsh Scripts/cmake_afterbuild.ps1
 
-    - name: Upload binaries
-      uses: actions/upload-artifact@v2
-      with:
-        name: binary
-        path: bin
+      - name: Upload binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: binary
+          path: bin

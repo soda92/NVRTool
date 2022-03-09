@@ -28,7 +28,7 @@ class VideoTab(QtWidgets.QWidget):
         self.video_area_main.setLayout(self.video_grid)
         self.video_area_main.setMinimumHeight(int(self.video_area_main.width() * 3 / 4))
         self.video_box_grid.addWidget(self.video_area_main)
-        self.video_box_grid.addWidget(Color("blue"))
+
         self.setLayout(self.video_box_grid)
 
         addrs1 = [
@@ -52,3 +52,31 @@ class VideoTab(QtWidgets.QWidget):
         for frame in self.video_frames1:
             self.video_grid.addWidget(frame)
 
+        self.video_area_other = QtWidgets.QWidget()
+        self.video_grid2 = VideoGrid(3)
+        self.video_grid2.setContentsMargins(0, 0, 0, 0)
+        self.video_area_other.setLayout(self.video_grid2)
+        self.video_area_other.setMinimumHeight(
+            int(self.video_area_other.width() * 3 / 4)
+        )
+        self.video_box_grid.addWidget(self.video_area_other)
+        self.video_frames2 = [VideoFrame("Local", addr) for addr in addrs2]
+        # self.v.start_record("Test", "D:/")
+        for frame in self.video_frames2:
+            self.video_grid2.addWidget(frame)
+        self.video_area_other.hide()
+
+        from .BottomBar import BottomBar
+
+        self.bottom_bar = BottomBar()
+        self.video_box_grid.addWidget(self.bottom_bar)
+        self.bottom_bar.button1.clicked.connect(self.show_1)
+        self.bottom_bar.button2.clicked.connect(self.show_2)
+
+    def show_1(self):
+        self.video_area_other.hide()
+        self.video_area_main.show()
+
+    def show_2(self):
+        self.video_area_main.hide()
+        self.video_area_other.show()
