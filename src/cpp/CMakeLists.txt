@@ -7,7 +7,7 @@ set(CXX_STANDARD_REQUIRED True)
 
 include_directories("../../HCNetSDK/include")
 
-# https://stackoverflow.com/questions/9160335/os-specific-instructions-in-cmake-how-to
+# https://stackoverflow.com/a/9160449/12291425
 if (WIN32)
     link_directories("../../HCNetSDK/lib_win64")
 endif (WIN32)

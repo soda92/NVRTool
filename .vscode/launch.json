@@ -5,12 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Qt",
+            "name": "PyQt",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}\\src\\python\\main.py",
             "cwd": "${workspaceFolder}",
             "justMyCode": true
+        },
+        {
+            "name": "Qt",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}\\build\\app.exe",
+            "cwd": "${workspaceFolder}\\build",
+            "preLaunchTask": "qtbuild",
+            "console": "integratedTerminal"
         },
         {
             "name": "bin-launcher",

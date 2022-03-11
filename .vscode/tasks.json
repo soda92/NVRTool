@@ -12,6 +12,11 @@
             "label": "quickbuild",
             "type": "shell",
             "command": "${workspaceFolder}\\Scripts\\vscode_build.ps1 --quick",
+        },
+        {
+            "label": "qtbuild",
+            "type": "shell",
+            "command": "pwsh src/qt/build.ps1",
         }
     ]
 }
