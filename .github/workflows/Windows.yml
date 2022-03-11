@@ -2,19 +2,9 @@ name: CMake
 
 on:
   push:
-    paths:
-      - "**.cpp"
-      - "**.hpp"
-      - "**.h"
-      - "**/CMakeLists.txt"
-      - ".github/workflows/Windows.yml"
+    branches: [ main, dev ]
   pull_request:
-    paths:
-      - "**.cpp"
-      - "**.hpp"
-      - "**.h"
-      - "**/CMakeLists.txt"
-      - ".github/workflows/Windows.yml"
+    branches: [ main ]
 
 jobs:
   build:
@@ -44,6 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           Push-Location C:/vcpkg
+          .\bootstrap-vcpkg.bat
           .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem `
             boost-process boost-python --triplet x64-windows
           Pop-Location

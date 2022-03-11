@@ -12,7 +12,7 @@ class MainTab(QtWidgets.QTabWidget):
                 color: white;
                 height: 50px;
                 border: 1px solid white;
-                width: 150px;
+                width: 100px;
                 font-size: 22px;
                 font-family: \"Microsoft Yahei\";
             }
@@ -75,10 +75,10 @@ class MainTab(QtWidgets.QTabWidget):
 
         self.tab_sensor = SensorTab()
         self.addTab(self.tab_sensor, "")
-        self.setTabText(self.indexOf(self.tab_sensor), _translate("MainWindow", "火警信息"))
+        self.setTabText(self.indexOf(self.tab_sensor), _translate("MainWindow", "防火信息"))
 
         from .event.EventsTab import EventsTab
 
         self.tab_events = EventsTab()
         self.addTab(self.tab_events, "")
-        self.setTabText(self.indexOf(self.tab_events), _translate("MainWindow", "事件记录"))
+        self.setTabText(self.indexOf(self.tab_events), _translate("MainWindow", "故障记录"))

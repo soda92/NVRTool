@@ -44,7 +44,7 @@ class VideoFrame(QtWidgets.QWidget):
         self.client.stream()
 
     def start_record(self, train_num, directory):
-        args = f"ffmpeg -i rtsp://admin:hk123456@{self.ip}:554/Streaming/Channels/101 -c copy -map 0:v:0 -map 0:a:0 -segment_time 00:15:00 -f segment -strftime 1 {directory}%Y%m%d_%H%M%S_{train_num}_{self.name}.mp4"
+        args = f"ffmpeg -i rtsp://admin:hk123456@{self.ip}:554/Streaming/Channels/101 -c copy -map 0:v:0 -map 0:a:0 -segment_time 00:15:00 -f segment -strftime 1 {directory}/%Y%m%d/_%H%M%S_{train_num}_{self.name}.mp4"
         self.process = subprocess.Popen(args.split())
 
     def status(self):
