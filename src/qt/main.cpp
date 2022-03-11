@@ -3,11 +3,6 @@
 #include <QMainWindow>
 #include <QDebug>
 
-class QPushButton;
-class QTextBrowser;
-
-// This is the declaration of our MainWidget class
-// The definition/implementation is in mainwidget.cpp
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -27,12 +22,12 @@ public:
         setWindowTitle(tr("Connecting buttons to processes.."));
 
         connect(button_, &QPushButton::clicked, this, &MainWindow::clicked);
-    }; // Constructor
+    };
     ~MainWindow()
     {
         delete button_;
         delete textBrowser_;
-    }; // Destructor
+    };
 
 public slots:
     void clicked()
@@ -49,13 +44,8 @@ private:
 
 int main(int argc, char *argv[])
 {
-    // Creates an instance of QApplication
     QApplication a(argc, argv);
-
-    // This is our MainWidget class containing our GUI and functionality
     MainWindow w;
     w.show(); // Show main window
-
-    // run the application and return execs() return value/code
     return a.exec();
 }
