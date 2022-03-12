@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION "3.12")
 project(app)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 include_directories("../../HCNetSDK/include")
 # https://stackoverflow.com/a/9160449/12291425
 if (WIN32)
@@ -17,7 +20,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
 #  https://stackoverflow.com/a/49816516/12291425
-find_package(Qt5 COMPONENTS Widgets Network Gui REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 set(CMAKE_AUTOMOC ON)
 
 if(DEBUG)
@@ -26,21 +29,12 @@ else()
 add_executable(app WIN32 main.cpp)
 endif(DEBUG)
 
-target_link_libraries(app PRIVATE Qt5::Widgets)
+target_link_libraries(app PRIVATE Qt6::Widgets)
+
 # https://stackoverflow.com/a/40572207/12291425
+
 add_custom_target(
     deploy-dll ALL
     DEPENDS app
-    COMMAND ${Qt5_DIR}/../../../bin/windeployqt.exe $<TARGET_FILE:app>
+    COMMAND ${Qt6_DIR}/../../../bin/windeployqt.exe $<TARGET_FILE:app>
 )
-
-if(NO_COPY)   
-else()
-    add_custom_target(
-        fix-plugin ALL
-        DEPENDS ${PROJECT_BINARY_DIR}/../Scripts/fix-plugin.ps1
-        DEPENDS deploy-dll
-        COMMAND pwsh Scripts/fix-plugin.ps1
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/../
-    )
-endif(NO_COPY)

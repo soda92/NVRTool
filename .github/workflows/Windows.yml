@@ -40,20 +40,22 @@ jobs:
           path: |
             ${{ github.workspace }}/Qt
             C:\users\runneradmin\appdata\local\pip\cache
-          key: ${{ runner.os }}-QtCache2
+          key: ${{ runner.os }}-QtCache3
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
+          version: '6.3.0'
+          arch: 'win64_msvc2019_64'
           dir: ${{ github.workspace }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: cmake configure
         run: |
           Push-Location src/qt
-          $Env:Qt5_DIR="${{ github.workspace }}/Qt/5.15.2/msvc2019_64"
+          $Env:Qt5_DIR="${{ github.workspace }}/Qt/6.3.0/msvc2019_64"
           $Env:CMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-          cmake -B ../../build -G "Ninja" -Wno-dev -DNO_COPY=1 -DCMAKE_BUILD_TYPE=Release
+          cmake -B ../../build -G "Ninja" -Wno-dev -DCMAKE_BUILD_TYPE=Release
           Pop-Location
 
       - name: cmake build

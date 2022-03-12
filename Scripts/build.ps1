@@ -14,5 +14,5 @@ ForEach-Object {
 }
 Pop-Location
 Write-Host "Visual Studio 2022 amd64 Command Prompt variables set." -ForegroundColor Green
-$Env:Qt5_DIR = "C:/Qt/5.12.12/msvc2022-dynamic"
+$Env:Qt6_DIR = "$PSScriptRoot/../Qt/6.3.0/msvc2019_64"
 cmake --build $PSScriptRoot/../build

@@ -26,3 +26,6 @@ venv*
 
 # db
 *.sqlite3
+
+# Qt install
+/Qt
