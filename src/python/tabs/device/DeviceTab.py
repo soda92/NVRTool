@@ -13,6 +13,8 @@ class DeviceTab(QtWidgets.QWidget):
             }
         """
         )
+
+        
         self.button = QtWidgets.QPushButton()
         self.button.setParent(self)
         self.button.setText("系统设置")
