@@ -23,11 +23,16 @@ set(CMAKE_AUTOMOC ON)
 add_executable(app main.cpp)
 target_link_libraries(app PRIVATE Qt5::Widgets)
 # https://stackoverflow.com/a/40572207/12291425
-add_custom_command(
-    TARGET app POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:Qt5::Widgets>
-        $<TARGET_FILE:Qt5::Core>
-        $<TARGET_FILE:Qt5::Gui>
-        $<TARGET_FILE_DIR:app>
+add_custom_target(
+    deploy-dll ALL
+    DEPENDS app
+    COMMAND ${Qt5_DIR}/../../../bin/windeployqt.exe $<TARGET_FILE:app>
+)
+
+add_custom_target(
+    fix-plugin ALL
+    DEPENDS ${PROJECT_BINARY_DIR}/../Scripts/fix-plugin.ps1
+    DEPENDS deploy-dll
+    COMMAND pwsh Scripts/fix-plugin.ps1
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/../
 )
