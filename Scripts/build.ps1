@@ -15,4 +15,4 @@ ForEach-Object {
 Pop-Location
 Write-Host "Visual Studio 2022 amd64 Command Prompt variables set." -ForegroundColor Green
   
-cmake --build $PSScriptRoot/../../build
+cmake --build $PSScriptRoot/../build

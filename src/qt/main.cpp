@@ -19,6 +19,7 @@ public:
         QWidget *widget = new QWidget();
         widget->setLayout(mainLayout);
         setCentralWidget(widget);
+        widget->setMinimumSize(800, 600);
         setWindowTitle(tr("Connecting buttons to processes.."));
 
         connect(button_, &QPushButton::clicked, this, &MainWindow::clicked);
@@ -39,8 +40,8 @@ private:
     QPushButton *button_;
     QTextBrowser *textBrowser_;
 };
+
 #include "main.moc"
-#include <QtWidgets>
 
 int main(int argc, char *argv[])
 {

@@ -14,5 +14,9 @@ ForEach-Object {
 }
 Pop-Location
 Write-Host "Visual Studio 2022 amd64 Command Prompt variables set." -ForegroundColor Green
-  
-cmake -B build -G "Ninja" -DCMAKE_TOOLCHAIN_FILE="D:/src/vcpkg/scripts/buildsystems/vcpkg.cmake"
+Push-Location $PSScriptRoot/../src/qt/
+$Env:Qt5_DIR = "C:/Qt/5.12.12/msvc2022-dynamic/lib/cmake"
+$Env:CMAKE_TOOLCHAIN_FILE = "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+
+cmake -B $PSScriptRoot/../build -G "Ninja" -Wno-dev
+Pop-Location

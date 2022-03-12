@@ -17,12 +17,10 @@ include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
 #  https://stackoverflow.com/a/49816516/12291425
-find_package(Qt5 COMPONENTS Widgets Network Gui REQUIRED
-PATHS "C:/Qt/5.12.12/msvc2022-dynamic/lib/cmake" NO_DEFAULT_PATH)
+find_package(Qt5 COMPONENTS Widgets Network Gui REQUIRED)
 set(CMAKE_AUTOMOC ON)
 
 add_executable(app main.cpp)
-
 target_link_libraries(app PRIVATE Qt5::Widgets)
 # https://stackoverflow.com/a/40572207/12291425
 add_custom_command(

@@ -16,7 +16,7 @@
         {
             "label": "qtbuild",
             "type": "shell",
-            "command": "pwsh src/qt/build.ps1",
+            "command": "pwsh Scripts/build.ps1",
         }
     ]
 }
