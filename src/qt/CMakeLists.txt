@@ -29,10 +29,13 @@ add_custom_target(
     COMMAND ${Qt5_DIR}/../../../bin/windeployqt.exe $<TARGET_FILE:app>
 )
 
-add_custom_target(
-    fix-plugin ALL
-    DEPENDS ${PROJECT_BINARY_DIR}/../Scripts/fix-plugin.ps1
-    DEPENDS deploy-dll
-    COMMAND pwsh Scripts/fix-plugin.ps1
-    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/../
-)
+if(NO_COPY)   
+else()
+    add_custom_target(
+        fix-plugin ALL
+        DEPENDS ${PROJECT_BINARY_DIR}/../Scripts/fix-plugin.ps1
+        DEPENDS deploy-dll
+        COMMAND pwsh Scripts/fix-plugin.ps1
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/../
+    )
+endif(NO_COPY)
