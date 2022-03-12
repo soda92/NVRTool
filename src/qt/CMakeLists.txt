@@ -20,7 +20,12 @@ link_directories(${Boost_LIBRARY_DIRS})
 find_package(Qt5 COMPONENTS Widgets Network Gui REQUIRED)
 set(CMAKE_AUTOMOC ON)
 
+if(DEBUG)
 add_executable(app main.cpp)
+else()
+add_executable(app WIN32 main.cpp)
+endif(DEBUG)
+
 target_link_libraries(app PRIVATE Qt5::Widgets)
 # https://stackoverflow.com/a/40572207/12291425
 add_custom_target(

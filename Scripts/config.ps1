@@ -18,5 +18,5 @@ Push-Location $PSScriptRoot/../src/qt/
 $Env:Qt5_DIR = "C:/Qt/5.12.12/msvc2022-dynamic/lib/cmake"
 $Env:CMAKE_TOOLCHAIN_FILE = "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
 
-cmake -B $PSScriptRoot/../build -G "Ninja" -Wno-dev
+cmake -B $PSScriptRoot/../build -G "Ninja" -Wno-dev -DDEBUG=1
 Pop-Location
