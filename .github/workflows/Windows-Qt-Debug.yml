@@ -55,7 +55,7 @@ jobs:
           Push-Location src/qt
           $Env:Qt5_DIR="${{ github.workspace }}/Qt/6.3.0/msvc2019_64"
           $Env:CMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-          cmake -B ../../build -G "Ninja" -Wno-dev -DCMAKE_BUILD_TYPE=Release
+          cmake -B ../../build -G "Ninja" -Wno-dev
           Pop-Location
 
       - name: cmake build
@@ -75,6 +75,7 @@ jobs:
 
           Copy-Item -Path build/*.exe $dest
           Copy-Item -Path build/*.dll $dest
+          Copy-Item -Path build/*.pdb $dest
           Copy-Item -Path build/iconengines $dest -Recurse -Force
           Copy-Item -Path build/imageformats $dest -Recurse -Force
           Copy-Item -Path build/platforms $dest -Recurse -Force
