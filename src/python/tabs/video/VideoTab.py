@@ -6,7 +6,7 @@ from .Color import _translate
 
 
 class VideoTab(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, config):
         super(VideoTab, self).__init__()
         self.setStyleSheet(
             """

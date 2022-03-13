@@ -3,7 +3,7 @@ from .video.Color import _translate
 
 
 class MainTab(QtWidgets.QTabWidget):
-    def __init__(self):
+    def __init__(self, config):
         super(MainTab, self).__init__()
         self.setStyleSheet(
             """
@@ -59,7 +59,7 @@ class MainTab(QtWidgets.QTabWidget):
 
         from .video.VideoTab import VideoTab
 
-        self.tab_video = VideoTab()
+        self.tab_video = VideoTab(config)
         self.addTab(self.tab_video, "")
 
         self.setTabText(self.indexOf(self.tab_video), _translate("MainWindow", "视频预览"))

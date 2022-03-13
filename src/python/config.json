@@ -1,0 +1,97 @@
+{
+    "name": "SS91456",
+    "serial": {
+        "tax": "COM1",
+        "detector": "COM2",
+        "power": "COM3"
+    },
+    "record_path_root": "E:",
+    "configured": false,
+    "window_size": "auto",
+    "groups": [
+        {
+            "group": "A节",
+            "current": true,
+            "devices": [
+                {
+                    "name": "路况",
+                    "detector": null,
+                    "address": "192.168.104.70",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.70:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "司机室",
+                    "detector": 0,
+                    "address": "192.168.104.71",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.71:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "高压室1",
+                    "detector": 1,
+                    "address": "192.168.104.72",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.72:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "高压室2",
+                    "detector": null,
+                    "address": "192.168.104.73",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.73:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "左走廊",
+                    "detector": 2,
+                    "address": "192.168.104.74",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.74:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "右走廊",
+                    "detector": 3,
+                    "address": "192.168.104.75",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.75:554/Streaming/Channels/101"
+                }
+            ]
+        },
+        {
+            "group": "B节",
+            "current": false,
+            "devices": [
+                {
+                    "name": "路况",
+                    "detector": null,
+                    "address": "192.168.104.80",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.80:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "司机室",
+                    "detector": null,
+                    "address": "192.168.104.81",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.81:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "高压室1",
+                    "detector": null,
+                    "address": "192.168.104.82",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.82:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "高压室2",
+                    "detector": null,
+                    "address": "192.168.104.83",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.83:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "左走廊",
+                    "detector": null,
+                    "address": "192.168.104.84",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.84:554/Streaming/Channels/101"
+                },
+                {
+                    "name": "右走廊",
+                    "detector": null,
+                    "address": "192.168.104.85",
+                    "stream_addr": "rtsp://admin:hk123456@192.168.104.85:554/Streaming/Channels/101"
+                }
+            ]
+        }
+    ]
+}

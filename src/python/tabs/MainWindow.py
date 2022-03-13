@@ -3,7 +3,7 @@ from .video.Color import _translate
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self):
+    def __init__(self, config):
         super(MainWindow, self).__init__()
 
         self.setWindowTitle("太原机车防火视频程序")
@@ -22,7 +22,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.main_grid.setContentsMargins(0, 0, 0, 0)
         from .MainTab import MainTab
 
-        self.tab_page = MainTab()
+        self.tab_page = MainTab(config)
         self.main_grid.addWidget(self.tab_page, 0, 0, 1, 1)
 
         from .stop_button import stop_button
