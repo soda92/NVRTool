@@ -22,14 +22,20 @@ link_directories(${Boost_LIBRARY_DIRS})
 #  https://stackoverflow.com/a/49816516/12291425
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+find_package(fmt CONFIG REQUIRED)
+
+set(srcs main.cpp main.qrc)
 
 if(DEBUG)
-add_executable(app main.cpp)
+add_executable(app ${srcs})
 else()
-add_executable(app WIN32 main.cpp)
+add_executable(app WIN32 ${srcs})
 endif(DEBUG)
 
-target_link_libraries(app PRIVATE Qt6::Widgets)
+target_link_libraries(app PRIVATE Qt6::Widgets fmt::fmt)
 
 # https://stackoverflow.com/a/40572207/12291425
 
