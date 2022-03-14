@@ -1,12 +1,17 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from .video.Color import _translate
+from .MainTab import MainTab
+from .stop_button import stop_button
 
 
 class MainWindow(QtWidgets.QMainWindow):
+    tab_page: MainTab
+    stopbutton: stop_button
+
     def __init__(self, config):
         super(MainWindow, self).__init__()
 
-        self.setWindowTitle("太原机车防火视频程序")
+        self.setWindowTitle(f"太原机车防火视频程序 - {config['name']}")
         self.setMinimumSize(QtCore.QSize(800, 600))
 
         self.centralwidget = QtWidgets.QWidget()
@@ -20,18 +25,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.centralwidget.setLayout(self.main_grid)
 
         self.main_grid.setContentsMargins(0, 0, 0, 0)
-        from .MainTab import MainTab
 
         self.tab_page = MainTab(config)
         self.main_grid.addWidget(self.tab_page, 0, 0, 1, 1)
 
-        from .stop_button import stop_button
 
-        self.stop_button = stop_button()
-        self.stop_button.setParent(self.centralwidget)
+        self.stopbutton = stop_button()
+        self.stopbutton.setParent(self.centralwidget)
 
         self.tab_page.raise_()
-        self.stop_button.raise_()
+        self.stopbutton.raise_()
 
         self.setCentralWidget(self.centralwidget)
 

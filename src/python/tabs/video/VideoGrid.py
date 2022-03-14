@@ -4,6 +4,8 @@ from .VideoFrame import VideoFrame
 
 
 class VideoGrid(QtWidgets.QGridLayout):
+    widgets: typing.List[VideoFrame]
+
     def __init__(self, max_count) -> None:
         super(VideoGrid, self).__init__()
         self.setSpacing(0)

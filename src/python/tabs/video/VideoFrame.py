@@ -20,9 +20,23 @@ class VideoFrame(QtWidgets.QWidget):
     double_click_signal = pyqtSignal(int)
     number: int = -1
     maxmized: bool = False
+    group: str
+    name: str
+    detector: int
+    address: str
+    stream_addr: str
 
-    def __init__(self, name, ip) -> None:
+    def __init__(
+        self, group: str, name: str, detector: int, address: str, stream_addr: str
+    ) -> None:
         super(VideoFrame, self).__init__()
+
+        self.group = group
+        self.name = name
+        self.detector = detector
+        self.address = address
+        self.stream_addr = stream_addr
+
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         self.setStyleSheet("border: 1px solid white;")
@@ -37,10 +51,9 @@ class VideoFrame(QtWidgets.QWidget):
         layout.addWidget(self.frame)
         self.setLayout(layout)
         hwnd = int(self.frame.winId())
-        self.name = name
-        self.ip = ip
-        self.text.setText(f"无信号\n{self.ip}")
-        self.client = stream_lib.Client(hwnd, ip)
+
+        self.text.setText(f"无信号\n{self.group}{self.name}\n{self.address}")
+        self.client = stream_lib.Client(hwnd, address)
         self.client.stream()
 
     def start_record(self, train_num, directory):

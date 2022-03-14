@@ -4,9 +4,7 @@
 #include <QDebug>
 #include <memory>
 #include <QFile>
-#include <QTextStream>
 #include <fmt/core.h>
-#include <QPointer>
 using namespace std;
 
 class A

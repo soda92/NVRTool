@@ -1,10 +1,38 @@
 from PyQt6 import QtWidgets
+
+from .video.VideoTab import VideoTab
+from .device.DeviceTab import DeviceTab
 from .video.Color import _translate
+from .sensor.SensorTab import SensorTab
+from .event.EventsTab import EventsTab
 
 
 class MainTab(QtWidgets.QTabWidget):
+    tab_video: VideoTab
+    tab_device: DeviceTab
+    tab_sensor: SensorTab
+    tab_events: EventsTab
+
     def __init__(self, config):
         super(MainTab, self).__init__()
+
+        self.tab_video = VideoTab(config)
+        self.addTab(self.tab_video, "")
+
+        self.tab_device = DeviceTab()
+        self.addTab(self.tab_device, "")
+
+        self.tab_sensor = SensorTab()
+        self.addTab(self.tab_sensor, "")
+
+        self.tab_events = EventsTab()
+        self.addTab(self.tab_events, "")
+
+        self.setTabText(self.indexOf(self.tab_video), _translate("MainWindow", "视频预览"))
+        self.setTabText(self.indexOf(self.tab_device), _translate("MainWindow", "设备管理"))
+        self.setTabText(self.indexOf(self.tab_sensor), _translate("MainWindow", "防火信息"))
+        self.setTabText(self.indexOf(self.tab_events), _translate("MainWindow", "故障记录"))
+
         self.setStyleSheet(
             """
             QTabBar::tab  {
@@ -56,29 +84,3 @@ class MainTab(QtWidgets.QTabWidget):
             }
         """
         )
-
-        from .video.VideoTab import VideoTab
-
-        self.tab_video = VideoTab(config)
-        self.addTab(self.tab_video, "")
-
-        self.setTabText(self.indexOf(self.tab_video), _translate("MainWindow", "视频预览"))
-
-        from .device.DeviceTab import DeviceTab
-
-        self.tab_device = DeviceTab()
-        self.addTab(self.tab_device, "")
-
-        self.setTabText(self.indexOf(self.tab_device), _translate("MainWindow", "设备管理"))
-
-        from .sensor.SensorTab import SensorTab
-
-        self.tab_sensor = SensorTab()
-        self.addTab(self.tab_sensor, "")
-        self.setTabText(self.indexOf(self.tab_sensor), _translate("MainWindow", "防火信息"))
-
-        from .event.EventsTab import EventsTab
-
-        self.tab_events = EventsTab()
-        self.addTab(self.tab_events, "")
-        self.setTabText(self.indexOf(self.tab_events), _translate("MainWindow", "故障记录"))
