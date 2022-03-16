@@ -1,17 +1,29 @@
+import os
+import threading
+import time
 from PyQt6 import QtWidgets
+from PyQt6 import QtCore
+import datetime
 from .VideoGrid import VideoGrid
 from .VideoFrame import VideoFrame
-from typing import List
+from typing import Any, List
 from .Color import Color
 
 
 class VideoBoxTab(QtWidgets.QTabWidget):
+    """Video Box tabs."""
+
     frames: List[VideoFrame] = []
     grids: List[VideoGrid] = []
     tabs: List[QtWidgets.QWidget] = []
+    config: Any
 
     def __init__(self, config):
         super(VideoBoxTab, self).__init__()
+
+        self.config = config
+        self.check_path()
+
         if config["window_size"] != 4:
             self.grids = [VideoGrid(3) for _ in range(2)]
         else:
@@ -22,8 +34,10 @@ class VideoBoxTab(QtWidgets.QTabWidget):
             self.tabs[i].setLayout(self.grids[i])
             self.addTab(self.tabs[i], "")
 
+        count = 0
         for group in config["groups"]:
             for device in group["devices"]:
+                count += 1
                 self.frames.append(
                     VideoFrame(
                         group=group["group"],
@@ -31,6 +45,8 @@ class VideoBoxTab(QtWidgets.QTabWidget):
                         detector=device["detector"],
                         address=device["address"],
                         stream_addr=device["stream_addr"],
+                        count=count,
+                        config=config,
                     )
                 )
 
@@ -128,6 +144,35 @@ class VideoBoxTab(QtWidgets.QTabWidget):
             }
         """
         )
+
+    def check_path(self):
+        self.check_current()
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.check_future)
+        self.timer.start(1000 * 5 * 60)
+
+    def check_current(self):
+        current = datetime.datetime.now()
+        formated_date = f"{current.year:04d}-{current.month:02d}-{current.day:02d}"
+        date_folder = os.path.join(self.config["record_path_root"], formated_date)
+        try:
+            if not os.path.exists(date_folder):
+                os.makedirs(date_folder)
+        except:
+            pass
+
+    def check_future(self):
+        current = datetime.datetime.now()
+        span = datetime.timedelta(minutes=6)
+        future = current + span
+        if future.day != current.day:
+            formated_date = f"{future.year:04d}-{future.month:02d}-{future.day:02d}"
+            date_folder = os.path.join(self.config["record_path_root"], formated_date)
+            if not os.path.exists(date_folder):
+                try:
+                    os.makedirs(date_folder)
+                except:
+                    pass
 
 
 class VideoTab(QtWidgets.QWidget):

@@ -19,7 +19,7 @@ class MainTab(QtWidgets.QTabWidget):
         self.tab_video = VideoTab(config)
         self.addTab(self.tab_video, "")
 
-        self.tab_device = DeviceTab()
+        self.tab_device = DeviceTab(self.tab_video.video_box_tab.frames, config)
         self.addTab(self.tab_device, "")
 
         self.tab_sensor = SensorTab()
