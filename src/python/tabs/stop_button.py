@@ -6,7 +6,6 @@ _translate = QtCore.QCoreApplication.translate
 class stop_button(QtWidgets.QPushButton):
     def __init__(self):
         super(stop_button, self).__init__()
-        self.setGeometry(QtCore.QRect(692, 5, 101, 41))
         self.setStyleSheet(
             """
             QPushButton#stop_warn_button{
@@ -15,6 +14,8 @@ class stop_button(QtWidgets.QPushButton):
                 border: 1px solid white;
                 font-size: 22px;
                 font-family: "Microsoft Yahei";
+                margin: 5px;
+                padding: 3px;
             }
             QPushButton#stop_warn_button::pressed{
                 background-color: red;

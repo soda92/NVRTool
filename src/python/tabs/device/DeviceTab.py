@@ -1,6 +1,7 @@
 from typing import Any, List
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore
+from PyQt6 import QtGui
 from ..video.VideoFrame import VideoFrame
 
 
@@ -66,6 +67,10 @@ class DeviceTab(QtWidgets.QWidget):
                     margin-right: auto;
                     border: none;
                 }
+                QTableWidget::item{
+                    padding-top: 5px;
+                    padding-bottom: 5px;
+                }
                 """
             )
             self.tables[i].setSizePolicy(
@@ -75,10 +80,23 @@ class DeviceTab(QtWidgets.QWidget):
             self.tables[i].setSizeAdjustPolicy(
                 QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
             )
+            self.tables[i].horizontalHeader().setSectionResizeMode(
+                0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents
+            )
+            self.tables[i].horizontalHeader().setSectionResizeMode(
+                1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents
+            )
+            self.tables[i].verticalHeader().setSectionResizeMode(
+                QtWidgets.QHeaderView.ResizeMode.Stretch
+            )
+
             self.table_area_layout.addWidget(
                 self.tables[i], QtCore.Qt.AlignmentFlag.AlignCenter
             )
 
+        font = QtGui.QFont()
+        font.setPixelSize(22)
+        font.setFamily("Microsoft Yahei")
         counts = [0 for _ in range(len(config["groups"]))]
         for i in range(len(self.frames)):
             for j in range(len(groups)):
@@ -86,6 +104,7 @@ class DeviceTab(QtWidgets.QWidget):
                     item0 = QtWidgets.QTableWidgetItem(
                         f"{self.frames[i].group}{self.frames[i].name}"
                     )
+                    item0.setFont(font)
                     item0.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tables[j].setItem(
                         counts[j],
@@ -95,6 +114,7 @@ class DeviceTab(QtWidgets.QWidget):
                     item1 = QtWidgets.QTableWidgetItem(
                         f"{self.frames[i].status_text()}"
                     )
+                    item1.setFont(font)
                     item1.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tables[j].setItem(
                         counts[j],
@@ -123,6 +143,18 @@ class DeviceTab(QtWidgets.QWidget):
         self.disk_status.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("位置"))
         self.disk_status.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem("总容量"))
         self.disk_status.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem("剩余"))
+        self.disk_status.horizontalHeader().setSectionResizeMode(
+            0, QtWidgets.QHeaderView.ResizeMode.ResizeToContents
+        )
+        self.disk_status.horizontalHeader().setSectionResizeMode(
+            1, QtWidgets.QHeaderView.ResizeMode.ResizeToContents
+        )
+        self.disk_status.horizontalHeader().setSectionResizeMode(
+            2, QtWidgets.QHeaderView.ResizeMode.ResizeToContents
+        )
+        self.disk_status.verticalHeader().setSectionResizeMode(
+            QtWidgets.QHeaderView.ResizeMode.ResizeToContents
+        )
 
         self.disk_status_w = QtWidgets.QWidget()
         self.disk_status_l = QtWidgets.QHBoxLayout()

@@ -29,13 +29,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.tab_page = MainTab(config)
         self.main_grid.addWidget(self.tab_page, 0, 0, 1, 1)
 
-
-        self.stopbutton = stop_button()
-        self.stopbutton.setParent(self.centralwidget)
-
-        self.tab_page.raise_()
-        self.stopbutton.raise_()
-
         self.setCentralWidget(self.centralwidget)
 
     def status(self):

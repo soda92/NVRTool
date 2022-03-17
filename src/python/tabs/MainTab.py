@@ -1,10 +1,12 @@
 from PyQt6 import QtWidgets
+from PyQt6 import QtCore
 
 from .video.VideoTab import VideoTab
 from .device.DeviceTab import DeviceTab
 from .video.Color import _translate
 from .sensor.SensorTab import SensorTab
 from .event.EventsTab import EventsTab
+from .stop_button import stop_button
 
 
 class MainTab(QtWidgets.QTabWidget):
@@ -33,6 +35,8 @@ class MainTab(QtWidgets.QTabWidget):
         self.setTabText(self.indexOf(self.tab_sensor), _translate("MainWindow", "防火信息"))
         self.setTabText(self.indexOf(self.tab_events), _translate("MainWindow", "故障记录"))
 
+        self.button = stop_button()
+        self.setCornerWidget(self.button, QtCore.Qt.Corner.TopRightCorner)
         self.setStyleSheet(
             """
             QTabBar::tab  {
@@ -40,7 +44,7 @@ class MainTab(QtWidgets.QTabWidget):
                 color: white;
                 height: 50px;
                 border: 1px solid white;
-                width: 100px;
+                width: 130px;
                 font-size: 22px;
                 font-family: \"Microsoft Yahei\";
             }

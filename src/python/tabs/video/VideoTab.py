@@ -31,6 +31,7 @@ class VideoBoxTab(QtWidgets.QTabWidget):
 
         self.tabs = [QtWidgets.QWidget() for _ in self.grids]
         for i in range(len(self.tabs)):
+            self.grids[i].setContentsMargins(0, 0, 0, 0)
             self.tabs[i].setLayout(self.grids[i])
             self.addTab(self.tabs[i], "")
 
@@ -98,9 +99,9 @@ class VideoBoxTab(QtWidgets.QTabWidget):
             QTabBar::tab  {
                 background: black;
                 color: white;
-                height: 50px;
+                height: 40px;
                 border: 1px solid white;
-                width: 130px;
+                width: 150px;
                 font-size: 22px;
                 font-family: \"Microsoft Yahei\";
             }
@@ -182,6 +183,7 @@ class VideoTab(QtWidgets.QWidget):
         super(VideoTab, self).__init__()
 
         self.layout = QtWidgets.QVBoxLayout()
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.video_box_tab = VideoBoxTab(config)
         self.layout.addWidget(self.video_box_tab)
         self.setLayout(self.layout)
