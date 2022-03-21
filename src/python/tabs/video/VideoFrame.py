@@ -3,6 +3,7 @@ from typing import Any
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore
 import datetime
+from typing import Tuple
 
 
 import os, sys
@@ -33,6 +34,9 @@ class VideoFrame(QtWidgets.QWidget):
     count: int
     config: Any
     process: Any = None
+    table_number: int = 0
+    table_index: int = 0
+    recording_signal = QtCore.pyqtSignal(int, int, bool)
 
     def __init__(
         self,
@@ -73,6 +77,34 @@ class VideoFrame(QtWidgets.QWidget):
         self.client = stream_lib.Client(hwnd, address)
         self.client.stream()
 
+    def check_and_start_record(self):
+        self.process_check = QtCore.QProcess(self)
+        self.process_check.finished.connect(self.check)
+        self.process_check.start(
+            "ffprobe",
+            [
+                "-show_format",
+                "-timeout",
+                "1000000",
+                "-loglevel",
+                "quiet",
+                self.stream_addr,
+            ],
+        )
+
+    def check(self):
+        output = self.process_check.readAllStandardOutput()
+        output = str(output, "utf-8")
+        # print(output)
+        if output != "":
+            self.start_record()
+        else:
+            self.timer = QtCore.QTimer()
+            self.timer.setSingleShot(True)
+            self.timer.setInterval(7000)
+            self.timer.timeout.connect(self.check_and_start_record)
+            self.timer.start()
+
     def start_record(self):
         current = datetime.datetime.now()
         formated_date = f"{current.year:04d}-{current.month:02d}-{current.day:02d}"
@@ -104,7 +136,7 @@ class VideoFrame(QtWidgets.QWidget):
             "1",
             "-segment_format",
             "mp4",
-            f'self.config["record_path_root"]/%Y-%m-%d/'
+            f"{self.config['record_path_root']}/%Y-%m-%d/"
             + self.config["name"]
             + "_"
             + "北京蓝天多维"
@@ -115,15 +147,23 @@ class VideoFrame(QtWidgets.QWidget):
             + "_"
             + "%Y%m%d_%H%M%S.mp4",
         ]
-        self.process = (
-            QtCore.QProcess()
+        self.process = QtCore.QProcess(
+            self
         )  # Keep a reference to the QProcess (e.g. on self) while it's running.
+
         self.process.finished.connect(self.process_finished)  # Clean up once complete.
         self.process.start(args[0], args[1:])
+        self.recording_signal.emit(self.table_number, self.table_index, True)
 
     def process_finished(self):
-        self.message("Process finished.")
+        print("Process finished.")
         self.process = None
+        self.recording_signal.emit(self.table_number, self.table_index, False)
+        self.timer = QtCore.QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.setInterval(7000)
+        self.timer.timeout.connect(self.check_and_start_record)
+        self.timer.start()
 
     def status(self):
         if self.process is None:

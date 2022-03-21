@@ -48,11 +48,13 @@ class DeviceTab(QtWidgets.QWidget):
         self.table_area.setLayout(self.table_area_layout)
 
         self.tables = [QtWidgets.QTableWidget() for _ in config["groups"]]
-        groups = [config["groups"][i]["group"] for i in range(len(config["groups"]))]
+        self.groups = [
+            config["groups"][i]["group"] for i in range(len(config["groups"]))
+        ]
         counts = [0 for _ in range(len(config["groups"]))]
         for i in range(len(self.frames)):
-            for j in range(len(groups)):
-                if self.frames[i].group == groups[j]:
+            for j in range(len(self.groups)):
+                if self.frames[i].group == self.groups[j]:
                     counts[j] += 1
 
         for i in range(len(self.tables)):
@@ -99,11 +101,14 @@ class DeviceTab(QtWidgets.QWidget):
         font.setFamily("Microsoft Yahei")
         counts = [0 for _ in range(len(config["groups"]))]
         for i in range(len(self.frames)):
-            for j in range(len(groups)):
-                if self.frames[i].group == groups[j]:
+            for j in range(len(self.groups)):
+                if self.frames[i].group == self.groups[j]:
                     item0 = QtWidgets.QTableWidgetItem(
                         f"{self.frames[i].group}{self.frames[i].name}"
                     )
+                    self.frames[i].table_number = j
+                    self.frames[i].table_index = counts[j]
+                    self.frames[i].recording_signal.connect(self.refresh)
                     item0.setFont(font)
                     item0.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tables[j].setItem(
@@ -199,6 +204,24 @@ class DeviceTab(QtWidgets.QWidget):
 
             """
         )
+        self.start_record()
+
+    def start_record(self):
+        for frame in self.frames:
+            frame.check_and_start_record()
+        # self.frames[0].check_and_start_record()
+
+
+    @QtCore.pyqtSlot(int, int, bool)
+    def refresh(self, table_number: int, table_index: int, status: bool) -> None:
+        item = self.tables[table_number].item(table_index, 1)
+        if status:
+            item.setText("录像")
+            item.setForeground(QtGui.QColor("green"))
+        else:
+            item.setText("未录像")
+            item.setForeground(QtGui.QColor("red"))
+
 
     def showDialog(self) -> None:
         """Exit dialog. check password and exit."""
