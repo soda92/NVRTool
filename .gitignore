@@ -8,6 +8,7 @@ bin
 # 日志文件
 systemlog.txt
 log.txt
+*.log
 
 # NSIS
 nsis-build

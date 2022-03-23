@@ -1,9 +1,10 @@
-import subprocess
 from typing import Any
 from PyQt6 import QtWidgets
 from PyQt6 import QtCore
 import datetime
-from typing import Tuple
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 import os, sys
@@ -75,11 +76,15 @@ class VideoFrame(QtWidgets.QWidget):
 
         self.text.setText(f"无信号\n{self.group}{self.name}\n{self.address}")
         self.client = stream_lib.Client(hwnd, address)
-        self.client.stream()
+        try:
+            self.client.stream()
+        except:
+            logger.exception("预览失败")
 
     def check_and_start_record(self):
         self.process_check = QtCore.QProcess(self)
         self.process_check.finished.connect(self.check)
+        logger.info("正在连接: %s%s", self.group, self.name)
         self.process_check.start(
             "ffprobe",
             [
@@ -99,6 +104,7 @@ class VideoFrame(QtWidgets.QWidget):
         if output != "":
             self.start_record()
         else:
+            logger.warning("%s%s连接失败", self.group, self.name)
             self.timer = QtCore.QTimer()
             self.timer.setSingleShot(True)
             self.timer.setInterval(7000)
@@ -152,11 +158,12 @@ class VideoFrame(QtWidgets.QWidget):
         )  # Keep a reference to the QProcess (e.g. on self) while it's running.
 
         self.process.finished.connect(self.process_finished)  # Clean up once complete.
+        logger.info("%s%s开始录像", self.group, self.name)
         self.process.start(args[0], args[1:])
         self.recording_signal.emit(self.table_number, self.table_index, True)
 
     def process_finished(self):
-        print("Process finished.")
+        logger.warning("%s%s录像停止", self.group, self.name)
         self.process = None
         self.recording_signal.emit(self.table_number, self.table_index, False)
         self.timer = QtCore.QTimer()

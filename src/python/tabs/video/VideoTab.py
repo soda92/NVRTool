@@ -41,7 +41,7 @@ class VideoBoxTab(QtWidgets.QTabWidget):
                 count += 1
                 self.frames.append(
                     VideoFrame(
-                        group=group["group"],
+                        group=group["name"],
                         name=device["name"],
                         detector=device["detector"],
                         address=device["address"],

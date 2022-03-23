@@ -3,6 +3,9 @@ from PyQt6 import QtWidgets
 from PyQt6 import QtCore
 from PyQt6 import QtGui
 from ..video.VideoFrame import VideoFrame
+from typing import List
+from .DiskStatusServer import DiskStatus, StatusReporter, DiskStatusServer
+import pydevd
 
 
 class DeviceTab(QtWidgets.QWidget):
@@ -49,7 +52,7 @@ class DeviceTab(QtWidgets.QWidget):
 
         self.tables = [QtWidgets.QTableWidget() for _ in config["groups"]]
         self.groups = [
-            config["groups"][i]["group"] for i in range(len(config["groups"]))
+            config["groups"][i]["name"] for i in range(len(config["groups"]))
         ]
         counts = [0 for _ in range(len(config["groups"]))]
         for i in range(len(self.frames)):
@@ -120,6 +123,7 @@ class DeviceTab(QtWidgets.QWidget):
                         f"{self.frames[i].status_text()}"
                     )
                     item1.setFont(font)
+                    item1.setForeground(QtGui.QColor("red"))
                     item1.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                     self.tables[j].setItem(
                         counts[j],
@@ -134,8 +138,15 @@ class DeviceTab(QtWidgets.QWidget):
         layout.addWidget(label_disk)
 
         self.disk_status = QtWidgets.QTableWidget()
-        self.disk_status.setRowCount(2)
+        self.disk_status.setRowCount(len(config["groups"]))
         self.disk_status.setColumnCount(3)
+        for i in range(self.disk_status.rowCount()):
+            for j in range(self.disk_status.columnCount()):
+                item = QtWidgets.QTableWidgetItem("错误")
+                item.setFont(font)
+                item.setForeground(QtGui.QColor("red"))
+                item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+                self.disk_status.setItem(i, j, item)
         self.disk_status.setSizeAdjustPolicy(
             QtWidgets.QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents
         )
@@ -172,6 +183,11 @@ class DeviceTab(QtWidgets.QWidget):
 
         layout.addWidget(self.button)
         self.setObjectName("devicetab")
+        self.disk_status_server = DiskStatusServer(config)
+        self.disk_status_server.start()
+        self.status_reporter = StatusReporter(config)
+        self.status_reporter.result_signal.connect(self.refresh_disks)
+        self.status_reporter.start()
 
         self.setStyleSheet(
             """
@@ -211,9 +227,9 @@ class DeviceTab(QtWidgets.QWidget):
             frame.check_and_start_record()
         # self.frames[0].check_and_start_record()
 
-
     @QtCore.pyqtSlot(int, int, bool)
     def refresh(self, table_number: int, table_index: int, status: bool) -> None:
+        pydevd.settrace(suspend=False)
         item = self.tables[table_number].item(table_index, 1)
         if status:
             item.setText("录像")
@@ -222,6 +238,24 @@ class DeviceTab(QtWidgets.QWidget):
             item.setText("未录像")
             item.setForeground(QtGui.QColor("red"))
 
+    @QtCore.pyqtSlot(list)
+    def refresh_disks(self, status_all: List[DiskStatus]) -> None:
+        pydevd.settrace(suspend=False)
+        for i, status in enumerate(status_all):
+            item_location = self.disk_status.item(i, 0)
+            item_total = self.disk_status.item(i, 1)
+            item_free = self.disk_status.item(i, 2)
+            if status.error:
+                for item in (item_location, item_total, item_free):
+                    item.setText("错误")
+                    item.setForeground(QtGui.QColor("red"))
+            else:
+                for (item, value) in zip(
+                    (item_location, item_total, item_free),
+                    (status.location, status.total, status.free),
+                ):
+                    item.setText(value)
+                    item.setForeground(QtGui.QColor("green"))
 
     def showDialog(self) -> None:
         """Exit dialog. check password and exit."""

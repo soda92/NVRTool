@@ -10,7 +10,8 @@
     "window_size": "auto",
     "groups": [
         {
-            "group": "A节",
+            "name": "A节",
+            "address": "192.168.104.200",
             "current": true,
             "devices": [
                 {
@@ -52,7 +53,8 @@
             ]
         },
         {
-            "group": "B节",
+            "name": "B节",
+            "address": "192.168.104.201",
             "current": false,
             "devices": [
                 {
