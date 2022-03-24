@@ -6,6 +6,7 @@ pytest
 
 # depndencies
 PyQt5
+PyQt6
 pywin32
 pywinauto
 Flask

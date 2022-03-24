@@ -20,7 +20,6 @@ class VideoBoxTab(QtWidgets.QTabWidget):
 
     def __init__(self, config):
         super(VideoBoxTab, self).__init__()
-
         self.config = config
         self.check_path()
 
@@ -148,7 +147,8 @@ class VideoBoxTab(QtWidgets.QTabWidget):
 
     def check_path(self):
         self.check_current()
-        self.timer = QtCore.QTimer(self)
+        
+        self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.check_future)
         self.timer.start(1000 * 5 * 60)
 

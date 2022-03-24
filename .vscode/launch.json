@@ -8,46 +8,12 @@
             "name": "PyQt",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\src\\python\\main.py",
-            "cwd": "${workspaceFolder}",
-            "justMyCode": true
-        },
-        {
-            "name": "Qt",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}\\build\\app.exe",
-            "cwd": "${workspaceFolder}\\build",
-            "preLaunchTask": "qtbuild",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "bin-launcher",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}\\build\\bin\\FireVideo.exe",
+            "program": "${workspaceFolder}/src/main.py",
             "args": [],
-            "cwd": "${workspaceFolder}\\build\\bin",
-            "stopAtEntry": false,
-            "environment": [],
-            "console": "externalTerminal",
-            "preLaunchTask": "quickbuild"
-        },
-        {
-            "name": "py-launcher",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}\\pysrc\\service.py",
-            "cwd": "${workspaceFolder}\\build\\bin",
-            "console": "integratedTerminal"
-        },
-        {
-            "name": "staging-debug",
-            "type": "python",
-            "request": "launch",
-            "program": "${workspaceFolder}\\build\\bin\\service.py",
-            "cwd": "${workspaceFolder}\\build\\bin",
-            "console": "integratedTerminal"
+            "env": {},
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }

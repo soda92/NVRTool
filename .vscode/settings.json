@@ -77,13 +77,13 @@
     },
     "python.formatting.provider": "black",
     "python.testing.pytestArgs": [
-        "tests"
+        "test"
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "cmake.sourceDirectory": "${workspaceFolder}/src/qt",
+    "cmake.sourceDirectory": "${workspaceFolder}/plugin",
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "cmake.configureEnvironment": {
-        "CMAKE_TOOLCHAIN_FILE": "D:/src/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
     }
 }

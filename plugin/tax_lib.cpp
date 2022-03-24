@@ -204,6 +204,7 @@ int AnalyseTax(UCHAR *DataBuf, TAXDATA *TaxData)
 	return 0;
 }
 
+#define _WIN32_WINNT 0x0A00
 #include <boost/asio.hpp>
 #include <thread>
 #include <chrono>

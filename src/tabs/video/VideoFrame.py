@@ -3,28 +3,16 @@ from PyQt6 import QtWidgets
 from PyQt6 import QtCore
 import datetime
 import logging
+import stream_lib
+import os
 
 logger = logging.getLogger(__name__)
-
-
-import os, sys
-import pathlib
-
-if not os.path.exists("serial_lib.pyd"):
-    this_path = pathlib.Path(__file__).resolve().parent
-    bin_path = this_path.parent.parent.parent.parent.joinpath("bin")
-    os.add_dll_directory(str(bin_path))
-    sys.path.insert(0, str(bin_path))
-
-import stream_lib
-
-from PyQt6.QtCore import pyqtSignal
 
 
 class VideoFrame(QtWidgets.QWidget):
     """A Video Frame Window."""
 
-    double_click_signal = pyqtSignal(int)
+    double_click_signal = QtCore.pyqtSignal(int)
     number: int = -1
     maxmized: bool = False
     group: str
@@ -58,6 +46,7 @@ class VideoFrame(QtWidgets.QWidget):
         self.stream_addr = stream_addr
         self.count = count
         self.config = config
+
 
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -172,16 +161,6 @@ class VideoFrame(QtWidgets.QWidget):
         self.timer.timeout.connect(self.check_and_start_record)
         self.timer.start()
 
-    def status(self):
-        if self.process is None:
-            return False
-        return True
-
-    def status_text(self):
-        if self.status():
-            return "录像"
-        else:
-            return "未录像"
 
     def mouseDoubleClickEvent(self, event) -> None:
         self.double_click_signal.emit(self.number)

@@ -1,5 +1,7 @@
-Push-Location $PSSCriptRoot/../
-$dest = "$PSScriptRoot/../bin"
+Set-Location $PSSCriptRoot/../
+$dest = "$PSScriptRoot/../lib"
+
+
 Write-Host "copying to $dest"
 
 if (Test-Path -Path $dest) {
@@ -11,10 +13,8 @@ New-Item -ItemType Directory -Path $dest -Force
 Copy-Item -Path build/*.exe $dest
 Copy-Item -Path build/*.dll $dest
 
-Copy-Item -Path CHANGELOG.md $dest
-
-Copy-Item -Path HCNetSDK/lib_win64/*.dll -Destination $dest -Recurse -Force
-Copy-Item -Path HCNetSDK/lib_win64/HCNetSDKCom -Destination $dest -Recurse -Force
+Copy-Item -Path plugin/HCNetSDK/lib_win64/*.dll -Destination $dest -Recurse -Force
+Copy-Item -Path plugin/HCNetSDK/lib_win64/HCNetSDKCom -Destination $dest -Recurse -Force
 
 Push-Location C:/Windows/System32/
 Copy-Item -Path `
@@ -22,9 +22,6 @@ Copy-Item -Path `
     -Destination $dest
 
 Pop-Location
-Copy-Item `
-    -Path src/python/service.py, src/configurations/Default.ini, src/configurations/程序配置.ini `
-    -Destination $dest
 
 Push-Location $dest
 Rename-Item stream_lib.dll stream_lib.pyd

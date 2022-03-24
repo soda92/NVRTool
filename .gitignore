@@ -28,5 +28,8 @@ venv*
 # db
 *.sqlite3
 
-# Qt install
-/Qt
+# built plugin
+/lib
+
+# pytest
+/.pytest_cache
