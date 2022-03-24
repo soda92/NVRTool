@@ -1,21 +1,9 @@
-# tooling
-wheel
-pyinstaller
-black
-pytest
-pydevd
-
-# depndencies
-PyQt5
+# GUI
 PyQt6
-pywin32
-pywinauto
-Flask
+
+# server & client
+flask
 requests
-netifaces
-psutil
 
-
-# doc
-sphinx
-sphinx-qt-documentation
+# debug
+pydevd

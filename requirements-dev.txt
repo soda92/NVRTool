@@ -1,0 +1,17 @@
+# tooling
+wheel
+pyinstaller
+black
+pytest
+
+# doc
+sphinx
+sphinx-qt-documentation
+
+# old
+PyQt5
+pywin32
+pywinauto
+netifaces
+psutil
+
