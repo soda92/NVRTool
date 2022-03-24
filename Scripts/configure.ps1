@@ -24,8 +24,11 @@ if($a -contains "not recognized"){
     Write-Host "Visual Studio 2022 amd64 Command Prompt variables set." -ForegroundColor Green
 }
 
-Push-Location $PSScriptRoot/../plugin
-$Env:CMAKE_TOOLCHAIN_FILE = "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+Push-Location $PSScriptRoot/../
 
-cmake -B $PSScriptRoot/../build -G "Ninja" -Wno-dev
+$Env:CMAKE_TOOLCHAIN_FILE = "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+Push-Location plugin
+cmake -B ../build -G "Ninja" -Wno-dev
+Pop-Location
+
 Pop-Location

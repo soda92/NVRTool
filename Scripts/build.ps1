@@ -24,10 +24,14 @@ if($a -contains "not recognized"){
     Write-Host "Visual Studio 2022 amd64 Command Prompt variables set." -ForegroundColor Green
 }
 
-cmake --build $PSScriptRoot/../build
+Push-Location $PSScriptRoot/../
+
+cmake --build build
 
 if ($? -eq $false){
     throw "error occored."
 }
 
 pwsh $PSScriptRoot/afterbuild.ps1
+
+Pop-Location

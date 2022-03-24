@@ -1,4 +1,4 @@
-Set-Location $PSSCriptRoot/../
+Push-Location $PSSCriptRoot/../
 $dest = "$PSScriptRoot/../lib"
 
 
@@ -27,4 +27,6 @@ Push-Location $dest
 Rename-Item stream_lib.dll stream_lib.pyd
 Rename-Item serial_lib.dll serial_lib.pyd
 Rename-Item tax_lib.dll tax_lib.pyd
+Pop-Location
+
 Pop-Location

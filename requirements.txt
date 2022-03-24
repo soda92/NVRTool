@@ -3,6 +3,7 @@ wheel
 pyinstaller
 black
 pytest
+pydevd
 
 # depndencies
 PyQt5
