@@ -3,6 +3,11 @@ wheel
 pyinstaller
 black
 pytest
+ipython
+python-vlc
+Pillow
+imagehash
+
 
 # doc
 sphinx
