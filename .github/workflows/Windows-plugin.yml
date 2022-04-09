@@ -1,0 +1,86 @@
+name: CMake
+
+on:
+  push:
+    branches: [main, dev]
+    paths: plugin/**
+  pull_request:
+    branches: [main]
+    paths: plugin/**
+
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache vcpkg
+        id: cache-vcpkg
+        uses: actions/cache@v2
+        with:
+          path: |
+            C:\Users\runneradmin\AppData\Local\vcpkg\archives
+          key: ${{ runner.os }}-cache2
+
+      - name: Install ninja-build tool
+        uses: seanmiddleditch/gha-setup-ninja@v3
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install dependencies
+        run: |
+          Push-Location C:/vcpkg
+          .\bootstrap-vcpkg.bat
+          .\vcpkg install fmt boost-json boost-asio boost-beast boost-filesystem `
+            boost-process boost-python --triplet x64-windows
+          Pop-Location
+
+      - name: cmake configure
+        run: |
+          Push-Location plugin
+          $Env:CMAKE_TOOLCHAIN_FILE="C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          cmake -B ../build -G "Ninja" -Wno-dev
+          Pop-Location
+
+      - name: cmake build
+        run: |
+          cmake --build build
+
+      - name: copy dependencies
+        run: |
+          $dest = "${{github.workspace}}/lib"
+        
+
+          Write-Host "copying to $dest"
+
+          if (Test-Path -Path $dest) {
+              Remove-Item -Path $dest/* -Recurse
+          }
+
+          New-Item -ItemType Directory -Path $dest -Force
+
+          Copy-Item -Path build/*.exe $dest
+          Copy-Item -Path build/*.dll $dest
+
+          Copy-Item -Path plugin/HCNetSDK/lib_win64/*.dll -Destination $dest -Recurse -Force
+          Copy-Item -Path plugin/HCNetSDK/lib_win64/HCNetSDKCom -Destination $dest -Recurse -Force
+
+          Push-Location C:/Windows/System32/
+          Copy-Item -Path `
+              mfc140d.dll, msvcp140d.dll, VCRUNTIME140D.dll, VCRUNTIME140_1D.dll, ucrtbased.dll `
+              -Destination $dest
+
+          Pop-Location
+
+          Push-Location $dest
+          Rename-Item stream_lib.dll stream_lib.pyd
+          Rename-Item serial_lib.dll serial_lib.pyd
+          Rename-Item tax_lib.dll tax_lib.pyd
+          Pop-Location
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: lib
+          path: lib

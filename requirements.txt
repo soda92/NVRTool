@@ -1,0 +1,9 @@
+# GUI
+PyQt6
+
+# server & client
+flask
+requests
+
+# debug
+pydevd

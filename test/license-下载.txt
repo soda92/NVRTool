@@ -1,0 +1,5 @@
+Username = [6A]			        // 用户名
+Password = [A6]			        // 密码
+Channel  = [01,02,03]		    // 通道号，用逗号分割，00表示01-06
+TimeFrom = [2021-12-23 10:00]	// 下载起始时间，格式为yyyy-mm-dd hh:mm
+TimeSpan = [20]			        // 下载的时间长度，从TimeFrom开始计算，以小时为单位

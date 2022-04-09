@@ -1,0 +1,23 @@
+# tooling
+wheel
+pyinstaller
+black
+pytest
+ipython
+python-vlc
+Pillow
+imagehash
+
+
+# doc
+jupyter
+Sphinx
+sphinx-qt-documentation
+myst-nb
+
+# old
+PyQt5
+pywin32; sys_platform == 'Windows'
+pywinauto; sys_platform == 'Windows'
+netifaces; sys_platform == 'Windows'
+psutil; sys_platform == 'Windows'

@@ -1,113 +1,40 @@
-# 版本历史
-*-Release-*
-*-Debug-*
+# 生成目录
+build
+bin
 
-# 程序生成目录
-Release
-Debug
+# 生成文件
+*.pyd
 
-# 生成的文件
-*.dll
-*.lib
+# 日志文件
+systemlog.txt
+log.txt
+*.log
 
-*.she
-*.exe
-*.lib
-*.obj
-
+# NSIS
+nsis-build
 installer.out.nsi
-
-
-# Visual Studio 文件
-*.sdf
-*.suo
-.vs
-
 
 # 备份文件
 *-old
 *.zip
 *.bak
 
-
-# vs
-*.aps
-enc_temp_folder
-
-build
-*.filters
-*.user
-ipch
-
-# 资源文件
-*.png
-*.psd
-!/LT_WXCL/res/LT_WXCL.rc2
-
-
-# 日志文件
-LT_WXCL/log.txt
-
-# 要用到的文件
-!LT_WXCL_Dll/*.dll
-!LT_WXCL_Dll/HCNetSDKCom/*.dll
-!LT_WXCL_Dll/*.lib
-!LT_WXCL_Dll/HCNetSDKCom/*.lib
-!LT_WXCL/**/*.lib
-!python-3.8.10-amd64.exe
-
-
-# OLD
-*-OLD
-
-# 日志文件
-systemlog.txt
-
-
-# Ignore NuGet Packages
-*.nupkg
-
-# The packages folder can be ignored because of Package Restore
-**/[Pp]ackages/*
-
-# except build/, which is used as an MSBuild target.
-!**/[Pp]ackages/build/
-
-# Uncomment if necessary however generally it will be regenerated when needed
-#!**/[Pp]ackages/repositories.config
-
-# NuGet v3's project.json files produces more ignorable files
-*.nuget.props
-*.nuget.targets
-
-# Ignore other intermediate files that NuGet might create. project.lock.json is used in conjunction
-# with project.json (NuGet v3); project.assets.json is used in conjunction with the PackageReference
-# format (NuGet v4 and .NET Core).
-project.lock.json
-project.assets.json
-
-# python cache
+# Python
 __pycache__
-
-# old deps
-core
-packages
-
-# deps
-
-req_pack
-
-# generated window
-*window.py
 
 # virtualenv
 venv*
 
-# pyinstaller
-*.spec
-build
-dist
+# db
+*.sqlite3
 
+# built plugin
+/lib
+
+# pytest
+/.pytest_cache
+
+*.png
 _build
 *.mkv
 *.log

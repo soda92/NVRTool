@@ -1,0 +1,7 @@
+create vdisk file=D:\vdisk.vhd maximum=100 type=expandable
+select vdisk file=D:\vdisk.vhd
+attach vdisk
+convert mbr
+create partition primary
+format fs=ntfs label="HardDisk" quick
+assign letter=e
