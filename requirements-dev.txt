@@ -10,8 +10,10 @@ imagehash
 
 
 # doc
-sphinx
+jupyter
+Sphinx
 sphinx-qt-documentation
+myst-nb
 
 # old
 PyQt5
@@ -19,4 +21,3 @@ pywin32
 pywinauto
 netifaces
 psutil
-

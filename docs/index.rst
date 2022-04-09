@@ -9,17 +9,7 @@ Welcome to py-TaiYuan's documentation!
 .. toctree::
    :maxdepth: 2
 
-   delete_file
-   update_profile
-   copy_file
-   check_disk
-   delete_file_test
-   get_files
-   launcher
-   license_util
-   parse_config
-   server
-   tasks
+   record
 
 
 Indices and tables
