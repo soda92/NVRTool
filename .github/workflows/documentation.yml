@@ -33,6 +33,7 @@ jobs:
         run: |
           pushd docs
           cd _build/html
+          touch .nojekyll
           git init
           git add -A
           git config --local user.email "action@github.com"
