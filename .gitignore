@@ -108,3 +108,7 @@ venv*
 build
 dist
 
+_build
+*.mkv
+*.log
+*.pyd
