@@ -3,7 +3,7 @@ from PyQt6 import QtWidgets
 from PyQt6 import QtCore
 import datetime
 import logging
-import stream_lib
+import stream_lib # type: ignore
 import os
 
 logger = logging.getLogger(__name__)
@@ -13,13 +13,17 @@ class VideoFrame(QtWidgets.QWidget):
     """A Video Frame Window."""
 
     double_click_signal = QtCore.pyqtSignal(int)
+    "双击事件, 发送给VideoGrid.maxmize"
     number: int = -1
     maxmized: bool = False
     group: str
     name: str
     detector: int
+    "关联传感器id"
     address: str
+    "IP address"
     stream_addr: str
+    "视频流地址"
     count: int
     config: Any
     process: Any = None
@@ -71,6 +75,7 @@ class VideoFrame(QtWidgets.QWidget):
             logger.exception("预览失败")
 
     def check_and_start_record(self):
+        """检查流地址, 并开始录像."""
         self.process_check = QtCore.QProcess(self)
         self.process_check.finished.connect(self.check)
         logger.info("正在连接: %s%s", self.group, self.name)
@@ -87,6 +92,7 @@ class VideoFrame(QtWidgets.QWidget):
         )
 
     def check(self):
+        """检查"""
         output = self.process_check.readAllStandardOutput()
         output = str(output, "utf-8")
         # print(output)
@@ -101,6 +107,7 @@ class VideoFrame(QtWidgets.QWidget):
             self.timer.start()
 
     def start_record(self):
+        """开始录像"""
         current = datetime.datetime.now()
         formated_date = f"{current.year:04d}-{current.month:02d}-{current.day:02d}"
         date_folder = os.path.join(self.config["record_path_root"], formated_date)
@@ -115,16 +122,23 @@ class VideoFrame(QtWidgets.QWidget):
             self.stream_addr,
             "-c",
             "copy",
+            # 舍弃data流
             "-map",
+            # 视频
             "0:v:0",
             "-map",
+            # 音频
             "0:a:0",
             "-f",
+            # 自动切分
             "segment",
+            # 日期变量
             "-strftime",
             "1",
+            # 间隔15分钟
             "-segment_time",
             "00:15:00",
+            # 遵循时钟
             "-segment_atclocktime",
             "1",
             "-reset_timestamps",
@@ -152,6 +166,7 @@ class VideoFrame(QtWidgets.QWidget):
         self.recording_signal.emit(self.table_number, self.table_index, True)
 
     def process_finished(self):
+        """录像停止信号. 会在7s后重新开始录像."""
         logger.warning("%s%s录像停止", self.group, self.name)
         self.process = None
         self.recording_signal.emit(self.table_number, self.table_index, False)
@@ -163,4 +178,5 @@ class VideoFrame(QtWidgets.QWidget):
 
 
     def mouseDoubleClickEvent(self, event) -> None:
+        """双击事件: 最大化"""
         self.double_click_signal.emit(self.number)

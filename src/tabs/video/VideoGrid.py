@@ -5,6 +5,7 @@ from .VideoFrame import VideoFrame
 
 class VideoGrid(QtWidgets.QGridLayout):
     widgets: typing.List[VideoFrame]
+    """子窗口"""
 
     def __init__(self, max_count) -> None:
         super(VideoGrid, self).__init__()
@@ -17,6 +18,7 @@ class VideoGrid(QtWidgets.QGridLayout):
         self.maxmized = False
 
     def addWidget(self, widget: VideoFrame):
+        """添加子窗口"""
         self.widgets.append(widget)
         super().addWidget(widget, self.current_row, self.current_column)
         widget.number = self.numbers
@@ -30,6 +32,7 @@ class VideoGrid(QtWidgets.QGridLayout):
 
     @QtCore.pyqtSlot(int)
     def maxmize(self, number: int) -> None:
+        """子窗口最大最小化"""
         if self.maxmized:
             for w in self.widgets:
                 w.show()

@@ -34,7 +34,7 @@ venv*
 # pytest
 /.pytest_cache
 
-*.png
+screenshot*.png
 _build
 *.mkv
 *.log

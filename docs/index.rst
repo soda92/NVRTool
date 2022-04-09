@@ -10,6 +10,7 @@ Welcome to NVRTool's documentation!
    :maxdepth: 2
 
    record
+   grid
    旧的文档
    CHANGELOG
 

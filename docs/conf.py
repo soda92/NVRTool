@@ -15,6 +15,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../src/"))
+sys.path.insert(0, os.path.abspath("../lib/"))
 
 
 # -- Project information -----------------------------------------------------
@@ -24,7 +26,7 @@ copyright = "2022, SodaCris"
 author = "SodaCris"
 
 # The full version, including alpha/beta/rc tags
-release = "1.2.x"
+release = "alpha"
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,6 +38,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx_qt_documentation",
+    "sphinx.ext.viewcode",
     "myst_nb",
 ]
 
@@ -52,7 +55,7 @@ templates_path = ["_templates"]
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = "zh_hans"
+language = "zh_CN"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -71,3 +74,6 @@ html_theme = "alabaster"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+# google image surveillance-cameras icon
+html_favicon = "_static/surveillance-camera-3.png"

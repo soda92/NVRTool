@@ -85,5 +85,6 @@
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "cmake.configureEnvironment": {
         "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-    }
+    },
+    "esbonio.sphinx.confDir": ""
 }
