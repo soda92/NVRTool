@@ -4,6 +4,7 @@ _translate = QtCore.QCoreApplication.translate
 
 
 class stop_button(QtWidgets.QPushButton):
+    """停止报警按钮"""
     def __init__(self):
         super(stop_button, self).__init__()
         self.setStyleSheet(
@@ -30,4 +31,5 @@ class stop_button(QtWidgets.QPushButton):
         self.clicked.connect(self.print_c1)
 
     def print_c1(self):
+        """TODO 按下事件"""
         print("stop warn button clicked")

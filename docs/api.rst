@@ -40,6 +40,17 @@ Classes
 .. autoclass:: tabs.event.EventsTab.EventsTab
     :members:
 
+.. autoclass:: tabs.MainTab.MainTab
+    :members:
+
+.. autoclass:: tabs.MainWindow.MainWindow
+    :members:
+
+.. autoclass:: tabs.stop_button.stop_button
+    :members:
+
+
+
 Functions
 ---------
 

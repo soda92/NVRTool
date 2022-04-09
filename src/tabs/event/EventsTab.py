@@ -3,6 +3,7 @@ from PyQt6 import QtCore
 
 
 class EventsTab(QtWidgets.QWidget):
+    "记录故障信息"
     def __init__(self):
         super(EventsTab, self).__init__()
         self.setStyleSheet(

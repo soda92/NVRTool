@@ -3,6 +3,7 @@ from PyQt6 import QtCore
 
 
 class SensorTab(QtWidgets.QWidget):
+    "通过串口读取, 显示传感器状态"
     def __init__(self):
         super(SensorTab, self).__init__()
         self.setStyleSheet(

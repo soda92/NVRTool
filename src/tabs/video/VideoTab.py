@@ -146,6 +146,7 @@ class VideoBoxTab(QtWidgets.QTabWidget):
         )
 
     def check_path(self):
+        """检查并创建录像文件夹, 间隔5分钟"""
         self.check_current()
         
         self.timer = QtCore.QTimer()
@@ -153,6 +154,7 @@ class VideoBoxTab(QtWidgets.QTabWidget):
         self.timer.start(1000 * 5 * 60)
 
     def check_current(self):
+        "当前录像文件夹"
         current = datetime.datetime.now()
         formated_date = f"{current.year:04d}-{current.month:02d}-{current.day:02d}"
         date_folder = os.path.join(self.config["record_path_root"], formated_date)
@@ -163,6 +165,7 @@ class VideoBoxTab(QtWidgets.QTabWidget):
             pass
 
     def check_future(self):
+        "第二天的录像文件夹, 提前6分钟创建"
         current = datetime.datetime.now()
         span = datetime.timedelta(minutes=6)
         future = current + span
@@ -177,6 +180,7 @@ class VideoBoxTab(QtWidgets.QTabWidget):
 
 
 class VideoTab(QtWidgets.QWidget):
+    """VideoBoxTab包装"""
     video_box_tab: VideoBoxTab
 
     def __init__(self, config):

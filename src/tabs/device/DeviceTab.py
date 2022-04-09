@@ -223,12 +223,14 @@ class DeviceTab(QtWidgets.QWidget):
         self.start_record()
 
     def start_record(self):
+        """启动录像"""
         for frame in self.frames:
             frame.check_and_start_record()
         # self.frames[0].check_and_start_record()
 
     @QtCore.pyqtSlot(int, int, bool)
     def refresh(self, table_number: int, table_index: int, status: bool) -> None:
+        "根据Frame的录像消息刷新显示"
         pydevd.settrace(suspend=False)
         item = self.tables[table_number].item(table_index, 1)
         if status:
@@ -240,6 +242,7 @@ class DeviceTab(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot(list)
     def refresh_disks(self, status_all: List[DiskStatus]) -> None:
+        "根据StatusReporter刷新磁盘信息"
         pydevd.settrace(suspend=False)
         for i, status in enumerate(status_all):
             item_location = self.disk_status.item(i, 0)
@@ -258,7 +261,7 @@ class DeviceTab(QtWidgets.QWidget):
                     item.setForeground(QtGui.QColor("green"))
 
     def showDialog(self) -> None:
-        """Exit dialog. check password and exit."""
+        """退出对话框"""
 
         text, ok = QtWidgets.QInputDialog.getText(
             self, "输入密码", "输入密码", QtWidgets.QLineEdit.EchoMode.Password
@@ -268,5 +271,6 @@ class DeviceTab(QtWidgets.QWidget):
                 self.exit()
 
     def exit(self):
+        """退出程序"""
         """Exit the program for maintenance."""
         QtWidgets.QApplication.exit()

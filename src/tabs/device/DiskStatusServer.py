@@ -34,7 +34,7 @@ location_ = None
 
 @app.route("/size")
 def disk_size():
-    """可用空间"""
+    """磁盘可用空间服务器"""
     global config_, path_, location_
     if path_ == None:
         if config_ == None:
@@ -51,6 +51,7 @@ def disk_size():
 
 # https://realpython.com/python-pyqt-qthread/#using-qthread-vs-pythons-threading
 class Worker(QtCore.QObject):
+    """服务器工作线程"""
     finished = QtCore.pyqtSignal()
 
     def run(self):
@@ -60,6 +61,7 @@ class Worker(QtCore.QObject):
 
 @dataclass
 class DiskStatus:
+    """磁盘数据模型"""
     location: str = ""
     total: str = ""
     used: str = ""
@@ -68,6 +70,7 @@ class DiskStatus:
 
     @classmethod
     def get(cls, path: str, location: str):
+        """获取数据"""
         total, used, free = 0, 0, 0
         error = True
         if os.path.exists(path):
@@ -84,7 +87,9 @@ import pydevd
 
 
 class StatusReporterWorker(QtCore.QObject):
+    """通过requrests定期获取双方磁盘数据, 作为信号发出"""
     result_signal = QtCore.pyqtSignal(list)
+    """结果信号"""
 
     def __init__(self, config) -> None:
         super(StatusReporterWorker, self).__init__()
@@ -92,6 +97,7 @@ class StatusReporterWorker(QtCore.QObject):
         self.config = config
 
     def get(self):
+        """获取信息"""
         pydevd.settrace(suspend=False)
         status_all = []
         proxies = {
@@ -121,17 +127,21 @@ class StatusReporterWorker(QtCore.QObject):
         return status_all
 
     def refresh(self):
+        """刷新"""
         data = self.get()
         self.result_signal.emit(data)
 
     def start_routine(self):
+        """定时刷新"""
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.refresh)
         self.timer.start(3000)
 
 
 class StatusReporter(QtCore.QObject):
+    """运行磁盘数据线程"""
     result_signal = QtCore.pyqtSignal(list)
+    """结果信号"""
 
     def __init__(self, config) -> None:
         super(StatusReporter, self).__init__()
@@ -143,10 +153,12 @@ class StatusReporter(QtCore.QObject):
         self.worker.result_signal.connect(self.result_signal)
 
     def start(self):
+        """启动线程"""
         self.thread.start()
 
 
 class DiskStatusServer(QtCore.QObject):
+    """运行服务器线程"""
     thread_completed_signal = QtCore.pyqtSignal()
 
     def __init__(self, config):
@@ -168,7 +180,9 @@ class DiskStatusServer(QtCore.QObject):
         self.thread.finished.connect(self.thread.deleteLater)
 
     def start(self):
+        """启动服务器"""
         self.thread.start()
 
     def log(self):
+        """退出日志"""
         logger.warning("status server exited.")

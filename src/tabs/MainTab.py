@@ -10,6 +10,7 @@ from .stop_button import stop_button
 
 
 class MainTab(QtWidgets.QTabWidget):
+    """整体选项卡"""
     tab_video: VideoTab
     tab_device: DeviceTab
     tab_sensor: SensorTab

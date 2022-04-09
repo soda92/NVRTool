@@ -4,6 +4,7 @@ from .stop_button import stop_button
 
 
 class MainWindow(QtWidgets.QMainWindow):
+    "主窗口"
     tab_page: MainTab
     stopbutton: stop_button
 
