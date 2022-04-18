@@ -17,7 +17,7 @@ myst-nb
 
 # old
 PyQt5
-pywin32; sys_platform == 'Windows'
-pywinauto; sys_platform == 'Windows'
-netifaces; sys_platform == 'Windows'
-psutil; sys_platform == 'Windows'
+pywin32; sys_platform == 'win32'
+pywinauto; sys_platform == 'win32'
+netifaces; sys_platform == 'win32'
+psutil; sys_platform == 'win32'
